@@ -1,8 +1,10 @@
 # gitkraken-chinese
-GitKraken的中文汉化补丁 - by K-Skye  
-自从用上了GitKraken就卸载了其他相关git的gui，界面非常合我的胃口，但是官方没有中文简体，于是便有了汉化的想法.
+GitKraken的中文汉化补丁 - by K-Skye
 
-2019.10.1 在MacOS 10.14 GitKraken 6.2.0测试通过
+## 说明
+自从用上了GitKraken就爱上了，卸载了其他相关git的gui，它的界面非常合我的胃口，但是苦于官方没有中文简体，于是便有了汉化的想法.  
+  
+更新于2019.10.1 在MacOS 10.14 GitKraken 6.2.0测试通过  
 
 ## 原理
 

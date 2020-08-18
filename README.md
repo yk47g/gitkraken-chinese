@@ -4,6 +4,7 @@ GitKraken的中文汉化补丁 - by K-Skye
 ## 说明
 自从用上了GitKraken就爱上了，卸载了其他相关git的gui，它的界面非常合我的胃口，但是苦于官方没有中文简体，于是便有了汉化的想法.  
   
+更新于2020.8.18 在windows 2.7.0版本 测试通过（感谢@Black-Spree）
 更新于2019.10.1 在MacOS 10.14 GitKraken 6.2.0测试通过  
 
 ## 原理
@@ -17,7 +18,7 @@ GitKraken的中文汉化补丁 - by K-Skye
   
    - Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json` (x.x.x 是你的GitKraken版本)
    - Mac: `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
-   - Linux: `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢lyydhy 10.31补充 Gitkraken是deepin 通过deb 安装的)
+   - Linux: `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢@lyydhy 10.31补充 Gitkraken是deepin 通过deb 安装的)
      
 2. 重启GitKraken.
 

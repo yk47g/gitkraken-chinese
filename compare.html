@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<!--
+	由于对比当前已有中文json和新版本的英文json，快速得到新版本英文json中增加了哪些内容，这样我们就可以快速进行翻译。
+-->
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <style>
+    li {
+      list-style: none;
+    }
+    #result {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+    #en {
+
+    }
+    .sp {width: 30%}
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <button @click="doCompare">对比</button>
+    <button @click="autoGen">自动生成json</button>
+    <p>使用说明：将此html文件放置到 GitKraken 的 strings.json 目录。打开之后会自动解析目录下面的已有的 strings.json(GitKraken原版/新版)，
+      以及一个已有的中文json文件(上一版本的)，然后点击对比，对比完成之后点击自动生成json，会打印到控制台，将其格式化之后拷贝到中文json文件中(上一版本的，追加进去)，然后进行翻译修改就可以了。</p>
+    <p>读取文件采用了读取本地文件(同目录的)，我用vscode，装了一个 live server 插件，要不然由跨域问题。</p>
+
+    <div id="result">
+      <div id="en" class="sp">
+        <div class="title">
+          英文&emsp;共 {{menuStringsEN.length}} 个
+        </div>
+        <ul>
+          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}：{{item.key}}</li>
+        </ul>
+      </div>
+
+      <div id="zh" class="sp">
+        <div class="title">
+          中文&emsp;共 {{menuStringsZH.length}} 个
+        </div>
+        <ul>
+          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}：{{item.key}}</li>
+        </ul>
+      </div>
+
+      <div id="cy" class="sp">
+        <div class="title">
+          中文没有的&emsp;共 {{menuStringsCY.length}} 个
+        </div>
+        <ul>
+          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}：{{item.key}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+
+<script>
+
+  
+var app = new Vue({
+  el: '#app',
+  data() {
+    return {
+      menuStringsEN: [],
+      menuStringsZH: [],
+      menuStringsCY: [],
+      enList: {},
+    }
+  },
+  mounted() {
+    this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
+    this.loadJsonKeys('http://127.0.0.1:5500/zh.json', 'zh')
+  },
+  methods: {
+    doCompare() {
+      let vm = this
+      vm.menuStringsCY = []
+      vm.menuStringsEN.forEach(en => {
+        let idx = vm.menuStringsZH.findIndex((zh) => zh.key == en.key)
+        if (idx == -1) {
+          vm.enList[en.key] = en.value
+          vm.menuStringsCY.push(en)
+        }
+      })
+    },
+    autoGen() {
+      console.log(JSON.stringify(this.enList))
+    },
+    loadJsonKeys(url, type) {
+      let vm = this
+      let request = new XMLHttpRequest()
+      request.open("get", url)
+      request.send(null)
+      request.onload = function () {
+          if (request.status == 200) {
+              let json = JSON.parse(request.responseText)
+              const menuStrings = json['menuStrings']
+              for (var key in menuStrings) {
+                if (type == 'en') {
+                  vm.menuStringsEN.push({
+                    key: key,
+                    value: menuStrings[key],
+                    scope: 'menuStrings'
+                  })
+                } else {
+                  vm.menuStringsZH.push({
+                    key: key,
+                    value: menuStrings[key],
+                    scope: 'menuStrings'
+                  })
+                }
+              }
+              const strings = json['strings']
+              for (var key in strings) {
+                if (type == 'en') {
+                  vm.menuStringsEN.push({
+                    key: key,
+                    value: strings[key],
+                    scope: 'strings'
+                  })
+                } else {
+                  vm.menuStringsZH.push({
+                    key: key,
+                    value: strings[key],
+                    scope: 'strings'
+                  })
+                }
+              }
+          }
+      }
+    }
+  },
+})
+
+</script>

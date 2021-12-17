@@ -6,6 +6,8 @@
 
 <head>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
 
   <style>
     li {
@@ -27,9 +29,14 @@
   <div id="app">
     <button @click="doCompare">对比</button>
     <button @click="autoGen">自动生成json</button>
+    <button @click="autoTranslate">自动翻译</button>
     <p>使用说明：将此html文件放置到 GitKraken 的 strings.json 目录。打开之后会自动解析目录下面的已有的 strings.json(GitKraken原版/新版)，
       以及一个已有的中文json文件(上一版本的)，然后点击对比，对比完成之后点击自动生成json，会打印到控制台，将其格式化之后拷贝到中文json文件中(上一版本的，追加进去)，然后进行翻译修改就可以了。</p>
     <p>读取文件采用了读取本地文件(同目录的)，我用vscode，装了一个 live server 插件，要不然由跨域问题。</p>
+
+    <div>
+      <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+    </div>
 
     <div id="result">
       <div id="en" class="sp">
@@ -66,7 +73,6 @@
 
 <script>
 
-  
 var app = new Vue({
   el: '#app',
   data() {
@@ -74,28 +80,21 @@ var app = new Vue({
       menuStringsEN: [],
       menuStringsZH: [],
       menuStringsCY: [],
-      enList: {},
+      sourceEN: {},
+      youdao: {
+        appKey: '', //有道AppKey
+        appSecret: '', //有道AppSecret
+        salt: (new Date).getTime(),
+        from: 'en',
+        to: 'zh-CHS',
+      }
     }
   },
   mounted() {
     this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
-    this.loadJsonKeys('http://127.0.0.1:5500/zh.json', 'zh')
+    this.loadJsonKeys('http://127.0.0.1:5500/strings_8.1.1.json', 'zh')
   },
   methods: {
-    doCompare() {
-      let vm = this
-      vm.menuStringsCY = []
-      vm.menuStringsEN.forEach(en => {
-        let idx = vm.menuStringsZH.findIndex((zh) => zh.key == en.key)
-        if (idx == -1) {
-          vm.enList[en.key] = en.value
-          vm.menuStringsCY.push(en)
-        }
-      })
-    },
-    autoGen() {
-      console.log(JSON.stringify(this.enList))
-    },
     loadJsonKeys(url, type) {
       let vm = this
       let request = new XMLHttpRequest()
@@ -104,6 +103,9 @@ var app = new Vue({
       request.onload = function () {
           if (request.status == 200) {
               let json = JSON.parse(request.responseText)
+              if (type == 'en') {
+                vm.sourceEN = json;
+              }
               const menuStrings = json['menuStrings']
               for (var key in menuStrings) {
                 if (type == 'en') {
@@ -138,6 +140,91 @@ var app = new Vue({
               }
           }
       }
+    },
+    doCompare() {
+      let vm = this
+      vm.menuStringsCY = []
+      vm.menuStringsEN.forEach(en => {
+        let idx = vm.menuStringsZH.some((zh) => zh.key === en.key)
+        if (!idx) {
+          vm.menuStringsCY.push(en)
+        }
+      })
+    },
+    autoGen() {
+      for (var item of this.menuStringsZH) {
+        if (this.sourceEN[item.scope][item.key])
+          this.sourceEN[item.scope][item.key] = item.value;
+      }
+      
+      var file = JSON.stringify(this.sourceEN, null, 2);
+      document.getElementById("textJson").innerHTML = file;
+    },
+    async autoTranslate(){
+      if (this.menuStringsCY.length === 0){
+        alert('没有需要翻译的内容');
+        return;
+      }
+
+      const oneCount = 20;
+      for(let i = 0; i < this.menuStringsCY.length; i = i + oneCount){
+        const data = this.menuStringsCY.slice(i, i + oneCount);
+        const query = data.map(m => m.value).join('\n');
+        const result = await this.translate(query);
+        for(var j = 0; j < data.length; j++) {
+          const deep = JSON.parse(JSON.stringify(data[j]));
+          deep.value = result[j];
+          this.menuStringsZH.push(deep);
+        }
+        //避免请求过于频繁
+        await this.sleep(1500);
+      }
+      this.autoGen();
+    },
+    translate(query) {
+      const curtime = Math.round(new Date().getTime()/1000);
+      const sign = this.buildSign(query, curtime);
+      const url = 'https://openapi.youdao.com/api';
+      const data = {
+            q: query,
+            appKey: this.youdao.appKey,
+            salt: this.youdao.salt,
+            from: this.youdao.from,
+            to: this.youdao.to,
+            sign: sign,
+            signType: "v3",
+            curtime: curtime,
+        };
+      return new Promise(resolve => {
+        $.ajax({
+          url: url,
+          type: 'POST',
+          dataType: 'jsonp',
+          data : data,
+          success: function (data) {
+            if (data.errorCode != '0') {
+              console.log(data);
+              resolve([]);
+              return;
+            }
+            const result = data.translation[0].split('\n');
+            resolve(result);
+          } 
+        });
+      });
+      
+    },
+    buildSign(query, curtime) {
+      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret
+      return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
+    },
+    truncate(q){
+      var len = q.length;
+      if(len<=20) return q;
+      return q.substring(0, 10) + len + q.substring(len-10, len);
+    },
+    sleep(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
     }
   },
 })

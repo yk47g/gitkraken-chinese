@@ -6,7 +6,7 @@ GitKraken的中文汉化补丁 - by K-Skye
 
 ## 更新
 
-更新于2023.09.11 9.5.1版本（感谢@star-andy）
+更新于2023.09.11 适配 9.5.1 版本（感谢@star-andy）  
 更新于2021.12.17 新增可视化对比，接入有道翻译API（感谢@TanxiangCode）  
 更新于2021.03.18 新增对比新旧版本区别，自动生成新版本的json文件的工具compare.html（感谢@DreamSaddle）  
 更新于2020.08.18 在windows 2.7.0版本 测试通过（感谢@Black-Spree）  

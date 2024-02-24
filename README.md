@@ -19,7 +19,7 @@ GitKraken的中文汉化补丁 - by K-Skye
 （自动生成json工具已实现自动翻译。因有道API属于收费接口，故不提供appKey，有需要者自行申请。）  
 ## 操作步骤
 
-1. 将项目中的 `strings.json` 替换到 GitKraken 语言目录下的 `strings.json`.  
+1. 将项目中对应版本的.json文件重命名为 `strings.json` 并替换 GitKraken 语言目录下的 `strings.json`.  
 (实际目录可能会不一样,但文件名一定是strings.json)
   
    - Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json` (x.x.x 是你的GitKraken版本)

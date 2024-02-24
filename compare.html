@@ -1,41 +1,118 @@
 <!DOCTYPE html>
 
-<!--
-	由于对比当前已有中文json和新版本的英文json，快速得到新版本英文json中增加了哪些内容，这样我们就可以快速进行翻译。
--->
+<!--  用于对比当前已有中文json和新版本的英文json,快速得到新版本英文json中增加的内容,这样就可以快速进行翻译  -->
+
+<html>
 
 <head>
+  <title>自动翻译脚本</title>
+
+  <!--  ====Meta====  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!--  ====Script Libraries====  -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
 
+  <!--  ====Others Libraries====  -->
+  <link rel="icon" type="images/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
+
+  <!--  ====Style====  -->
   <style>
     li {
       list-style: none;
     }
+
+    .instructions {
+      list-style: decimal;
+      margin: 0;
+    }
+
+    .operation {
+      display: grid;
+      grid-template-columns: 5fr 1fr;
+    }
+
+    textarea {
+      resize: none;
+    }
+
     #result {
       display: flex;
       flex-direction: row;
       width: 100%;
     }
-    #en {
-
+    
+    .sp {
+      width: 30%
     }
-    .sp {width: 30%}
+
+    @media (max-width: 1001px) {
+      .operation {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div id="app">
-    <button @click="doCompare">对比</button>
-    <button @click="autoGen">自动生成json</button>
-    <button @click="autoTranslate">自动翻译</button>
-    <p>使用说明：将此html文件放置到 GitKraken 的 strings.json 目录。打开之后会自动解析目录下面的已有的 strings.json(GitKraken原版/新版)，
-      以及一个已有的中文json文件(上一版本的)，然后点击对比，对比完成之后点击自动生成json，会打印到控制台，将其格式化之后拷贝到中文json文件中(上一版本的，追加进去)，然后进行翻译修改就可以了。</p>
-    <p>读取文件采用了读取本地文件(同目录的)，我用vscode，装了一个 live server 插件，要不然由跨域问题。</p>
+    <form @submit.prevent="saveKeys">
+      <fieldset>
+        <legend>有道API配置</legend>
+        <label for="appKey">有道AppKey:</label>
+        <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
+        <br>
+        <label for="appSecret">有道AppSecret:</label>
+        <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+        <br>
+        <button type="submit">保存</button>
+      </fieldset>
+    </form>
 
-    <div>
-      <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+    <div class="operation">
+      <fieldset>
+        <div>
+          <button @click="doCompare">对比</button>
+          <button @click="autoTranslate">自动翻译</button>
+        </div>
+        <div>
+          <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>使用说明:</legend>
+        <ol class="instructions">
+          <li class="instructions">
+              将此html文件放置到 GitKraken 自带的 strings.json 文件的同级目录下(一般是src文件中)
+          </li>
+          <li class="instructions">
+              将旧版中文json文件(如 strings_9.5.1.json )重命名为 strings_old.json 并放到同级目录下
+          </li>
+          <li class="instructions">
+              使用 VSCode 的 Live Server 插件打开此 html 文件,这将会自动解析目录下面的 strings.json  (GitKraken原版文件)和 strings_old.json (过时的本地化文件)
+          </li>
+          <li class="instructions">
+            将你的有道AppKey和AppSecret填入文本框并点击 <u>保存</u>
+          </li>
+          <li class="instructions">
+            点击 <u>对比</u> 按钮,对比得到strings.json新增的内容
+          </li>
+          <li class="instructions">
+            点击 <u>自动翻译</u> 按钮并等待文本框输出翻译结果
+          </li>
+          <li class="instructions">
+            使用 Ctrl + A 将文本框中的翻译结果全选,然后复制并完全覆盖 strings.json 文件
+          </li>
+          <li class="instructions">
+            重启 GitKraken 并(可选)清理目录中多余的 strings_old.json 文件
+          </li>
+        </ol>
+      </fieldset>
     </div>
 
     <div id="result">
@@ -44,7 +121,7 @@
           英文&emsp;共 {{menuStringsEN.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -53,7 +130,7 @@
           中文&emsp;共 {{menuStringsZH.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -62,7 +139,7 @@
           中文没有的&emsp;共 {{menuStringsCY.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
     </div>
@@ -92,7 +169,7 @@ var app = new Vue({
   },
   mounted() {
     this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
-    this.loadJsonKeys('http://127.0.0.1:5500/strings_8.1.1.json', 'zh')
+    this.loadJsonKeys('http://127.0.0.1:5500/strings_old.json', 'zh')
   },
   methods: {
     loadJsonKeys(url, type) {
@@ -225,6 +302,18 @@ var app = new Vue({
     },
     sleep(time) {
       return new Promise((resolve) => setTimeout(resolve, time));
+    },
+    saveKeys() {
+      // 获取AppKey和AppSecret的表单内容
+      const appKey = document.getElementById('appKey').value;
+      const appSecret = document.getElementById('appSecret').value;
+
+      // 将值赋给Vue实例的data
+      this.youdao.appKey = appKey;
+      this.youdao.appSecret = appSecret;
+
+      // 提示
+      alert('保存成功！');
     }
   },
 })

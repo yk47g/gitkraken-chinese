@@ -21,36 +21,97 @@
 
   <!--  ====Style====  -->
   <style>
+    /* ====Global==== */
     li {
+      /* style */
       list-style: none;
     }
 
-    .instructions {
+    fieldset{
+      /* box */
+      padding: 0.5em;
+      margin: 1px;
+    }
+
+    button:hover{
+      /* style */
+      cursor: pointer;
+    }
+
+    /* ====Specific==== */
+    .introduction {
+      /* style */
+      background-color: #f5f5f5;
+    }
+
+    .introduction-list,
+    .introduction-list-li {
+      /* box */
+      padding: 0;
+      margin: 0 0 0 4px;
+
+      /* style */
       list-style: decimal;
-      margin: 0;
     }
 
     .operation {
+      /* layout */
       display: grid;
       grid-template-columns: 5fr 1fr;
     }
 
-    textarea {
+    .console{
+      /* layout */
+      display: grid;
+      grid-template-rows: 2em 1fr;
+    }
+
+    .console-btns{
+      /* layout */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1em;
+      justify-items: center;
+
+      /* box */
+      height: 2em;
+      width: 100%;
+    }
+
+    .console-btns button {
+      /* box */
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .console-textarea textarea {
+      /* box */
+      /* element.style不知为啥比元素选择器优先级要高,因此用了强调 */
+      height: 100% !important;
+
+      /* style */
       resize: none;
     }
 
     #result {
+      /* layout */
       display: flex;
       flex-direction: row;
+
+      /* box */
       width: 100%;
     }
     
     .sp {
+      /* box */
       width: 30%
     }
 
+    /* ====Media Query==== */
     @media (max-width: 1001px) {
       .operation {
+        /* layout */
         display: grid;
         grid-template-columns: 2fr 1fr;
       }
@@ -74,42 +135,50 @@
     </form>
 
     <div class="operation">
-      <fieldset>
-        <div>
+      <fieldset class="console">
+        <legend>控制台</legend>
+        <div class="console-btns">
           <button @click="doCompare">对比</button>
+          <button @click="autoGen">自动生成json</button>
           <button @click="autoTranslate">自动翻译</button>
         </div>
-        <div>
+        <div class="console-textarea">
           <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend>使用说明:</legend>
-        <ol class="instructions">
-          <li class="instructions">
-              将此html文件放置到 GitKraken 自带的 strings.json 文件的同级目录下(一般是src文件中)
+      <fieldset class="introduction">
+        <legend>使用说明</legend>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+              将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
           </li>
-          <li class="instructions">
-              将旧版中文json文件(如 strings_9.5.1.json )重命名为 strings_old.json 并放到同级目录下
+          <li class="introduction-list-li">
+              使 
+              <ul>
+                <li style="list-style: square;">compare.html;</li>
+                <li style="list-style: square;">strings_old.json;</li>
+                <li style="list-style: square;">更新的英文 strings.json</li>
+              </ul>
+              位于同级目录
           </li>
-          <li class="instructions">
-              使用 VSCode 的 Live Server 插件打开此 html 文件,这将会自动解析目录下面的 strings.json  (GitKraken原版文件)和 strings_old.json (过时的本地化文件)
+          <li class="introduction-list-li">
+              使用 VSCode 的 Live Server 插件打开 compare.html ,将自动解析两个json文件
           </li>
-          <li class="instructions">
-            将你的有道AppKey和AppSecret填入文本框并点击 <u>保存</u>
+          <li class="introduction-list-li">
+            填写有道API并点击 <u>保存</u>
           </li>
-          <li class="instructions">
-            点击 <u>对比</u> 按钮,对比得到strings.json新增的内容
+          <li class="introduction-list-li">
+            点击 <u>对比</u> 按钮得到差异内容
           </li>
-          <li class="instructions">
-            点击 <u>自动翻译</u> 按钮并等待文本框输出翻译结果
+          <li class="introduction-list-li">
+            点击 <u>自动翻译</u> 按钮翻译并整理
           </li>
-          <li class="instructions">
-            使用 Ctrl + A 将文本框中的翻译结果全选,然后复制并完全覆盖 strings.json 文件
+          <li class="introduction-list-li">
+            全选文本框内容覆盖 strings.json 文件
           </li>
-          <li class="instructions">
-            重启 GitKraken 并(可选)清理目录中多余的 strings_old.json 文件
+          <li class="introduction-list-li">
+            重启 GitKraken
           </li>
         </ol>
       </fieldset>
@@ -159,8 +228,10 @@ var app = new Vue({
       menuStringsCY: [],
       sourceEN: {},
       youdao: {
-        appKey: '', //有道AppKey
-        appSecret: '', //有道AppSecret
+        // 有道AppKey
+        appKey: '',
+        // 有道AppSecret
+        appSecret: '',
         salt: (new Date).getTime(),
         from: 'en',
         to: 'zh-CHS',
@@ -168,7 +239,9 @@ var app = new Vue({
     }
   },
   mounted() {
+    // 英文源文件
     this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
+    // 旧版汉化文件
     this.loadJsonKeys('http://127.0.0.1:5500/strings_old.json', 'zh')
   },
   methods: {
@@ -257,6 +330,7 @@ var app = new Vue({
         await this.sleep(1500);
       }
       this.autoGen();
+      alert('翻译并整理完成');
     },
     translate(query) {
       const curtime = Math.round(new Date().getTime()/1000);
@@ -313,7 +387,7 @@ var app = new Vue({
       this.youdao.appSecret = appSecret;
 
       // 提示
-      alert('保存成功！');
+      alert('保存成功');
     }
   },
 })

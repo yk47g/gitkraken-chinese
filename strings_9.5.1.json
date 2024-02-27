@@ -1,7 +1,7 @@
 {
     "languageOption": {
-      "label": "English (US)",
-      "value": "en-us"
+      "label": nglis"Eh (US)","en-us"
+      "value": 
     },
     "menuStrings": {
       "ProductName": "<%= productName %>",

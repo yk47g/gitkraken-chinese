@@ -1,41 +1,187 @@
 <!DOCTYPE html>
 
-<!--
-	由于对比当前已有中文json和新版本的英文json，快速得到新版本英文json中增加了哪些内容，这样我们就可以快速进行翻译。
--->
+<!--  用于对比当前已有中文json和新版本的英文json,快速得到新版本英文json中增加的内容,这样就可以快速进行翻译  -->
+
+<html>
 
 <head>
+  <title>自动翻译脚本</title>
+
+  <!--  ====Meta====  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!--  ====Script Libraries====  -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
 
+  <!--  ====Others Libraries====  -->
+  <link rel="icon" type="images/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
+
+  <!--  ====Style====  -->
   <style>
+    /* ====Global==== */
     li {
+      /* style */
       list-style: none;
     }
-    #result {
-      display: flex;
-      flex-direction: row;
+
+    fieldset{
+      /* box */
+      padding: 0.5em;
+      margin: 1px;
+    }
+
+    button:hover{
+      /* style */
+      cursor: pointer;
+    }
+
+    /* ====Specific==== */
+    .introduction {
+      /* style */
+      background-color: #f5f5f5;
+    }
+
+    .introduction-list,
+    .introduction-list-li {
+      /* box */
+      padding: 0;
+      margin: 0 0 0 4px;
+
+      /* style */
+      list-style: decimal;
+    }
+
+    .operation {
+      /* layout */
+      display: grid;
+      grid-template-columns: 5fr 1fr;
+    }
+
+    .console{
+      /* layout */
+      display: grid;
+      grid-template-rows: 2em 1fr;
+    }
+
+    .console-btns{
+      /* layout */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1em;
+      justify-items: center;
+
+      /* box */
+      height: 2em;
       width: 100%;
     }
-    #en {
 
+    .console-btns button {
+      /* box */
+      padding: 0;
+      width: 100%;
+      height: 100%;
     }
-    .sp {width: 30%}
+
+    .console-textarea textarea {
+      /* box */
+      /* element.style不知为啥比元素选择器优先级要高,因此用了强调 */
+      height: 100% !important;
+
+      /* style */
+      resize: none;
+    }
+
+    #result {
+      /* layout */
+      display: flex;
+      flex-direction: row;
+
+      /* box */
+      width: 100%;
+    }
+    
+    .sp {
+      /* box */
+      width: 30%
+    }
+
+    /* ====Media Query==== */
+    @media (max-width: 1001px) {
+      .operation {
+        /* layout */
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div id="app">
-    <button @click="doCompare">对比</button>
-    <button @click="autoGen">自动生成json</button>
-    <button @click="autoTranslate">自动翻译</button>
-    <p>使用说明：将此html文件放置到 GitKraken 的 strings.json 目录。打开之后会自动解析目录下面的已有的 strings.json(GitKraken原版/新版)，
-      以及一个已有的中文json文件(上一版本的)，然后点击对比，对比完成之后点击自动生成json，会打印到控制台，将其格式化之后拷贝到中文json文件中(上一版本的，追加进去)，然后进行翻译修改就可以了。</p>
-    <p>读取文件采用了读取本地文件(同目录的)，我用vscode，装了一个 live server 插件，要不然由跨域问题。</p>
+    <form @submit.prevent="saveKeys">
+      <fieldset>
+        <legend>有道API配置</legend>
+        <label for="appKey">有道AppKey:</label>
+        <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
+        <br>
+        <label for="appSecret">有道AppSecret:</label>
+        <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+        <br>
+        <button type="submit">保存</button>
+      </fieldset>
+    </form>
 
-    <div>
-      <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+    <div class="operation">
+      <fieldset class="console">
+        <legend>控制台</legend>
+        <div class="console-btns">
+          <button @click="doCompare">对比</button>
+          <button @click="autoGen">自动生成json</button>
+          <button @click="autoTranslate">自动翻译</button>
+        </div>
+        <div class="console-textarea">
+          <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="introduction">
+        <legend>使用说明</legend>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+              将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
+          </li>
+          <li class="introduction-list-li">
+              使 
+              <ul>
+                <li style="list-style: square;">compare.html;</li>
+                <li style="list-style: square;">strings_old.json;</li>
+                <li style="list-style: square;">更新的英文 strings.json</li>
+              </ul>
+              位于同级目录
+          </li>
+          <li class="introduction-list-li">
+              使用 VSCode 的 Live Server 插件打开 compare.html ,将自动解析两个json文件
+          </li>
+          <li class="introduction-list-li">
+            填写有道API并点击 <u>保存</u>
+          </li>
+          <li class="introduction-list-li">
+            点击 <u>对比</u> 按钮得到差异内容
+          </li>
+          <li class="introduction-list-li">
+            点击 <u>自动翻译</u> 按钮翻译并整理
+          </li>
+          <li class="introduction-list-li">
+            全选文本框内容覆盖 strings.json 文件
+          </li>
+          <li class="introduction-list-li">
+            重启 GitKraken
+          </li>
+        </ol>
+      </fieldset>
     </div>
 
     <div id="result">
@@ -44,7 +190,7 @@
           英文&emsp;共 {{menuStringsEN.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -53,7 +199,7 @@
           中文&emsp;共 {{menuStringsZH.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -62,7 +208,7 @@
           中文没有的&emsp;共 {{menuStringsCY.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}：{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}:{{item.key}}</li>
         </ul>
       </div>
     </div>
@@ -82,8 +228,10 @@ var app = new Vue({
       menuStringsCY: [],
       sourceEN: {},
       youdao: {
-        appKey: '', //有道AppKey
-        appSecret: '', //有道AppSecret
+        // 有道AppKey
+        appKey: '',
+        // 有道AppSecret
+        appSecret: '',
         salt: (new Date).getTime(),
         from: 'en',
         to: 'zh-CHS',
@@ -91,8 +239,10 @@ var app = new Vue({
     }
   },
   mounted() {
+    // 英文源文件
     this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
-    this.loadJsonKeys('http://127.0.0.1:5500/strings_8.1.1.json', 'zh')
+    // 旧版汉化文件
+    this.loadJsonKeys('http://127.0.0.1:5500/strings_old.json', 'zh')
   },
   methods: {
     loadJsonKeys(url, type) {
@@ -180,6 +330,7 @@ var app = new Vue({
         await this.sleep(1500);
       }
       this.autoGen();
+      alert('翻译并整理完成');
     },
     translate(query) {
       const curtime = Math.round(new Date().getTime()/1000);
@@ -225,6 +376,18 @@ var app = new Vue({
     },
     sleep(time) {
       return new Promise((resolve) => setTimeout(resolve, time));
+    },
+    saveKeys() {
+      // 获取AppKey和AppSecret的表单内容
+      const appKey = document.getElementById('appKey').value;
+      const appSecret = document.getElementById('appSecret').value;
+
+      // 将值赋给Vue实例的data
+      this.youdao.appKey = appKey;
+      this.youdao.appSecret = appSecret;
+
+      // 提示
+      alert('保存成功');
     }
   },
 })

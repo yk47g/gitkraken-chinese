@@ -39,6 +39,28 @@
     }
 
     /* ====Specific==== */
+    header {
+      /* layout */
+      height: 32px;
+    }
+
+    .header-anchor {
+      /* layout */
+      display: inline-block;
+
+      /* box */
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+
+    .header-anchor-logo {
+      /* box */
+      display: inline-block;
+      padding: 1px;
+      height: 30px;
+    }
+
     .introduction {
       /* style */
       background-color: #f5f5f5;
@@ -120,6 +142,11 @@
 </head>
 
 <body>
+  <header class="header">
+    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese">
+      <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="关于我们的GitHub项目">
+    </a>
+  </header>
   <div id="app">
     <form @submit.prevent="saveKeys">
       <fieldset>
@@ -149,6 +176,7 @@
 
       <fieldset class="introduction">
         <legend>使用说明</legend>
+        <b>对于有"有道翻译"API的用户:</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
               将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
@@ -172,15 +200,49 @@
             点击 <u>对比</u> 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 <u>自动翻译</u> 按钮翻译并整理
+            点击 <u>自动翻译</u> 按钮翻译,并将结果使用
+            <a href="https://www.bejson.com/" target="_blank">
+              格式化工具
+            </a>
+            整理
           </li>
           <li class="introduction-list-li">
-            全选文本框内容覆盖 strings.json 文件
+            将整理好后的内容覆盖 strings.json 文件
           </li>
           <li class="introduction-list-li">
             重启 GitKraken
           </li>
         </ol>
+        <b>对于没有API的用户</b>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+            前三个步骤和上面的一样
+          </li>
+          <li class="introduction-list-li">
+            点击 <u>对比</u> 按钮得到差异内容
+          </li>
+          <li class="introduction-list-li">
+            点击 <u>自动生成json</u> 按钮生成整合后的 json 文件
+          </li>
+          <li class="introduction-list-li">
+            复制并翻译文本框内的文件
+          </li>
+          <li class="introduction-list-li">
+            将翻译好的内容使用
+            <a href="https://www.bejson.com/" target="_blank">
+              格式化工具
+            </a>
+            整理
+          </li>
+          <li class="introduction-list-li">
+            承接上面的第七步
+          </li>
+        </ol>
+        <i>有关有道API的申请步骤,参阅
+          <a href="./About_YouDao_API.md" target="_blank">
+            关于有道API
+          </a>
+        </i>
       </fieldset>
     </div>
 
@@ -240,9 +302,9 @@ var app = new Vue({
   },
   mounted() {
     // 英文源文件
-    this.loadJsonKeys('http://127.0.0.1:5500/strings.json', 'en')
+    this.loadJsonKeys('./strings.json', 'en')
     // 旧版汉化文件
-    this.loadJsonKeys('http://127.0.0.1:5500/strings_old.json', 'zh')
+    this.loadJsonKeys('./strings_old.json', 'zh')
   },
   methods: {
     loadJsonKeys(url, type) {

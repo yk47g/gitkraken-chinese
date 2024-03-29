@@ -2,7 +2,7 @@
 
 <!--  用于对比当前已有中文json和新版本的英文json,快速得到新版本英文json中增加的内容,这样就可以快速进行翻译  -->
 
-<html>
+<html lang="zh-CN">
 
 <head>
   <title>自动翻译脚本</title>
@@ -124,7 +124,7 @@
       /* box */
       width: 100%;
     }
-    
+
     .sp {
       /* box */
       width: 30%
@@ -170,6 +170,7 @@
           <button @click="autoTranslate">自动翻译</button>
         </div>
         <div class="console-textarea">
+          <label for="textJson"></label>
           <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
         </div>
       </fieldset>
@@ -182,7 +183,7 @@
               将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
           </li>
           <li class="introduction-list-li">
-              使 
+              使
               <ul>
                 <li style="list-style: square;">compare.html;</li>
                 <li style="list-style: square;">strings_old.json;</li>
@@ -281,7 +282,7 @@
 
 <script>
 
-var app = new Vue({
+const app = new Vue({
   el: '#app',
   data() {
     return {
@@ -313,14 +314,15 @@ var app = new Vue({
       request.open("get", url)
       request.send(null)
       request.onload = function () {
-          if (request.status == 200) {
+          if (request.status === 200) {
+              let key
               let json = JSON.parse(request.responseText)
-              if (type == 'en') {
+              if (type === 'en') {
                 vm.sourceEN = json;
               }
               const menuStrings = json['menuStrings']
-              for (var key in menuStrings) {
-                if (type == 'en') {
+              for (key in menuStrings) {
+                if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: menuStrings[key],
@@ -335,8 +337,8 @@ var app = new Vue({
                 }
               }
               const strings = json['strings']
-              for (var key in strings) {
-                if (type == 'en') {
+              for (key in strings) {
+                if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: strings[key],
@@ -364,13 +366,12 @@ var app = new Vue({
       })
     },
     autoGen() {
-      for (var item of this.menuStringsZH) {
+      for (const item of this.menuStringsZH) {
         if (this.sourceEN[item.scope][item.key])
           this.sourceEN[item.scope][item.key] = item.value;
       }
-      
-      var file = JSON.stringify(this.sourceEN, null, 2);
-      document.getElementById("textJson").innerHTML = file;
+
+  document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
     },
     async autoTranslate(){
       if (this.menuStringsCY.length === 0){
@@ -383,7 +384,7 @@ var app = new Vue({
         const data = this.menuStringsCY.slice(i, i + oneCount);
         const query = data.map(m => m.value).join('\n');
         const result = await this.translate(query);
-        for(var j = 0; j < data.length; j++) {
+        for(let j = 0; j < data.length; j++) {
           const deep = JSON.parse(JSON.stringify(data[j]));
           deep.value = result[j];
           this.menuStringsZH.push(deep);
@@ -415,25 +416,25 @@ var app = new Vue({
           dataType: 'jsonp',
           data : data,
           success: function (data) {
-            if (data.errorCode != '0') {
+            if (data.errorCode !== '0') {
               console.log(data);
               resolve([]);
               return;
             }
             const result = data.translation[0].split('\n');
             resolve(result);
-          } 
+          }
         });
       });
-      
+
     },
     buildSign(query, curtime) {
       const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
     truncate(q){
-      var len = q.length;
-      if(len<=20) return q;
+        const len = q.length
+        if(len<=20) return q;
       return q.substring(0, 10) + len + q.substring(len-10, len);
     },
     sleep(time) {

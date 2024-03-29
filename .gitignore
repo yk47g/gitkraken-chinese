@@ -1,2 +1,5 @@
-.vscode
-.gitignore
+###Editor###
+.vscode/
+.idea/
+###test###
+test/

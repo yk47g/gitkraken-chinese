@@ -61,6 +61,27 @@
       height: 30px;
     }
 
+    .APIConfig {
+      /* layout */
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      }
+
+    .input-group label {
+      width: 125px; /* 根据需要调整 */
+      margin-right: 10px; /* 根据需要调整 */
+      }
+
+    .APIConfig button{
+      width: 42px;
+      }
+
     .introduction {
       /* style */
       background-color: #f5f5f5;
@@ -149,14 +170,18 @@
   </header>
   <div id="app">
     <form @submit.prevent="saveKeys">
-      <fieldset>
+      <fieldset class="APIConfig">
         <legend>有道API配置</legend>
-        <label for="appKey">有道AppKey:</label>
-        <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
-        <br>
-        <label for="appSecret">有道AppSecret:</label>
-        <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
-        <br>
+          <div id="APIConfig-input">
+            <div class="input-group">
+              <label for="appKey">有道AppKey:</label>
+              <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
+            </div>
+            <div class="input-group">
+              <label for="appSecret">有道AppSecret:</label>
+              <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+            </div>
+          </div>
         <button type="submit">保存</button>
       </fieldset>
     </form>
@@ -195,13 +220,13 @@
               使用 VSCode 的 Live Server 插件打开 compare.html ,将自动解析两个json文件
           </li>
           <li class="introduction-list-li">
-            填写有道API并点击 <u>保存</u>
+            填写有道API并点击 [保存]
           </li>
           <li class="introduction-list-li">
-            点击 <u>对比</u> 按钮得到差异内容
+            点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 <u>自动翻译</u> 按钮翻译,并将结果使用
+            点击 [自动翻译] 按钮翻译,并将结果使用
             <a href="https://www.bejson.com/" target="_blank">
               格式化工具
             </a>
@@ -220,10 +245,10 @@
             前三个步骤和上面的一样
           </li>
           <li class="introduction-list-li">
-            点击 <u>对比</u> 按钮得到差异内容
+            点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 <u>自动生成json</u> 按钮生成整合后的 json 文件
+            点击 [自动生成json] 按钮生成整合后的 json 文件
           </li>
           <li class="introduction-list-li">
             复制并翻译文本框内的文件
@@ -237,6 +262,39 @@
           </li>
           <li class="introduction-list-li">
             承接上面的第七步
+          </li>
+        </ol>
+        <b>可能出现的问题和解决建议</b>
+        <a href="https://github.com/yk47g/gitkraken-chinese/issues">
+          报告问题
+        </a>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+            使用API翻译后并没有插入新增内容
+            <ul>
+              <li style="list-style: circle">
+                确认使用了VS Code 的 Live Server
+              </li>
+              <li style="list-style: circle">
+                检查API是否正确配置
+              </li>
+            </ul>
+          </li>
+          <li class="introduction-list-li">
+            打开页面有一段时间非常卡
+            <ul>
+              <li style="list-style: circle">
+                由于JSON文件较大,卡顿是正常的
+              </li>
+            </ul>
+          </li>
+          <li class="introduction-list-li">
+            按下[自动翻译]没反应
+            <ul>
+              <li style="list-style: circle">
+                请检查"中文 共 xx 个"条目下的数字有无更新,如果有则是正常运行
+              </li>
+            </ul>
           </li>
         </ol>
         <i>有关有道API的申请步骤,参阅

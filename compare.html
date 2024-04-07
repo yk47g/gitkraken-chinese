@@ -2,7 +2,7 @@
 
 <!--  用于对比当前已有中文json和新版本的英文json,快速得到新版本英文json中增加的内容,这样就可以快速进行翻译  -->
 
-<html>
+<html lang="zh-CN">
 
 <head>
   <title>自动翻译脚本</title>
@@ -60,6 +60,27 @@
       padding: 1px;
       height: 30px;
     }
+
+    .APIConfig {
+      /* layout */
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      }
+
+    .input-group label {
+      width: 125px; /* 根据需要调整 */
+      margin-right: 10px; /* 根据需要调整 */
+      }
+
+    .APIConfig button{
+      width: 42px;
+      }
 
     .introduction {
       /* style */
@@ -124,7 +145,7 @@
       /* box */
       width: 100%;
     }
-    
+
     .sp {
       /* box */
       width: 30%
@@ -149,14 +170,18 @@
   </header>
   <div id="app">
     <form @submit.prevent="saveKeys">
-      <fieldset>
+      <fieldset class="APIConfig">
         <legend>有道API配置</legend>
-        <label for="appKey">有道AppKey:</label>
-        <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
-        <br>
-        <label for="appSecret">有道AppSecret:</label>
-        <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
-        <br>
+          <div id="APIConfig-input">
+            <div class="input-group">
+              <label for="appKey">有道AppKey:</label>
+              <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
+            </div>
+            <div class="input-group">
+              <label for="appSecret">有道AppSecret:</label>
+              <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+            </div>
+          </div>
         <button type="submit">保存</button>
       </fieldset>
     </form>
@@ -170,6 +195,7 @@
           <button @click="autoTranslate">自动翻译</button>
         </div>
         <div class="console-textarea">
+          <label for="textJson"></label>
           <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
         </div>
       </fieldset>
@@ -182,7 +208,7 @@
               将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
           </li>
           <li class="introduction-list-li">
-              使 
+              使
               <ul>
                 <li style="list-style: square;">compare.html;</li>
                 <li style="list-style: square;">strings_old.json;</li>
@@ -194,13 +220,13 @@
               使用 VSCode 的 Live Server 插件打开 compare.html ,将自动解析两个json文件
           </li>
           <li class="introduction-list-li">
-            填写有道API并点击 <u>保存</u>
+            填写有道API并点击 [保存]
           </li>
           <li class="introduction-list-li">
-            点击 <u>对比</u> 按钮得到差异内容
+            点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 <u>自动翻译</u> 按钮翻译,并将结果使用
+            点击 [自动翻译] 按钮翻译,并将结果使用
             <a href="https://www.bejson.com/" target="_blank">
               格式化工具
             </a>
@@ -219,10 +245,10 @@
             前三个步骤和上面的一样
           </li>
           <li class="introduction-list-li">
-            点击 <u>对比</u> 按钮得到差异内容
+            点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 <u>自动生成json</u> 按钮生成整合后的 json 文件
+            点击 [自动生成json] 按钮生成整合后的 json 文件
           </li>
           <li class="introduction-list-li">
             复制并翻译文本框内的文件
@@ -236,6 +262,39 @@
           </li>
           <li class="introduction-list-li">
             承接上面的第七步
+          </li>
+        </ol>
+        <b>可能出现的问题和解决建议</b>
+        <a href="https://github.com/yk47g/gitkraken-chinese/issues">
+          报告问题
+        </a>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+            使用API翻译后并没有插入新增内容
+            <ul>
+              <li style="list-style: circle">
+                确认使用了VS Code 的 Live Server
+              </li>
+              <li style="list-style: circle">
+                检查API是否正确配置
+              </li>
+            </ul>
+          </li>
+          <li class="introduction-list-li">
+            打开页面有一段时间非常卡
+            <ul>
+              <li style="list-style: circle">
+                由于JSON文件较大,卡顿是正常的
+              </li>
+            </ul>
+          </li>
+          <li class="introduction-list-li">
+            按下[自动翻译]没反应
+            <ul>
+              <li style="list-style: circle">
+                请检查"中文 共 xx 个"条目下的数字有无更新,如果有则是正常运行
+              </li>
+            </ul>
           </li>
         </ol>
         <i>有关有道API的申请步骤,参阅
@@ -281,7 +340,7 @@
 
 <script>
 
-var app = new Vue({
+const app = new Vue({
   el: '#app',
   data() {
     return {
@@ -313,14 +372,15 @@ var app = new Vue({
       request.open("get", url)
       request.send(null)
       request.onload = function () {
-          if (request.status == 200) {
+          if (request.status === 200) {
+              let key
               let json = JSON.parse(request.responseText)
-              if (type == 'en') {
+              if (type === 'en') {
                 vm.sourceEN = json;
               }
               const menuStrings = json['menuStrings']
-              for (var key in menuStrings) {
-                if (type == 'en') {
+              for (key in menuStrings) {
+                if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: menuStrings[key],
@@ -335,8 +395,8 @@ var app = new Vue({
                 }
               }
               const strings = json['strings']
-              for (var key in strings) {
-                if (type == 'en') {
+              for (key in strings) {
+                if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: strings[key],
@@ -364,13 +424,12 @@ var app = new Vue({
       })
     },
     autoGen() {
-      for (var item of this.menuStringsZH) {
+      for (const item of this.menuStringsZH) {
         if (this.sourceEN[item.scope][item.key])
           this.sourceEN[item.scope][item.key] = item.value;
       }
-      
-      var file = JSON.stringify(this.sourceEN, null, 2);
-      document.getElementById("textJson").innerHTML = file;
+
+  document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
     },
     async autoTranslate(){
       if (this.menuStringsCY.length === 0){
@@ -383,7 +442,7 @@ var app = new Vue({
         const data = this.menuStringsCY.slice(i, i + oneCount);
         const query = data.map(m => m.value).join('\n');
         const result = await this.translate(query);
-        for(var j = 0; j < data.length; j++) {
+        for(let j = 0; j < data.length; j++) {
           const deep = JSON.parse(JSON.stringify(data[j]));
           deep.value = result[j];
           this.menuStringsZH.push(deep);
@@ -415,25 +474,25 @@ var app = new Vue({
           dataType: 'jsonp',
           data : data,
           success: function (data) {
-            if (data.errorCode != '0') {
+            if (data.errorCode !== '0') {
               console.log(data);
               resolve([]);
               return;
             }
             const result = data.translation[0].split('\n');
             resolve(result);
-          } 
+          }
         });
       });
-      
+
     },
     buildSign(query, curtime) {
       const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
     truncate(q){
-      var len = q.length;
-      if(len<=20) return q;
+        const len = q.length
+        if(len<=20) return q;
       return q.substring(0, 10) + len + q.substring(len-10, len);
     },
     sleep(time) {

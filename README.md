@@ -12,7 +12,7 @@ GitKraken的中文汉化补丁 - by K-Skye
 
 | 日期         | 更新内容                                                                   | 感谢                                               |
 |------------|------------------------------------------------------------------------|--------------------------------------------------|
-| 2024.05.15 | 适配 10.0.0 版本，更新 README.md 的格式                                          | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
+| 2024.05.20 | 适配 10.0.1 版本，更新 README.md 的格式                                          | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.03.07 | 适配 9.13.0 版本                                                           | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.02.27 | 适配 9.12.0 版本，明晰化 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件 | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.02.27 | 适配 9.11.1 版本                                                           | [@Jaffrez](https://github.com/Jaffrez)           |
@@ -34,10 +34,11 @@ GitKraken的中文汉化补丁 - by K-Skye
 1. 将项目中对应版本的 `.json` 文件重命名为 `strings.json` 并替换 GitKraken 语言目录下的 `strings.json`。  
    (实际目录可能会不一样，但文件名一定是 `strings.json`)
 
-   - Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json` (x.x.x 是你的 GitKraken 版本)
-   - Mac: `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
-   - Linux: `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢 [@lyydhy](https://github.com/lyydhy) 补充 GitKraken 是 deepin 通过 deb 安装的)
-   - Linux: `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json` (Arch Linux AUR 安装的路径在这)
+    - Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json` (x.x.x 是你的 GitKraken 版本)
+    - Mac: `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
+    - Linux: `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢 [@lyydhy](https://github.com/lyydhy) 补充
+      GitKraken 是 deepin 通过 deb 安装的)
+    - Linux: `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json` (Arch Linux AUR 安装的路径在这)
 
 2. 重启 GitKraken。
 
@@ -45,5 +46,6 @@ GitKraken的中文汉化补丁 - by K-Skye
 
 GitKraken 旧版本目录不一样，应该是以下目录：
 
-- Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json` (x.x.x 是你的 GitKraken 版本)
+- Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json` (x.x.x 是你的 GitKraken
+  版本)
 - Mac: `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`

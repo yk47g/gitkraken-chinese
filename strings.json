@@ -4771,6 +4771,7 @@
     "AddEditWorkspace-SearchRemoteRepos": "Search remote repositories",
     "AddEditWorkspace-SelectedRepoOne": "1 repository will be added to this workspace",
     "AddEditWorkspace-SelectedReposCount": "{0} repositories will be added to this workspace",
+    "AddEditWorkspace-ClearRepoSelection": "Clear",
     "AddEditWorkspace-SelectRepos": "Select repositories to add to this workspace",
     "AddEditWorkspace-SelectLocalSyncedWorkspaceRepos": "Select the directory you keep your repos to sync with your Local Workspace",
     "AddEditWorkspace-TeamDescription": "Select the teams and members this workspace will be shared with",

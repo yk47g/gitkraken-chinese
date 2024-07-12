@@ -10,18 +10,18 @@ GitKraken的中文汉化补丁 - by K-Skye
 
 ## 更新
 
-| 日期         | 更新内容                                                                   | 感谢                                               |
-|------------|------------------------------------------------------------------------|--------------------------------------------------|
-| 2024.05.20 | 适配 10.0.0-10.0.2 版本，更新 README.md 的格式                                   | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
-| 2024.03.07 | 适配 9.13.0 版本                                                           | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
-| 2024.02.27 | 适配 9.12.0 版本，明晰化 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件 | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
-| 2024.02.27 | 适配 9.11.1 版本                                                           | [@Jaffrez](https://github.com/Jaffrez)           |
-| 2024.02.27 | 适配 9.5.1 版本                                                            | [@buck178](https://github.com/buck178)           |
-| 2023.09.11 | 适配 9.5.1 版本                                                            | [@star-andy](https://github.com/star-andy)       |
-| 2021.12.17 | 新增可视化对比，接入有道翻译 API                                                     | [@TanxiangCode](https://github.com/TanxiangCode) |
-| 2021.03.18 | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html                            | [@DreamSaddle](https://github.com/DreamSaddle)   |
-| 2020.08.18 | 在 Windows 2.7.0 版本 测试通过                                                | [@Black-Spree](https://github.com/Black-Spree)   |
-| 2019.10.01 | 在 MacOS 10.14 GitKraken 6.2.0 测试通过                                     | [@yk47g](https://github.com/yk47g)               |
+| 日期                    | 更新内容                                                                   | 感谢                                               |
+|-----------------------|------------------------------------------------------------------------|--------------------------------------------------|
+| 2024.05.20-2024.07.11 | 适配 10.0.0-10.1.0 版本，更新 README.md 的格式                                   | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
+| 2024.03.07            | 适配 9.13.0 版本                                                           | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
+| 2024.02.27            | 适配 9.12.0 版本，明晰化 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件 | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
+| 2024.02.27            | 适配 9.11.1 版本                                                           | [@Jaffrez](https://github.com/Jaffrez)           |
+| 2024.02.27            | 适配 9.5.1 版本                                                            | [@buck178](https://github.com/buck178)           |
+| 2023.09.11            | 适配 9.5.1 版本                                                            | [@star-andy](https://github.com/star-andy)       |
+| 2021.12.17            | 新增可视化对比，接入有道翻译 API                                                     | [@TanxiangCode](https://github.com/TanxiangCode) |
+| 2021.03.18            | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html                            | [@DreamSaddle](https://github.com/DreamSaddle)   |
+| 2020.08.18            | 在 Windows 2.7.0 版本 测试通过                                                | [@Black-Spree](https://github.com/Black-Spree)   |
+| 2019.10.01            | 在 MacOS 10.14 GitKraken 6.2.0 测试通过                                     | [@yk47g](https://github.com/yk47g)               |
 
 ## 原理
 

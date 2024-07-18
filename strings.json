@@ -1590,7 +1590,7 @@
     "RepoManagement-ChangeColor": "Change color",
 
     "Color": "Color",
-    "Color-Gray": "Gray color",
+    "Color-Gray": "Gray",
     "Graph-ColorNumber": "Graph color {0}",
 
     "CloneRepo-CloneARepo": "Clone a Repo",
@@ -2760,10 +2760,9 @@
     "Trial-StartFreeGitKrakenTrial": "Start a Free GitKraken Trial",
     "Trial-TrialEndedModalContent0": "Upgrade GitKraken to continue to receive access to paid {0}.",
     "Trial-TrialEndedModalContent1": "By upgrading, you'll also be able to enjoy {0} from any of our legendary tools:",
-    "Trial-GitKrakenSuite": "GitKraken's developer platform",
-    "Trial-Special": "Limited Time: {0}",
-    "Trial-FiftyPercentOff": "Save 50% on GitKraken's DevEx platform",
-    "Trial-FirstAndSecondSeatsOnlyFourDollarsEach": "1st & 2nd seats only $4 per month!",
+    "Trial-GitKrakenSuite": "GitKraken's DevEx Platform",
+    "Trial-FiftyPercentOff": "1st seat of GitKraken Pro is now 50%+ off!",
+    "Trial-SpecialPricingSubtext": "See plans to get your special price.",
     "Trial-TrialStartedModalContent1": "For the next {0} days, you will have access to all paid {1}! After your GitKraken trial expires, your account will default to the free plan.",
     "Trial-TrialStartedModalContent2": "Add teammates for an extended trial!",
     "Trial-TrialStartedModalContent3": "Start a {0}-day multi-user trial when you create an organization and add your teammates. Everyone will have access to all of GitKraken's paid features until your multi-user trial ends.",
@@ -4869,6 +4868,8 @@
     "FocusView-RefreshData": "Refresh Data",
     "FocusView-LastUpdated": "Last Updated:",
     "FocusView-RefreshLimit": "Refreshing is limited to once per minute",
+    "FocusView-DisabledRefresh" : "Disabled refresh button for Launchpad. Refreshing is limited to once per minute.",
+    "FocusView-RefreshMessage" : "Refresh button for Launchpad. Press enter to refresh.",
     "FocusView-NoItemsAllHeader": "No Items",
     "FocusView-NoItemsPRHeader": "No Pull Requests",
     "FocusView-NoItemsIssueHeader": "No Issues",
@@ -5024,6 +5025,9 @@
     "StatusBar-ClickToUpdatePayment": "Click here to update payment",
     "StatusBar-GKRenewalFailed": "GitKraken renewal failed! {0}.",
     "StatusBar-UpdatePaymentUser": "GitKraken renewal failed! Ask your admin to update payment.",
-    "StatusBar-WhatsNewInVersion10": "{0} What's New In Version 10"
+    "StatusBar-WhatsNewInVersion10": "{0} What's New In Version 10",
+
+    "GKDotDev-OpeningLinkInBrowser": "Opening Link in Browser",
+    "GKDotDev-CopyLink": "Copy Link"
   }
 }

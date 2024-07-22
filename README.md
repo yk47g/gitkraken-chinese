@@ -12,7 +12,7 @@ GitKraken的中文汉化补丁 - by K-Skye
 
 | 日期                    | 更新内容                                                                   | 感谢                                               |
 |-----------------------|------------------------------------------------------------------------|--------------------------------------------------|
-| 2024.05.20-2024.07.11 | 适配 10.0.0-10.1.0 版本，更新 README.md 的格式                                   | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
+| 2024.05.20-2024.07.19 | 适配 10.0.0-10.1.1 版本，更新 README.md 的格式                                   | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.03.07            | 适配 9.13.0 版本                                                           | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.02.27            | 适配 9.12.0 版本，明晰化 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件 | [@YuanXiQWQ](https://github.com/YuanXiQWQ)       |
 | 2024.02.27            | 适配 9.11.1 版本                                                           | [@Jaffrez](https://github.com/Jaffrez)           |

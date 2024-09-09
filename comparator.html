@@ -175,7 +175,7 @@
 
 <body>
   <header class="header">
-    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese", target="_blank">
+    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese" target="_blank">
       <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="关于我们的GitHub项目">
     </a>
   </header>
@@ -346,10 +346,10 @@
             <li class="introduction-list-li">
               在 comparator.html 文件中填写相关信息
             </li>
+          </ol>
             <i>
               <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
             </i>
-          </ol>
         </div>
         <br>
         <b :class="{'clickable': true, 'clickable-active': showOpenAI}" @click="toggleOpenAI">OpenAI API的申请步骤</b>
@@ -373,10 +373,10 @@
             <li class="introduction-list-li">
               在 comparator.html 文件中填写相关信息, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果(而且免费限额高,token还便宜)
             </li>
+          </ol>
             <i>
               <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
             </i>
-          </ol>
         </div>
       </fieldset>
     </div>
@@ -479,7 +479,6 @@ const app = new Vue({
 
       try {
         await navigator.clipboard.writeText(content);
-        alert("已复制到剪切板");
       } catch (err) {
         alert("复制失败，请手动复制");
       }
@@ -583,7 +582,13 @@ const app = new Vue({
         }
       }
     },
+
     doCompare() {
+      if (this.menuStringsEN.length === 0 || this.menuStringsZH.length === 0) {
+        alert("请先上传新版本文件和旧版翻译文件，然后进行对比");
+        return;
+      }
+
       let vm = this;
       vm.menuStringsCY = [];
       vm.menuStringsEN.forEach(en => {
@@ -591,16 +596,28 @@ const app = new Vue({
         if (!idx) {
           vm.menuStringsCY.push(en);
         }
-      })
+      });
+
+      if (vm.menuStringsCY.length === 0) {
+        alert("没有找到差异内容");
+      }
     },
+
     autoGen() {
+      if (this.menuStringsZH.length === 0 || Object.keys(this.sourceEN).length === 0) {
+        alert("没有可生成的 JSON 内容，请先上传文件并进行对比或翻译");
+        return;
+      }
+
       for (const item of this.menuStringsZH) {
-        if (this.sourceEN[item.scope][item.key])
+        if (this.sourceEN[item.scope][item.key]) {
           this.sourceEN[item.scope][item.key] = item.value;
+        }
       }
 
       document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
     },
+
     async autoTranslate() {
       if (this.menuStringsCY.length === 0) {
         alert('没有需要翻译的内容');
@@ -711,28 +728,57 @@ const app = new Vue({
         return [];
       }
     },
+
     buildSign(query, curtime) {
       const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret;
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
+
     truncate(q) {
       const len = q.length;
       if (len <= 20) return q;
       return q.substring(0, 10) + len + q.substring(len - 10, len);
     },
+
     sleep(time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
+
     saveKeys() {
       // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
       if (this.selectedApi === 'youdao') {
-        this.youdao.appKey = document.getElementById('appKey').value;
-        this.youdao.appSecret = document.getElementById('appSecret').value;
-        alert('有道API 配置已保存');
+        const appKey = this.youdao.appKey;
+        const appSecret = this.youdao.appSecret;
+
+        if (!appKey) {
+          alert("请填写有道AppKey");
+          return;
+        }
+        if (!appSecret) {
+          alert("请填写有道AppSecret");
+          return;
+        }
+
+        this.youdao.appKey = appKey;
+        this.youdao.appSecret = appSecret;
+        alert('有道API配置已保存');
+
       } else if (this.selectedApi === 'openai') {
-        this.openai.apiKey = document.getElementById('openaiApiKey').value;
-        this.openai.model = document.getElementById("modelSelector").value;
-        alert('OpenAI API 配置已保存');
+        const apiKey = this.openai.apiKey;
+        const model = this.openai.model;
+
+        if (!apiKey) {
+          alert("请填写OpenAI API密钥");
+          return;
+        }
+        if (!model) {
+          alert("请选择OpenAI模型");
+          return;
+        }
+
+        this.openai.apiKey = apiKey;
+        this.openai.model = model;
+        alert('OpenAI API配置已保存');
       }
     }
   },

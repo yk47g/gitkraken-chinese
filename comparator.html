@@ -123,6 +123,26 @@
       resize: none;
     }
 
+    .clickable {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .clickable::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid black;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+    }
+
+    .clickable-active::after {
+      transform: rotate(180deg);
+    }
+
     #result{
       display: flex;
       flex-direction: row;
@@ -179,7 +199,7 @@
         <div v-if="selectedApi === 'openai'">
           <div class="input-group">
             <label for="openaiApiKey">OpenAI API 密钥:</label>
-            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="OpenAI API 密钥">
+            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="通常以 sk- 开头">
           </div>
           <div class='input-group'>
             <label for='modelSelector'>选择模型:</label>
@@ -209,8 +229,11 @@
 
       <fieldset class="introduction">
         <legend>使用说明</legend>
-        <b>对于有"有道翻译"API的用户:</b>
+        <b>对于有提供支持的API的用户:</b>
         <ol class="introduction-list">
+          <li class="introduction-list-li">
+            选择并填写API配置并点击 [保存]
+          </li>
           <li class="introduction-list-li">
               将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
           </li>
@@ -227,13 +250,10 @@
               使用 VSCode 的 Live Server 插件打开 comparator.html ,将自动解析两个json文件
           </li>
           <li class="introduction-list-li">
-            填写有道API并点击 [保存]
-          </li>
-          <li class="introduction-list-li">
             点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 [自动翻译] 按钮翻译,并将结果使用
+            点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框,之后将结果使用
             <a href="https://www.bejson.com/" target="_blank">
               格式化工具
             </a>
@@ -249,10 +269,7 @@
         <b>对于没有API的用户</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            前三个步骤和上面的一样
-          </li>
-          <li class="introduction-list-li">
-            点击 [对比] 按钮得到差异内容
+            执行上面的步骤2,3,4,5
           </li>
           <li class="introduction-list-li">
             点击 [自动生成json] 按钮生成整合后的 json 文件
@@ -268,7 +285,7 @@
             整理
           </li>
           <li class="introduction-list-li">
-            承接上面的第七步
+            执行上面的步骤7
           </li>
         </ol>
         <b>可能出现的问题和解决建议</b>
@@ -283,7 +300,7 @@
                 确认使用了VS Code 的 Live Server
               </li>
               <li style="list-style: circle">
-                检查API是否正确配置
+                检查API是否正确配置(有效性,模型访问权限)
               </li>
             </ul>
           </li>
@@ -304,11 +321,59 @@
             </ul>
           </li>
         </ol>
-        <i>有关有道API的申请步骤,参阅
-          <a href="./About_YouDao_API.md" target="_blank">
-            关于有道API
-          </a>
-        </i>
+        <b :class="{'clickable': true, 'clickable-active': showYoudao}" @click="toggleYoudao">有道API的申请步骤</b>
+        <div v-if="showYoudao">
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation" target="_blank">有道智云控制台</a>
+            </li>
+            <li class="introduction-list-li">
+              注册或登录
+            </li>
+            <li class="introduction-list-li">
+              在侧边栏选择 "自然语言翻译服务/文本翻译"
+            </li>
+            <li class="introduction-list-li">
+              找到 "文本翻译/应用概览/创建应用"
+            </li>
+            <li class="introduction-list-li">
+              创建应用并复制 AppKey 和 AppSecret
+            </li>
+            <li class="introduction-list-li">
+              在 comparator.html 文件中填写相关信息
+            </li>
+            <i>
+              <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
+            </i>
+          </ol>
+        </div>
+        <br>
+        <b :class="{'clickable': true, 'clickable-active': showOpenAI}" @click="toggleOpenAI">OpenAI API的申请步骤</b>
+        <div v-if="showOpenAI">
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI 官方网站</a>
+            </li>
+            <li class="introduction-list-li">
+              注册或登录
+            </li>
+            <li class="introduction-list-li">
+              在顶栏左上角新建Project(可选)或使用用户密钥(可选,不推荐),之后在顶栏右上角选择 "Dashboard", 随后侧边栏选择 "API Keys"
+            </li>
+            <li class="introduction-list-li">
+              通过 "+ Create New secret key" 按照提示新建一个密钥
+            </li>
+            <li class="introduction-list-li">
+              <b style="color: #FF0000">请保管好你的密钥,平台将不会再次展示你的密钥,忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
+            </li>
+            <li class="introduction-list-li">
+              在 comparator.html 文件中填写相关信息, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果(而且免费限额高,token还便宜)
+            </li>
+            <i>
+              <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
+            </i>
+          </ol>
+        </div>
       </fieldset>
     </div>
 
@@ -351,6 +416,8 @@ const app = new Vue({
   el: '#app',
   data() {
     return {
+      showYoudao: false,
+      showOpenAI: false,
       menuStringsEN: [],
       menuStringsZH: [],
       menuStringsCY: [],
@@ -381,6 +448,27 @@ const app = new Vue({
     this.loadJsonKeys('./strings_old.json', 'zh')
   },
   methods: {
+    /**
+     * 显示/隐藏内容
+     *
+     * @param id 要显示/隐藏的内容的元素id
+     */
+    toggleContent(id) {
+      const content = document.getElementById(`${id}-content`);
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        content.classList.add('visible');
+      } else {
+        content.classList.remove('visible');
+        content.classList.add('hidden');
+      }
+    },
+    toggleYoudao() {
+      this.showYoudao = !this.showYoudao;
+    },
+    toggleOpenAI() {
+      this.showOpenAI = !this.showOpenAI;
+    },
     loadJsonKeys(url, type) {
       let vm = this;
       let request = new XMLHttpRequest();

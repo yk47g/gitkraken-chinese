@@ -204,6 +204,7 @@
           <div class='input-group'>
             <label for='modelSelector'>选择模型:</label>
             <select id='modelSelector' v-model='openai.model'>
+              <option value='gpt-4o-mini'>gpt-4o-mini</option>
               <option value='gpt-3.5-turbo'>gpt-3.5-turbo</option>
               <option value='gpt-4'>gpt-4</option>
             </select>
@@ -436,7 +437,7 @@ const app = new Vue({
       openai: {
         apiKey: '',
         // 默认模型
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         temperature: 0.7,
       }
     }

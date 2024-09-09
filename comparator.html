@@ -66,12 +66,12 @@
     }
 
     .input-group label{
-      width: 125px;
+      width: 200px;
       margin-right: 10px;
     }
 
     .APIConfig button{
-      width: 42px;
+      width: 200px;
     }
 
     .introduction{
@@ -98,7 +98,7 @@
     .console{
       /* layout */
       display: grid;
-      grid-template-rows: 2em 1fr;
+      grid-template-rows: 3em 2em 2em 1fr;
     }
 
     .console-btns{
@@ -222,6 +222,15 @@
           <button @click="autoGen">自动生成json</button>
           <button @click="autoTranslate">自动翻译</button>
         </div>
+        <div class="input-group">
+          <label for="oldFile">上传旧版翻译文件:</label>
+          <input type="file" id="oldFile" @change="loadFile('zh')">
+        </div>
+
+        <div class="input-group">
+          <label for="newFile">上传新版文件:</label>
+          <input type="file" id="newFile" @change="loadFile('en')">
+        </div>
         <div class="console-textarea">
           <label for="textJson"></label>
           <textarea id="textJson"></textarea>
@@ -236,22 +245,7 @@
             选择并填写API配置并点击 [保存]
           </li>
           <li class="introduction-list-li">
-              将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
-          </li>
-          <li class="introduction-list-li">
-              使
-              <ul>
-                <li style="list-style: square;">comparator.html;</li>
-                <li style="list-style: square;">strings_old.json;</li>
-                <li style="list-style: square;">更新的英文 strings.json</li>
-              </ul>
-              位于同级目录
-          </li>
-          <li class="introduction-list-li">
-              使用 VSCode 的 Live Server 插件打开 comparator.html ,将自动解析两个json文件
-          </li>
-          <li class="introduction-list-li">
-            点击 [对比] 按钮得到差异内容
+            上传旧版翻译文件和新版文件并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
             点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框,之后将结果使用
@@ -270,7 +264,7 @@
         <b>对于没有API的用户</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            执行上面的步骤2,3,4,5
+            上传旧版翻译文件和新版文件并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
             点击 [自动生成json] 按钮生成整合后的 json 文件
@@ -286,7 +280,7 @@
             整理
           </li>
           <li class="introduction-list-li">
-            执行上面的步骤7
+            重启 GitKraken
           </li>
         </ol>
         <b>可能出现的问题和解决建议</b>
@@ -306,7 +300,7 @@
             </ul>
           </li>
           <li class="introduction-list-li">
-            打开页面有一段时间非常卡
+            有一段时间非常卡
             <ul>
               <li style="list-style: circle">
                 由于JSON文件较大,卡顿是正常的
@@ -442,12 +436,6 @@ const app = new Vue({
       }
     }
   },
-  mounted() {
-    // 英文源文件
-    this.loadJsonKeys('./strings.json', 'en')
-    // 旧版汉化文件
-    this.loadJsonKeys('./strings_old.json', 'zh')
-  },
   methods: {
     /**
      * 显示/隐藏内容
@@ -470,51 +458,78 @@ const app = new Vue({
     toggleOpenAI() {
       this.showOpenAI = !this.showOpenAI;
     },
-    loadJsonKeys(url, type) {
-      let vm = this;
-      let request = new XMLHttpRequest();
-      request.open("get", url);
-      request.send(null);
-      request.onload = function () {
-          if (request.status === 200) {
-              let key;
-              let json = JSON.parse(request.responseText);
-              if (type === 'en') {
-                vm.sourceEN = json;
-              }
-              const menuStrings = json['menuStrings'];
-              for (key in menuStrings) {
-                if (type === 'en') {
-                  vm.menuStringsEN.push({
-                    key: key,
-                    value: menuStrings[key],
-                    scope: 'menuStrings',
-                  });
-                } else {
-                  vm.menuStringsZH.push({
-                    key: key,
-                    value: menuStrings[key],
-                    scope: 'menuStrings',
-                  });
-                }
-              }
-              const strings = json['strings'];
-              for (key in strings) {
-                if (type === 'en') {
-                  vm.menuStringsEN.push({
-                    key: key,
-                    value: strings[key],
-                    scope: 'strings',
-                  });
-                } else {
-                  vm.menuStringsZH.push({
-                    key: key,
-                    value: strings[key],
-                    scope: 'strings',
-                  });
-                }
-              }
+    /**
+     * 删除上传的旧文件,读取上传的新文件
+     *
+     * @param type 上传的文件类型
+     */
+    loadFile(type) {
+      const input = type === 'en' ? document.getElementById('newFile') : document.getElementById('oldFile');
+      const file = input.files[0];
+
+      if (!file) {
+        alert("请选择文件");
+        return;
+      }
+
+      if (type === 'en') {
+        this.menuStringsEN = [];
+        this.sourceEN = {};
+      } else {
+        this.menuStringsZH = [];
+      }
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const json = JSON.parse(e.target.result);
+          if (type === 'en') {
+            this.sourceEN = json;
+            this.processJsonKeys(json, 'en');
+          } else {
+            this.processJsonKeys(json, 'zh');
           }
+        } catch (err) {
+          alert("文件内容无效，无法解析为JSON");
+        }
+      };
+      reader.readAsText(file);
+    },
+
+    processJsonKeys(json, type) {
+      let key;
+      const menuStrings = json['menuStrings'];
+      for (key in menuStrings) {
+        if (type === 'en') {
+          this.menuStringsEN.push({
+            key: key,
+            value: menuStrings[key],
+            scope: 'menuStrings',
+          });
+        } else {
+          this.menuStringsZH.push({
+            key: key,
+            value: menuStrings[key],
+            scope: 'menuStrings',
+          });
+        }
+      }
+
+      const strings = json['strings'];
+      for (key in strings) {
+        if (type === 'en') {
+          this.menuStringsEN.push({
+            key: key,
+            value: strings[key],
+            scope: 'strings',
+          });
+        } else {
+          this.menuStringsZH.push({
+            key: key,
+            value: strings[key],
+            scope: 'strings',
+          });
+        }
       }
     },
     doCompare() {
@@ -533,7 +548,7 @@ const app = new Vue({
           this.sourceEN[item.scope][item.key] = item.value;
       }
 
-  document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
+      document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
     },
     async autoTranslate() {
       if (this.menuStringsCY.length === 0) {
@@ -576,15 +591,15 @@ const app = new Vue({
       const sign = this.buildSign(query, curtime);
       const url = 'https://openapi.youdao.com/api';
       const data = {
-            q: query,
-            appKey: this.youdao.appKey,
-            salt: this.youdao.salt,
-            from: this.youdao.from,
-            to: this.youdao.to,
-            sign: sign,
-            signType: "v3",
-            curtime: curtime,
-        };
+        q: query,
+        appKey: this.youdao.appKey,
+        salt: this.youdao.salt,
+        from: this.youdao.from,
+        to: this.youdao.to,
+        sign: sign,
+        signType: "v3",
+        curtime: curtime,
+      };
       return new Promise(resolve => {
         $.ajax({
           url: url,
@@ -650,15 +665,15 @@ const app = new Vue({
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
     truncate(q) {
-        const len = q.length;
-        if (len <= 20) return q;
+      const len = q.length;
+      if (len <= 20) return q;
       return q.substring(0, 10) + len + q.substring(len - 10, len);
     },
     sleep(time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
     saveKeys() {
-    // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
+      // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
       if (this.selectedApi === 'youdao') {
         this.youdao.appKey = document.getElementById('appKey').value;
         this.youdao.appSecret = document.getElementById('appSecret').value;
@@ -666,7 +681,7 @@ const app = new Vue({
       } else if (this.selectedApi === 'openai') {
         this.openai.apiKey = document.getElementById('openaiApiKey').value;
         this.openai.model = document.getElementById("modelSelector").value;
-      alert('OpenAI API 配置已保存');
+        alert('OpenAI API 配置已保存');
       }
     }
   },

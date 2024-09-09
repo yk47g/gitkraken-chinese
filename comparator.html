@@ -130,14 +130,12 @@
     }
 
     .sp{
-      /* box */
       width: 30%
     }
 
     /* ====Media Query==== */
     @media (max-width: 1001px){
       .operation{
-        /* layout */
         display: grid;
         grid-template-columns: 2fr 1fr;
       }
@@ -182,6 +180,13 @@
           <div class="input-group">
             <label for="openaiApiKey">OpenAI API 密钥:</label>
             <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="OpenAI API 密钥">
+          </div>
+          <div class='input-group'>
+            <label for='modelSelector'>选择模型:</label>
+            <select id='modelSelector' v-model='openai.model'>
+              <option value='gpt-3.5-turbo'>gpt-3.5-turbo</option>
+              <option value='gpt-4'>gpt-4</option>
+            </select>
           </div>
         </div>
         <button type="submit">保存</button>
@@ -363,6 +368,7 @@ const app = new Vue({
       // OpenAI API 配置
       openai: {
         apiKey: '',
+        // 默认模型
         model: 'gpt-3.5-turbo',
         temperature: 0.7,
       }
@@ -376,59 +382,59 @@ const app = new Vue({
   },
   methods: {
     loadJsonKeys(url, type) {
-      let vm = this
-      let request = new XMLHttpRequest()
-      request.open("get", url)
-      request.send(null)
+      let vm = this;
+      let request = new XMLHttpRequest();
+      request.open("get", url);
+      request.send(null);
       request.onload = function () {
           if (request.status === 200) {
-              let key
-              let json = JSON.parse(request.responseText)
+              let key;
+              let json = JSON.parse(request.responseText);
               if (type === 'en') {
                 vm.sourceEN = json;
               }
-              const menuStrings = json['menuStrings']
+              const menuStrings = json['menuStrings'];
               for (key in menuStrings) {
                 if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: menuStrings[key],
-                    scope: 'menuStrings'
-                  })
+                    scope: 'menuStrings',
+                  });
                 } else {
                   vm.menuStringsZH.push({
                     key: key,
                     value: menuStrings[key],
-                    scope: 'menuStrings'
-                  })
+                    scope: 'menuStrings',
+                  });
                 }
               }
-              const strings = json['strings']
+              const strings = json['strings'];
               for (key in strings) {
                 if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: strings[key],
-                    scope: 'strings'
-                  })
+                    scope: 'strings',
+                  });
                 } else {
                   vm.menuStringsZH.push({
                     key: key,
                     value: strings[key],
-                    scope: 'strings'
-                  })
+                    scope: 'strings',
+                  });
                 }
               }
           }
       }
     },
     doCompare() {
-      let vm = this
-      vm.menuStringsCY = []
+      let vm = this;
+      vm.menuStringsCY = [];
       vm.menuStringsEN.forEach(en => {
-        let idx = vm.menuStringsZH.some((zh) => zh.key === en.key)
+        let idx = vm.menuStringsZH.some((zh) => zh.key === en.key);
         if (!idx) {
-          vm.menuStringsCY.push(en)
+          vm.menuStringsCY.push(en);
         }
       })
     },
@@ -551,11 +557,11 @@ const app = new Vue({
       }
     },
     buildSign(query, curtime) {
-      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret
+      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret;
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
     truncate(q) {
-        const len = q.length
+        const len = q.length;
         if (len <= 20) return q;
       return q.substring(0, 10) + len + q.substring(len - 10, len);
     },
@@ -570,6 +576,7 @@ const app = new Vue({
         alert('有道API 配置已保存');
       } else if (this.selectedApi === 'openai') {
         this.openai.apiKey = document.getElementById('openaiApiKey').value;
+        this.openai.model = document.getElementById("modelSelector").value;
       alert('OpenAI API 配置已保存');
       }
     }

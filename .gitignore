@@ -2,4 +2,5 @@
 .vscode/
 .idea/
 ###test###
-test/
+strings_old.json
+strings.json

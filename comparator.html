@@ -15,6 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!--  ====Others Libraries====  -->
   <link rel="icon" type="images/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
@@ -22,73 +23,64 @@
   <!--  ====Style====  -->
   <style>
     /* ====Global==== */
-    li {
-      /* style */
+    li{
       list-style: none;
     }
 
     fieldset{
-      /* box */
       padding: 0.5em;
       margin: 1px;
     }
 
     button:hover{
-      /* style */
       cursor: pointer;
     }
 
     /* ====Specific==== */
-    header {
-      /* layout */
+    header{
       height: 32px;
     }
 
-    .header-anchor {
-      /* layout */
+    .header-anchor{
       display: inline-block;
-
-      /* box */
       padding: 0;
       margin: 0;
       height: 100%;
     }
 
-    .header-anchor-logo {
-      /* box */
+    .header-anchor-logo{
       display: inline-block;
       padding: 1px;
       height: 30px;
     }
 
-    .APIConfig {
-      /* layout */
+    .APIConfig{
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       gap: 5px;
     }
 
-    .input-group {
+    .input-group{
       display: flex;
       align-items: center;
-      }
+    }
 
-    .input-group label {
-      width: 125px; /* 根据需要调整 */
-      margin-right: 10px; /* 根据需要调整 */
-      }
+    .input-group label{
+      width: 125px;
+      margin-right: 10px;
+    }
 
     .APIConfig button{
       width: 42px;
-      }
+    }
 
-    .introduction {
+    .introduction{
       /* style */
-      background-color: #f5f5f5;
+      background-color: #F5F5F5;
     }
 
     .introduction-list,
-    .introduction-list-li {
+    .introduction-list-li{
       /* box */
       padding: 0;
       margin: 0 0 0 4px;
@@ -97,7 +89,7 @@
       list-style: decimal;
     }
 
-    .operation {
+    .operation{
       /* layout */
       display: grid;
       grid-template-columns: 5fr 1fr;
@@ -110,50 +102,60 @@
     }
 
     .console-btns{
-      /* layout */
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1em;
       justify-items: center;
-
-      /* box */
       height: 2em;
       width: 100%;
     }
 
-    .console-btns button {
-      /* box */
-      padding: 0;
+    .console-btns button{
       width: 100%;
       height: 100%;
     }
 
-    .console-textarea textarea {
-      /* box */
-      height: 100% !important;
-
-      /* style */
+    #textJson{
+      width: 100%;
+      height: 95%;
+      overflow: auto;
+      margin-top: 10px;
       resize: none;
     }
 
-    #result {
-      /* layout */
+    .clickable {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .clickable::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid black;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+    }
+
+    .clickable-active::after {
+      transform: rotate(180deg);
+    }
+
+    #result{
       display: flex;
       flex-direction: row;
-
-      /* box */
       width: 100%;
     }
 
-    .sp {
-      /* box */
+    .sp{
       width: 30%
     }
 
     /* ====Media Query==== */
-    @media (max-width: 1001px) {
-      .operation {
-        /* layout */
+    @media (max-width: 1001px){
+      .operation{
         display: grid;
         grid-template-columns: 2fr 1fr;
       }
@@ -170,17 +172,44 @@
   <div id="app">
     <form @submit.prevent="saveKeys">
       <fieldset class="APIConfig">
-        <legend>有道API配置</legend>
-          <div id="APIConfig-input">
-            <div class="input-group">
-              <label for="appKey">有道AppKey:</label>
-              <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
-            </div>
-            <div class="input-group">
-              <label for="appSecret">有道AppSecret:</label>
-              <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
-            </div>
+        <legend>API 配置</legend>
+
+        <!-- 下拉菜单选择API -->
+        <div class="input-group">
+          <label for="apiSelector">选择翻译 API:</label>
+          <select id="apiSelector" v-model="selectedApi">
+            <option value="youdao">有道API</option>
+            <option value="openai">OpenAI API</option>
+          </select>
+        </div>
+
+        <!-- 有道 API 配置 -->
+        <div v-if="selectedApi === 'youdao'">
+          <div class="input-group">
+            <label for="appKey">有道AppKey:</label>
+            <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
           </div>
+          <div class="input-group">
+            <label for="appSecret">有道AppSecret:</label>
+            <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+          </div>
+        </div>
+
+        <!-- OpenAI API 配置 -->
+        <div v-if="selectedApi === 'openai'">
+          <div class="input-group">
+            <label for="openaiApiKey">OpenAI API 密钥:</label>
+            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="通常以 sk- 开头">
+          </div>
+          <div class='input-group'>
+            <label for='modelSelector'>选择模型:</label>
+            <select id='modelSelector' v-model='openai.model'>
+              <option value='gpt-4o-mini'>gpt-4o-mini</option>
+              <option value='gpt-3.5-turbo'>gpt-3.5-turbo</option>
+              <option value='gpt-4'>gpt-4</option>
+            </select>
+          </div>
+        </div>
         <button type="submit">保存</button>
       </fieldset>
     </form>
@@ -195,14 +224,17 @@
         </div>
         <div class="console-textarea">
           <label for="textJson"></label>
-          <textarea style="width:100%;height:500px; overflow: auto;" id="textJson"></textarea>
+          <textarea id="textJson"></textarea>
         </div>
       </fieldset>
 
       <fieldset class="introduction">
         <legend>使用说明</legend>
-        <b>对于有"有道翻译"API的用户:</b>
+        <b>对于有提供支持的API的用户:</b>
         <ol class="introduction-list">
+          <li class="introduction-list-li">
+            选择并填写API配置并点击 [保存]
+          </li>
           <li class="introduction-list-li">
               将旧版汉化文件(如 strings_9.5.1.json )重命名为 strings_old.json
           </li>
@@ -219,13 +251,10 @@
               使用 VSCode 的 Live Server 插件打开 comparator.html ,将自动解析两个json文件
           </li>
           <li class="introduction-list-li">
-            填写有道API并点击 [保存]
-          </li>
-          <li class="introduction-list-li">
             点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 [自动翻译] 按钮翻译,并将结果使用
+            点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框,之后将结果使用
             <a href="https://www.bejson.com/" target="_blank">
               格式化工具
             </a>
@@ -241,10 +270,7 @@
         <b>对于没有API的用户</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            前三个步骤和上面的一样
-          </li>
-          <li class="introduction-list-li">
-            点击 [对比] 按钮得到差异内容
+            执行上面的步骤2,3,4,5
           </li>
           <li class="introduction-list-li">
             点击 [自动生成json] 按钮生成整合后的 json 文件
@@ -260,7 +286,7 @@
             整理
           </li>
           <li class="introduction-list-li">
-            承接上面的第七步
+            执行上面的步骤7
           </li>
         </ol>
         <b>可能出现的问题和解决建议</b>
@@ -275,7 +301,7 @@
                 确认使用了VS Code 的 Live Server
               </li>
               <li style="list-style: circle">
-                检查API是否正确配置
+                检查API是否正确配置(有效性,模型访问权限)
               </li>
             </ul>
           </li>
@@ -296,11 +322,59 @@
             </ul>
           </li>
         </ol>
-        <i>有关有道API的申请步骤,参阅
-          <a href="./About_YouDao_API.md" target="_blank">
-            关于有道API
-          </a>
-        </i>
+        <b :class="{'clickable': true, 'clickable-active': showYoudao}" @click="toggleYoudao">有道API的申请步骤</b>
+        <div v-if="showYoudao">
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation" target="_blank">有道智云控制台</a>
+            </li>
+            <li class="introduction-list-li">
+              注册或登录
+            </li>
+            <li class="introduction-list-li">
+              在侧边栏选择 "自然语言翻译服务/文本翻译"
+            </li>
+            <li class="introduction-list-li">
+              找到 "文本翻译/应用概览/创建应用"
+            </li>
+            <li class="introduction-list-li">
+              创建应用并复制 AppKey 和 AppSecret
+            </li>
+            <li class="introduction-list-li">
+              在 comparator.html 文件中填写相关信息
+            </li>
+            <i>
+              <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
+            </i>
+          </ol>
+        </div>
+        <br>
+        <b :class="{'clickable': true, 'clickable-active': showOpenAI}" @click="toggleOpenAI">OpenAI API的申请步骤</b>
+        <div v-if="showOpenAI">
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI 官方网站</a>
+            </li>
+            <li class="introduction-list-li">
+              注册或登录
+            </li>
+            <li class="introduction-list-li">
+              在顶栏左上角新建Project(可选)或使用用户密钥(可选,不推荐),之后在顶栏右上角选择 "Dashboard", 随后侧边栏选择 "API Keys"
+            </li>
+            <li class="introduction-list-li">
+              通过 "+ Create New secret key" 按照提示新建一个密钥
+            </li>
+            <li class="introduction-list-li">
+              <b style="color: #FF0000">请保管好你的密钥,平台将不会再次展示你的密钥,忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
+            </li>
+            <li class="introduction-list-li">
+              在 comparator.html 文件中填写相关信息, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果(而且免费限额高,token还便宜)
+            </li>
+            <i>
+              <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
+            </i>
+          </ol>
+        </div>
       </fieldset>
     </div>
 
@@ -310,7 +384,7 @@
           英文&emsp;共 {{menuStringsEN.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsEN" :key="index">{{index+1}}:{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsEN" :key="index">{{index + 1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -319,7 +393,7 @@
           中文&emsp;共 {{menuStringsZH.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsZH" :key="index">{{index+1}}:{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsZH" :key="index">{{index + 1}}:{{item.key}}</li>
         </ul>
       </div>
 
@@ -328,7 +402,7 @@
           中文没有的&emsp;共 {{menuStringsCY.length}} 个
         </div>
         <ul>
-          <li v-for="(item, index) in menuStringsCY" :key="index">{{index+1}}:{{item.key}}</li>
+          <li v-for="(item, index) in menuStringsCY" :key="index">{{index + 1}}:{{item.key}}</li>
         </ul>
       </div>
     </div>
@@ -343,18 +417,28 @@ const app = new Vue({
   el: '#app',
   data() {
     return {
+      showYoudao: false,
+      showOpenAI: false,
       menuStringsEN: [],
       menuStringsZH: [],
       menuStringsCY: [],
       sourceEN: {},
+      // 默认 API
+      selectedApi: 'youdao',
+      // 有道 API 配置
       youdao: {
-        // 有道AppKey
         appKey: '',
-        // 有道AppSecret
         appSecret: '',
         salt: (new Date).getTime(),
         from: 'en',
         to: 'zh-CHS',
+      },
+      // OpenAI API 配置
+      openai: {
+        apiKey: '',
+        // 默认模型
+        model: 'gpt-4o-mini',
+        temperature: 0.7,
       }
     }
   },
@@ -365,60 +449,81 @@ const app = new Vue({
     this.loadJsonKeys('./strings_old.json', 'zh')
   },
   methods: {
+    /**
+     * 显示/隐藏内容
+     *
+     * @param id 要显示/隐藏的内容的元素id
+     */
+    toggleContent(id) {
+      const content = document.getElementById(`${id}-content`);
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        content.classList.add('visible');
+      } else {
+        content.classList.remove('visible');
+        content.classList.add('hidden');
+      }
+    },
+    toggleYoudao() {
+      this.showYoudao = !this.showYoudao;
+    },
+    toggleOpenAI() {
+      this.showOpenAI = !this.showOpenAI;
+    },
     loadJsonKeys(url, type) {
-      let vm = this
-      let request = new XMLHttpRequest()
-      request.open("get", url)
-      request.send(null)
+      let vm = this;
+      let request = new XMLHttpRequest();
+      request.open("get", url);
+      request.send(null);
       request.onload = function () {
           if (request.status === 200) {
-              let key
-              let json = JSON.parse(request.responseText)
+              let key;
+              let json = JSON.parse(request.responseText);
               if (type === 'en') {
                 vm.sourceEN = json;
               }
-              const menuStrings = json['menuStrings']
+              const menuStrings = json['menuStrings'];
               for (key in menuStrings) {
                 if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: menuStrings[key],
-                    scope: 'menuStrings'
-                  })
+                    scope: 'menuStrings',
+                  });
                 } else {
                   vm.menuStringsZH.push({
                     key: key,
                     value: menuStrings[key],
-                    scope: 'menuStrings'
-                  })
+                    scope: 'menuStrings',
+                  });
                 }
               }
-              const strings = json['strings']
+              const strings = json['strings'];
               for (key in strings) {
                 if (type === 'en') {
                   vm.menuStringsEN.push({
                     key: key,
                     value: strings[key],
-                    scope: 'strings'
-                  })
+                    scope: 'strings',
+                  });
                 } else {
                   vm.menuStringsZH.push({
                     key: key,
                     value: strings[key],
-                    scope: 'strings'
-                  })
+                    scope: 'strings',
+                  });
                 }
               }
           }
       }
     },
     doCompare() {
-      let vm = this
-      vm.menuStringsCY = []
+      let vm = this;
+      vm.menuStringsCY = [];
       vm.menuStringsEN.forEach(en => {
-        let idx = vm.menuStringsZH.some((zh) => zh.key === en.key)
+        let idx = vm.menuStringsZH.some((zh) => zh.key === en.key);
         if (!idx) {
-          vm.menuStringsCY.push(en)
+          vm.menuStringsCY.push(en);
         }
       })
     },
@@ -430,18 +535,25 @@ const app = new Vue({
 
   document.getElementById("textJson").innerHTML = JSON.stringify(this.sourceEN, null, 2);
     },
-    async autoTranslate(){
-      if (this.menuStringsCY.length === 0){
+    async autoTranslate() {
+      if (this.menuStringsCY.length === 0) {
         alert('没有需要翻译的内容');
         return;
       }
 
       const oneCount = 20;
-      for(let i = 0; i < this.menuStringsCY.length; i = i + oneCount){
+      for (let i = 0; i < this.menuStringsCY.length; i += oneCount) {
         const data = this.menuStringsCY.slice(i, i + oneCount);
         const query = data.map(m => m.value).join('\n');
-        const result = await this.translate(query);
-        for(let j = 0; j < data.length; j++) {
+        //根据选项调用API
+        let result = [];
+        if (this.selectedApi === 'youdao') {
+          result = await this.translateYoudao(query);
+        } else if (this.selectedApi === 'openai') {
+          result = await this.translateOpenAI(query);
+        }
+
+        for (let j = 0; j < data.length; j++) {
           const deep = JSON.parse(JSON.stringify(data[j]));
           deep.value = result[j];
           this.menuStringsZH.push(deep);
@@ -452,8 +564,15 @@ const app = new Vue({
       this.autoGen();
       alert('翻译并整理完成');
     },
-    translate(query) {
-      const curtime = Math.round(new Date().getTime()/1000);
+
+    /**
+     * 调用有道翻译
+     *
+     * @param query 翻译内容
+     * @return {Promise<unknown>} 翻译结果
+     */
+    async translateYoudao(query) {
+      const curtime = Math.round(new Date().getTime() / 1000);
       const sign = this.buildSign(query, curtime);
       const url = 'https://openapi.youdao.com/api';
       const data = {
@@ -471,7 +590,7 @@ const app = new Vue({
           url: url,
           type: 'POST',
           dataType: 'jsonp',
-          data : data,
+          data: data,
           success: function (data) {
             if (data.errorCode !== '0') {
               console.log(data);
@@ -483,31 +602,72 @@ const app = new Vue({
           }
         });
       });
+    },
 
+    /**
+     * 调用 OpenAI 翻译
+     *
+     * @param query 翻译内容
+     * @return {Promise<string[]|*[]>} 翻译结果
+     */
+    async translateOpenAI(query) {
+      const messages = [{
+        "role": "system",
+        "content": "Translate the following text to Chinese."
+      }, {
+        "role": "user",
+        "content": query
+      }];
+
+      const data = {
+        model: this.openai.model,
+        messages: messages,
+        temperature: this.openai.temperature
+      };
+
+      try {
+        const response = await axios.post(
+            'https://api.openai.com/v1/chat/completions',
+            data,
+            {
+              headers: {
+                'Authorization': `Bearer ${this.openai.apiKey}`,
+                'Content-Type': 'application/json'
+              }
+            }
+        );
+
+        const result = response.data.choices[0].message.content.trim();
+        return result.split('\n');
+
+      } catch (error) {
+        console.error("OpenAI API 错误:", error);
+        return [];
+      }
     },
     buildSign(query, curtime) {
-      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret
+      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret;
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
-    truncate(q){
-        const len = q.length
-        if(len<=20) return q;
-      return q.substring(0, 10) + len + q.substring(len-10, len);
+    truncate(q) {
+        const len = q.length;
+        if (len <= 20) return q;
+      return q.substring(0, 10) + len + q.substring(len - 10, len);
     },
     sleep(time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
     saveKeys() {
-      // 获取AppKey和AppSecret的表单内容
-      const appKey = document.getElementById('appKey').value;
-      const appSecret = document.getElementById('appSecret').value;
-
-      // 将值赋给Vue实例的data
-      this.youdao.appKey = appKey;
-      this.youdao.appSecret = appSecret;
-
-      // 提示
-      alert('保存成功');
+    // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
+      if (this.selectedApi === 'youdao') {
+        this.youdao.appKey = document.getElementById('appKey').value;
+        this.youdao.appSecret = document.getElementById('appSecret').value;
+        alert('有道API 配置已保存');
+      } else if (this.selectedApi === 'openai') {
+        this.openai.apiKey = document.getElementById('openaiApiKey').value;
+        this.openai.model = document.getElementById("modelSelector").value;
+      alert('OpenAI API 配置已保存');
+      }
     }
   },
 })

@@ -98,7 +98,7 @@
     .console{
       /* layout */
       display: grid;
-      grid-template-rows: 3em 2em 2em 1fr;
+      grid-template-rows: 2em 2em 2em 1fr auto;
     }
 
     .console-btns{
@@ -110,9 +110,19 @@
       width: 100%;
     }
 
-    .console-btns button{
+    .console-btns button,
+    .console-btns2 button{
       width: 100%;
       height: 100%;
+    }
+
+    .console-btns2{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+      justify-items: center;
+      height: 2em;
+      width: 100%;
     }
 
     #textJson{
@@ -165,7 +175,7 @@
 
 <body>
   <header class="header">
-    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese">
+    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese", target="_blank">
       <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="关于我们的GitHub项目">
     </a>
   </header>
@@ -223,17 +233,20 @@
           <button @click="autoTranslate">自动翻译</button>
         </div>
         <div class="input-group">
-          <label for="oldFile">上传旧版翻译文件:</label>
-          <input type="file" id="oldFile" @change="loadFile('zh')">
-        </div>
-
-        <div class="input-group">
           <label for="newFile">上传新版文件:</label>
           <input type="file" id="newFile" @change="loadFile('en')">
+        </div>
+        <div class="input-group">
+          <label for="oldFile">上传旧版翻译文件:</label>
+          <input type="file" id="oldFile" @change="loadFile('zh')">
         </div>
         <div class="console-textarea">
           <label for="textJson"></label>
           <textarea id="textJson"></textarea>
+        </div>
+        <div class="console-btns2">
+          <button @click="exportJson">导出json文件</button>
+          <button @click="copyToClipboard">复制到剪切板</button>
         </div>
       </fieldset>
 
@@ -242,20 +255,16 @@
         <b>对于有提供支持的API的用户:</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            选择并填写API配置并点击 [保存]
+            填写API配置并保存
           </li>
           <li class="introduction-list-li">
-            上传旧版翻译文件和新版文件并点击 [对比] 按钮得到差异内容
+            上传新版本文件和旧版翻译文件并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
-            点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框,之后将结果使用
-            <a href="https://www.bejson.com/" target="_blank">
-              格式化工具
-            </a>
-            整理
+            点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框
           </li>
           <li class="introduction-list-li">
-            将整理好后的内容覆盖 strings.json 文件
+            导出并覆盖 strings.json 文件
           </li>
           <li class="introduction-list-li">
             重启 GitKraken
@@ -264,7 +273,7 @@
         <b>对于没有API的用户</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            上传旧版翻译文件和新版文件并点击 [对比] 按钮得到差异内容
+            上传新版本文件和旧版翻译文件并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
             点击 [自动生成json] 按钮生成整合后的 json 文件
@@ -300,7 +309,7 @@
             </ul>
           </li>
           <li class="introduction-list-li">
-            有一段时间非常卡
+            电脑变得非常卡
             <ul>
               <li style="list-style: circle">
                 由于JSON文件较大,卡顿是正常的
@@ -438,6 +447,45 @@ const app = new Vue({
   },
   methods: {
     /**
+     * 导出JSON文件
+     */
+    exportJson() {
+      const content = document.getElementById("textJson").value;
+      if (!content) {
+        alert("没有可以导出的内容");
+        return;
+      }
+
+      const blob = new Blob([content], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "strings.json";
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+    },
+
+    /**
+     * 复制到剪切板
+     *
+     * @returns {Promise<void>} 标明方法类型,不用管
+     */
+    async copyToClipboard() {
+      const content = document.getElementById("textJson").value;
+      if (!content) {
+        alert("没有可以复制的内容");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(content);
+        alert("已复制到剪切板");
+      } catch (err) {
+        alert("复制失败，请手动复制");
+      }
+    },
+
+    /**
      * 显示/隐藏内容
      *
      * @param id 要显示/隐藏的内容的元素id
@@ -452,12 +500,15 @@ const app = new Vue({
         content.classList.add('hidden');
       }
     },
+
     toggleYoudao() {
       this.showYoudao = !this.showYoudao;
     },
+
     toggleOpenAI() {
       this.showOpenAI = !this.showOpenAI;
     },
+
     /**
      * 删除上传的旧文件,读取上传的新文件
      *

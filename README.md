@@ -2,7 +2,7 @@
 
 GitKraken的中文汉化补丁
 
-[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤) | [issue](#issue)
+[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤)
 
 ## 说明
 
@@ -33,21 +33,25 @@ GitKraken的中文汉化补丁
 
 ## 操作步骤
 
-1. 将项目中对应版本的 `.json` 文件重命名为 `strings.json` 并替换 GitKraken 语言目录下的 `strings.json`。  
-   (实际目录可能会不一样，但文件名一定是 `strings.json`)
+1. 将项目根目录或`./旧版本文件`中对应版本的 `.json` 文件重命名为 `strings.json` 并替换 GitKraken 语言目录下的
+   `strings.json`。(各版本实际目录可能会不一样，但文件名一定是 `strings.json`)
 
-    - Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json` (x.x.x 是你的 GitKraken 版本)
-    - Mac: `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
-    - Linux: `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢 [@lyydhy](https://github.com/lyydhy) 补充
+    - Windows(可能是以下目录中的任意一个):
+
+      `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json`
+
+      `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json` (x.x.x 是你的 GitKraken
+      版本)
+    - Mac(可能是以下目录中的任意一个):
+
+      `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
+
+      `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`
+    - Linux: 
+   
+      `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢 [@lyydhy](https://github.com/lyydhy) 补充
       GitKraken 是 deepin 通过 deb 安装的)
-    - Linux: `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json` (Arch Linux AUR 安装的路径在这)
+    
+      `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json` (Arch Linux AUR 安装的路径在这)
 
 2. 重启 GitKraken。
-
-## issue
-
-GitKraken 旧版本目录不一样，应该是以下目录：
-
-- Windows: `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json` (x.x.x 是你的 GitKraken
-  版本)
-- Mac: `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`

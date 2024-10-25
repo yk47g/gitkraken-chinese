@@ -12,7 +12,7 @@ GitKraken的中文汉化补丁
 
 | 日期                    | 更新内容                                                                   | 感谢                                                                                                                              |
 |-----------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| 2024.10.01            | 适配 10.4.0 版本                                                           | [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                                                                      |
+| 2024.10.25            | 适配 10.4.0-10.4.1 版本                                                    | [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                                                                      |
 | 2024.09.10            | 接入OpenAI API, 更新优化使用说明和页面交互, 新增文件上传/下载功能                               | [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                                                                      |
 | 2024.09.09            | 适配 10.3.0 版本                                                           | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) /  [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
 | 2024.03.07-2024.08.10 | 适配 9.13.0-10.2.0 版本，更新 README.md 的格式，更新文件结构                            | [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                                                                      |

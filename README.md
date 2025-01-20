@@ -10,8 +10,14 @@ GitKraken的中文汉化补丁
 
 ## 更新
 
+<details>
+<summary>
+<strong>更新日志</strong>
+</summary>
+
 |          日期           | 更新内容                                                                   |                                                               感谢                                                                |
 |:---------------------:|------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------:|
+|      2025.01.20       | 根据 10.6.1 版本进行校对&修订，更新 README.md 的格式                                   |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 | 2024.10.25-2025.01.15 | 适配 10.4.0-10.6.1 版本                                                    |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 |      2024.09.10       | 接入OpenAI API, 更新优化使用说明和页面交互, 新增文件上传/下载功能                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 |      2024.09.09       | 适配 10.3.0 版本                                                           | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) /  [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
@@ -23,7 +29,9 @@ GitKraken的中文汉化补丁
 |      2021.12.17       | 新增可视化对比，接入有道翻译 API                                                     |                                        [@TanxiangCode](https://github.com/TanxiangCode)                                         |
 |      2021.03.18       | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html                            |                                         [@DreamSaddle](https://github.com/DreamSaddle)                                          |
 |      2020.08.18       | 在 Windows 2.7.0 版本 测试通过                                                |                                         [@Black-Spree](https://github.com/Black-Spree)                                          |
-|      2019.10.01       | 在 MacOS 10.14 GitKraken 6.2.0 测试通过                                     |                                               [@yk47g](https://github.com/yk47g)                                                |
+|      2019.10.01       | 在 macOS 10.14 GitKraken 6.2.0 测试通过                                     |                                               [@yk47g](https://github.com/yk47g)                                                |
+
+</details>
 
 ## 原理
 
@@ -33,25 +41,32 @@ GitKraken的中文汉化补丁
 
 ## 操作步骤
 
-1. 将项目根目录或`./旧版本文件`中对应版本的 `.json` 文件重命名为 `strings.json` 并替换 GitKraken 语言目录下的
-   `strings.json`。(各版本实际目录可能会不一样，但文件名一定是 `strings.json`)
+按照以下步骤完成汉化操作：
 
-    - Windows(可能是以下目录中的任意一个):
+### 1. 找到并替换语言文件
 
-      `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json`
+从项目根目录或 `./旧版本文件` 中找到与你当前 GitKraken 版本匹配的 `.json` 文件，将其重命名为 `strings.json`，并替换
+GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你的操作系统有所不同：
 
-      `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json` (x.x.x 是你的 GitKraken
-      版本)
-    - Mac(可能是以下目录中的任意一个):
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Windows_logo_-_2012.svg/1280px-Windows_logo_-_2012.svg.png" alt="Windows Icon" style="width: 18px; height: 18px;"> Windows （`x.x.x` 表示 GitKraken 版本号）
 
-      `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
+- `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json`
+- `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json`
 
-      `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`
-    - Linux:
+#### <img src="https://cdn-icons-png.flaticon.com/512/2/2235.png" alt="macOS Icon" style="width: 18px; height: 18px;"> macOS
 
-      `/usr/share/gitkraken/resources/app.asar.unpacked/src` (感谢 [@lyydhy](https://github.com/lyydhy) 补充
-      GitKraken 是 deepin 通过 deb 安装的)
+- `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
+- `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`
 
-      `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json` (Arch Linux AUR 安装的路径在这)
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1024px-Tux.svg.png" alt="Linux Icon" style="width: 18px; height: 18px;"> Linux (不同安装方式下路径可能不同)
 
-2. 重启 GitKraken。
+- (由[@lyydhy](https://github.com/lyydhy)补充) 通过 `deb` 安装（例如 Deepin 系统），路径可能是：
+
+  `/usr/share/gitkraken/resources/app.asar.unpacked/src/strings.json`
+- 通过 `AUR` 安装（例如 Arch Linux），路径可能是：
+
+  `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json`
+
+### 2. 重启 GitKraken
+
+完成文件替换后，重启 GitKraken，即可生效。

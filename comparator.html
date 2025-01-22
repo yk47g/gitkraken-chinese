@@ -18,7 +18,8 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!--  ====Others Libraries====  -->
-  <link rel="icon" type="images/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
+  <link rel="icon" type="images/x-icon"
+        href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
 
   <!--  ====Style====  -->
   <style>
@@ -133,12 +134,12 @@
       resize: none;
     }
 
-    .clickable {
+    .clickable{
       cursor: pointer;
       position: relative;
     }
 
-    .clickable::after {
+    .clickable::after{
       content: '';
       display: inline-block;
       margin-left: 5px;
@@ -149,7 +150,7 @@
       transition: transform 0.2s ease;
     }
 
-    .clickable-active::after {
+    .clickable-active::after{
       transform: rotate(180deg);
     }
 
@@ -176,7 +177,8 @@
 <body>
   <header class="header">
     <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese" target="_blank">
-      <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="关于我们的GitHub项目">
+      <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
+           alt="关于我们的GitHub项目">
     </a>
   </header>
   <div id="app">
@@ -188,9 +190,25 @@
         <div class="input-group">
           <label for="apiSelector">选择翻译 API:</label>
           <select id="apiSelector" v-model="selectedApi">
-            <option value="youdao">有道API</option>
-            <option value="openai">OpenAI API</option>
+            <option value="openai">OpenAI</option>
+            <option value="youdao">有道智云</option>
           </select>
+        </div>
+
+        <!-- OpenAI API 配置 -->
+        <div v-if="selectedApi === 'openai'">
+          <div class="input-group">
+            <label for="openaiApiKey">OpenAI API 密钥:</label>
+            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="通常以 sk- 开头">
+          </div>
+          <div class='input-group'>
+            <label for='modelSelector'>选择模型:</label>
+            <select id='modelSelector' v-model='openai.model'>
+              <option value='gpt-4o-mini'>4o-mini</option>
+              <option value='gpt-4o'>4o</option>
+              <option value='o1-mini'>o1-mini (不建议)</option>
+            </select>
+          </div>
         </div>
 
         <!-- 有道 API 配置 -->
@@ -205,21 +223,6 @@
           </div>
         </div>
 
-        <!-- OpenAI API 配置 -->
-        <div v-if="selectedApi === 'openai'">
-          <div class="input-group">
-            <label for="openaiApiKey">OpenAI API 密钥:</label>
-            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="通常以 sk- 开头">
-          </div>
-          <div class='input-group'>
-            <label for='modelSelector'>选择模型:</label>
-            <select id='modelSelector' v-model='openai.model'>
-              <option value='gpt-4o-mini'>gpt-4o-mini</option>
-              <option value='gpt-3.5-turbo'>gpt-3.5-turbo</option>
-              <option value='gpt-4'>gpt-4</option>
-            </select>
-          </div>
-        </div>
         <button type="submit">保存</button>
       </fieldset>
     </form>
@@ -329,7 +332,8 @@
         <div v-if="showYoudao">
           <ol class="introduction-list">
             <li class="introduction-list-li">
-              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation" target="_blank">有道智云控制台</a>
+              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation"
+                      target="_blank">有道智云控制台</a>
             </li>
             <li class="introduction-list-li">
               注册或登录
@@ -347,9 +351,9 @@
               在 comparator.html 文件中填写相关信息
             </li>
           </ol>
-            <i>
-              <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
-            </i>
+          <i>
+            <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
+          </i>
         </div>
         <br>
         <b :class="{'clickable': true, 'clickable-active': showOpenAI}" @click="toggleOpenAI">OpenAI API的申请步骤</b>
@@ -362,21 +366,22 @@
               注册或登录
             </li>
             <li class="introduction-list-li">
-              在顶栏左上角新建Project(可选)或使用用户密钥(可选,不推荐),之后在顶栏右上角选择 "Dashboard", 随后侧边栏选择 "API Keys"
+              在顶栏左上角新建Project(可选)或使用用户密钥(可选,不推荐),之后在顶栏右上角选择 "Dashboard", 随后侧边栏选择
+              "API Keys"
             </li>
             <li class="introduction-list-li">
               通过 "+ Create New secret key" 按照提示新建一个密钥
             </li>
             <li class="introduction-list-li">
-              <b style="color: #FF0000">请保管好你的密钥,平台将不会再次展示你的密钥,忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
+              <b style="color: #F00">请保管好你的密钥,平台将不会再次展示你的密钥,忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
             </li>
             <li class="introduction-list-li">
               在 comparator.html 文件中填写相关信息, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果(而且免费限额高,token还便宜)
             </li>
           </ol>
-            <i>
-              <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
-            </i>
+          <i>
+            <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
+          </i>
         </div>
       </fieldset>
     </div>
@@ -427,7 +432,7 @@ const app = new Vue({
       menuStringsCY: [],
       sourceEN: {},
       // 默认 API
-      selectedApi: 'youdao',
+      selectedApi: 'openai',
       // 有道 API 配置
       youdao: {
         appKey: '',
@@ -456,7 +461,7 @@ const app = new Vue({
         return;
       }
 
-      const blob = new Blob([content], { type: "application/json" });
+      const blob = new Blob([content], {type: "application/json"});
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "strings.json";
@@ -694,6 +699,7 @@ const app = new Vue({
      * @return {Promise<string[]|*[]>} 翻译结果
      */
     async translateOpenAI(query) {
+      // Content是 prompt 提示词
       const messages = [{
         "role": "system",
         "content": "Translate the following text to Chinese."
@@ -707,19 +713,14 @@ const app = new Vue({
         messages: messages,
         temperature: this.openai.temperature
       };
+      const openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
+      const headers = {
+        'Authorization': `Bearer ${this.openai.apiKey}`,
+        'Content-Type': 'application/json'
+      };
 
       try {
-        const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions',
-            data,
-            {
-              headers: {
-                'Authorization': `Bearer ${this.openai.apiKey}`,
-                'Content-Type': 'application/json'
-              }
-            }
-        );
-
+        const response = await axios.post(openaiApiUrl, data, headers);
         const result = response.data.choices[0].message.content.trim();
         return result.split('\n');
 

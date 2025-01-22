@@ -450,8 +450,8 @@ const app = new Vue({
       menuStringsOldZh: [],
       // 旧版英文
       menuStringsOldEn: [],
-      // 原始行内容
-      newFileRawLines: [], // 新版英文文件的全部行(含空行/大括号/逗号)
+      // 新版英文文件原始行内容(含空行/大括号/逗号)
+      newFileRawLines: [],
       // 结果差异
       diffItems: [],
 
@@ -550,9 +550,8 @@ const app = new Vue({
       const reader = new FileReader();
       reader.onload = e => {
         const rawText = e.target.result;
-
-        // 同时用 JSON.parse 获取 key-value
         try {
+          // 用 JSON.parse 获取 key-value
           const jsonObj = JSON.parse(rawText);
           if (type === 'newEn') {
             this.menuStringsNewEn = [];
@@ -573,7 +572,7 @@ const app = new Vue({
     },
 
     /**
-     * 将JSON里的 menuStrings / strings 提取为数组
+     * 将JSON里的 languageOption/menuStrings/strings 提取为数组
      * @param json
      * @param fileType
      */
@@ -652,15 +651,17 @@ const app = new Vue({
       // 改动
       this.menuStringsNewEn.forEach(newItem => {
         const oldItem = this.menuStringsOldEn.find(o => o.key === newItem.key && o.scope === newItem.scope);
-        if (oldItem && oldItem.value !== newItem.value) {
-          this.diffItems.push({
-            key: newItem.key,
-            scope: newItem.scope,
-            color: 'blue',
-            type: 'changed',
-            oldValue: oldItem.value,
-            newValue: newItem.value
-          });
+        if (oldItem) {
+          if (!this.isSameString(oldItem.value, newItem.value)) {
+            this.diffItems.push({
+              key: newItem.key,
+              scope: newItem.scope,
+              color: 'blue',
+              type: 'changed',
+              oldValue: oldItem.value,
+              newValue: newItem.value
+            });
+          }
         }
       });
 
@@ -671,9 +672,13 @@ const app = new Vue({
       this.autoGen();
     },
 
+    isSameString(a, b) {
+      // 逻辑层面判断字符串是否相同
+      return a === b;
+    },
+
     /**
      * 转义 JSON 值
-     *
      * @param str JSON 值
      * @return {string} 转义后的值
      */
@@ -694,86 +699,96 @@ const app = new Vue({
      *   -未出现在diffItems的=>保留旧版中文翻译
      */
     autoGen() {
-      // 把旧版中文转为一个便于查找的字典 {scope: { key: value }}
-      const oldCnDict = {};
-      ["languageOption", "menuStrings", "strings"].forEach(scope => {
-        oldCnDict[scope] = {};
-      });
+      // 1. 把旧版中文转为字典
+      const oldCnDict = {
+        languageOption: {},
+        menuStrings: {},
+        strings: {}
+      };
       this.menuStringsOldZh.forEach(item => {
         oldCnDict[item.scope][item.key] = item.value;
       });
 
-      // 2把差异项做成 map
+      // 2. 把差异项变成 map
       const diffMap = {};
       this.diffItems.forEach(d => {
-        diffMap[d.scope + '\u0000' + d.key] = d; // \u0000 当做分隔符，避免 key 重名冲突
+        diffMap[d.scope + "\u0000" + d.key] = d;
       });
 
-      /* 行逐行扫描 newFileRawLines
-       * 如果是 "key": "value", 需要判断:
-       *  - removed => skip
-       *  - changed => 根据需求替换为新版英文 or 置空
-       *  - added => 其实它本身存在于新版英文 => 这里就输出行，但值换成(空/英文/…)
-       *  - 不在 diffMap => unchanged => 保留旧版中文
-       *  - 空行/大括号/其他 => 原样输出
-       *
-       * 大概是不支持嵌套,但是没看到嵌套的情况所以就鸽了吧(咕咕咕好困
-       */
-      const keyValuePattern = /^\s*"([^"]+)"\s*:\s*"([^"]*)"\s*(,?)\s*$/;
+      let currentScope = null;
+
+      // 判断是不是在进入作用域
+      const scopePattern = /^\s*"?(languageOption|menuStrings|strings)"?\s*:\s*\{\s*$/;
+
+      // 判断是不是关闭了当前作用域
+      const scopeClosePattern = /^\s*\}\s*,?\s*$/;
+
+      // 匹配键值行
+      const keyValuePattern = /^(\s*)"((?:\\.|[^"\\])*)"\s*:\s*"((?:\\.|[^"\\])*)"\s*(,?)\s*$/;
       const resultLines = [];
 
       for (let i = 0; i < this.newFileRawLines.length; i++) {
         const line = this.newFileRawLines[i];
-        const m = line.match(keyValuePattern);
-        if (!m) {
-          // 不匹配 => 空行、{、} 等
+
+        // 判断有没有匹配到“进入作用域”
+        const scopeOpenMatch = line.match(scopePattern);
+        if (scopeOpenMatch) {
+          currentScope = scopeOpenMatch[1];
           resultLines.push(line);
           continue;
         }
 
-        const lineKey = m[1];
-        const lineVal = m[2];
-        const trailingComma = m[3];
-
-        // 判断 scope
-        let scopeGuess = 'strings'; // 默认
-        if (lineKey in oldCnDict['languageOption']) {
-          scopeGuess = 'languageOption';
-        } else if (lineKey in oldCnDict['menuStrings']) {
-          scopeGuess = 'menuStrings';
-        } else if (!(lineKey in oldCnDict['strings'])) {
-          // 新增
-          const inEnMenu = this.menuStringsNewEn.find(e => e.key === lineKey && e.scope === 'menuStrings');
-          if (inEnMenu) {
-            scopeGuess = 'menuStrings';
-          }
+        // 判断有没有匹配到“退出作用域”
+        const scopeCloseMatch = line.match(scopeClosePattern);
+        if (scopeCloseMatch) {
+          currentScope = null; // 退出当前作用域
+          resultLines.push(line);
+          continue;
         }
 
-        const diffKey = scopeGuess + '\u0000' + lineKey;
+        const kvMatch = line.match(keyValuePattern);
+        if (!kvMatch) {
+          resultLines.push(line);
+          continue;
+        }
+
+        const leadingSpaces = kvMatch[1];
+        const rawKey = kvMatch[2];
+        const rawVal = kvMatch[3];
+        const trailingComma = kvMatch[4];
+
+        let parsedKey, parsedVal;
+        try {
+          parsedKey = JSON.parse(`"${rawKey}"`);
+          parsedVal = JSON.parse(`"${rawVal}"`);
+        } catch (e) {
+          resultLines.push(line);
+          continue;
+        }
+
+        let scopeName = currentScope || 'strings';
+
+        // 根据 diffMap 判断该 key 在当前作用域是否被增删改
+        const diffKey = scopeName + "\u0000" + parsedKey;
         const diffInfo = diffMap[diffKey];
 
-        // 判断 diffInfo.type 并执行合并
         if (diffInfo) {
           if (diffInfo.type === 'removed') {
-            // 跳过，不输出
-          } else if (diffInfo.type === 'added') {
-            // 新增 => 暂放英文
+            // 不输出此行
+          } else if (diffInfo.type === 'added' || diffInfo.type === 'changed') {
+            // 直接用差异中的 newValue
             const escapedVal = this.escapeJsonValue(diffInfo.newValue);
-            const newLine = `  "${lineKey}": "${escapedVal}"${trailingComma}`;
-            resultLines.push(newLine);
-          } else if (diffInfo.type === 'changed') {
-            // 改动 => 放新版英文(或置空)
-            const escapedVal = this.escapeJsonValue(diffInfo.newValue);
-            const newLine = `  "${lineKey}": "${escapedVal}"${trailingComma}`;
+            const newLine = `${leadingSpaces}"${this.escapeJsonValue(parsedKey)}": "${escapedVal}"${trailingComma}`;
             resultLines.push(newLine);
           } else {
             // 大概应该可能差不多不会跳到这里吧ww
           }
         } else {
-          const oldVal = oldCnDict[scopeGuess][lineKey];
-          const finalVal = (typeof oldVal === 'string') ? oldVal : lineVal;
+          // 无差异 => 保留旧版翻译
+          const oldVal = oldCnDict[scopeName][parsedKey];
+          const finalVal = (typeof oldVal === 'string') ? oldVal : parsedVal;
           const escapedVal = this.escapeJsonValue(finalVal);
-          const newLine = `  "${lineKey}": "${escapedVal}"${trailingComma}`;
+          const newLine = `${leadingSpaces}"${this.escapeJsonValue(parsedKey)}": "${escapedVal}"${trailingComma}`;
           resultLines.push(newLine);
         }
       }

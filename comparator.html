@@ -923,10 +923,63 @@ const app = new Vue({
         return [];
       }
 
+      // 固定翻译词汇
+      const fixedTranslations = [
+        {term: "Cherry Pick", translation: "挑拣"},
+        {term: "Email", translation: "邮箱"},
+        {term: "Email Address", translation: "邮箱"},
+        {term: "Filter", translation: "过滤器"},
+        {term: "Fork", translation: "分支"},
+        {term: "GitKraken Desktop", translation: "GitKraken 桌面版"},
+        {term: "Graph", translation: "图"},
+        {term: "Pull Request", translation: "拉取请求"},
+        {term: "Rebase", translation: "变基"},
+        {term: "Repo", translation: "仓库"},
+        {term: "Solo", translation: "单独显示"},
+        {term: "Stage", translation: "暂存"},
+        {term: "Stash", translation: "贮藏"}
+      ];
+
+      // 需要保留的专有名词数组
+      const keepTranslations = [
+        "Launchpad",
+        "WIP",
+        "Gitflow"
+      ];
+
+      /**
+       * 将固定翻译词汇数组格式化为字符串
+       * @param {Array} translations - 包含术语及其翻译的对象数组
+       * @returns {string} 格式化后的字符串
+       */
+      function formatFixedTranslations(translations) {
+        return translations.map(item => `- ${item.term}: "${item.translation}"`).join("\n");
+      }
+
+      /**
+       * 将需要保留的专有名词数组格式化为字符串
+       * @param {Array} terms - 需要保留的专有名词数组
+       * @returns {string} 格式化后的字符串
+       */
+      function formatKeepTranslations(terms) {
+        return terms.map(term => `- ${term}`).join("\n");
+      }
+
+      const fixedTranslationsString = "\n" + formatFixedTranslations(fixedTranslations);
+      const keepTranslationsString = "\n" + formatKeepTranslations(keepTranslations);
+
+
       const messages = [
-        {role: "system", content: "Translate the following text to Chinese."},
+        {
+          role: "system",
+          content: "You are a translator of Git operation terminology. Translate the following Git-related content from English to Chinese, " +
+              "\nUse the following fixed translations for specific terms:" + fixedTranslationsString +
+              "\nKeep the following specific terms in their original form without translation:" + keepTranslationsString +
+              "\nPlease note, you should only reply with the translation and refrain from engaging in a conversation with the user."
+        },
         {role: "user", content: query}
       ];
+      console.log(messages); // 这个最好是留着,方便以后新增词汇查看有没有问题
       const data = {
         model: this.openai.model,
         messages,

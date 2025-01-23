@@ -17,6 +17,7 @@ GitKraken的中文汉化补丁
 
 |          日期           | 更新内容                                                                   |                                                               感谢                                                                |
 |:---------------------:|------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------:|
+|      2025.01.22       | 更新 OpenAi 模型选项, 修复差异比较逻辑无法检测删减与内容修改的问题并保留空行, 优化界面交互体验                  |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 |      2025.01.20       | 根据 10.6.1 版本进行校对&修订，更新 README.md 的格式                                   |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 | 2024.10.25-2025.01.15 | 适配 10.4.0-10.6.1 版本                                                    |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
 |      2024.09.10       | 接入OpenAI API, 更新优化使用说明和页面交互, 新增文件上传/下载功能                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
@@ -48,7 +49,9 @@ GitKraken的中文汉化补丁
 从项目根目录或 `./旧版本文件` 中找到与你当前 GitKraken 版本匹配的 `.json` 文件，将其重命名为 `strings.json`，并替换
 GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你的操作系统有所不同：
 
-#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Windows_logo_-_2012.svg/1280px-Windows_logo_-_2012.svg.png" alt="Windows Icon" style="width: 18px; height: 18px;"> Windows （`x.x.x` 表示 GitKraken 版本号）
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Windows_logo_-_2012.svg/1280px-Windows_logo_-_2012.svg.png" alt="Windows Icon" style="width: 18px; height: 18px;"> Windows （
+
+`x.x.x` 表示 GitKraken 版本号）
 
 - `%程序安装目录%\gitkraken\app-x.x.x\resources\app\src\strings.json`
 - `%程序安装目录%\gitkraken\app-x.x.x\resources\app.asar.unpacked\src\strings.json`

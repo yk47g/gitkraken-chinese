@@ -2,7 +2,7 @@
 
 GitKraken的中文汉化补丁
 
-[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤)
+[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤) | [意见征集](#意见征集)
 
 ## 说明
 
@@ -71,3 +71,41 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 ### 2. 重启 GitKraken
 
 完成文件替换后，重启 GitKraken 即可生效。
+
+## 意见征集
+
+#### [加入讨论](https://github.com/yk47g/gitkraken-chinese/discussions/33)
+
+在校对时发现由于每次只是对新增/修改词汇上传来翻译,用词常有不统一的现象.翻阅Git中文社区,发现很多专有名词的翻译也很不统一.因此想开一个讨论看看大家的意见.
+目前规定的如下:
+> 带链接表示该翻译取自 [Git官方中文文档](https://git-scm.com/book/zh/v2),
+> 带多个链接表示官中有多种翻译,
+> 不带链接可能是因为该页面没有官中翻译或不是Git名词
+
+#### 翻译:
+
+| 序号 |       专有名词        |                                                                                               统一翻译                                                                                                |                                                                            其它翻译                                                                            |
+|:--:|:-----------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 1  |    Cherry Pick    |                                   [拣选](https://git-scm.com/book/zh/v2/%e5%88%86%e5%b8%83%e5%bc%8f-Git-%e7%bb%b4%e6%8a%a4%e9%a1%b9%e7%9b%ae#_rebase_cherry_pick)                                   |                                                                        挑拣, 挑选, 樱桃挑选                                                                        |
+| 2  |       Email       |                                                                                                邮箱                                                                                                 |                                                                            电子邮件                                                                            |
+| 3  |   Email Address   |                                                                                                邮箱                                                                                                 |                                                                           电子邮件地址                                                                           |
+| 4  |      Filter       |         [过滤器](https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2.html#_%E9%99%90%E5%88%B6%E8%BE%93%E5%87%BA%E9%95%BF%E5%BA%A6)          |                                                                            筛选器                                                                             |
+| 5  |       Fork        |                                   [分支](https://git-scm.com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_github_flow)                                   | 分叉, [派生](https://git-scm.com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E6%B4%BE%E7%94%9F%E9%A1%B9%E7%9B%AE) |
+| 6  | GitKraken Desktop |                                                                                           GitKraken 桌面版                                                                                           |                                                                       GitKraken 客户端                                                                        |
+| 7  |       Graph       |                                                                                                 图                                                                                                 |                                                                           图形, 图表                                                                           |
+| 8  |   Pull Request    |            [拉取请求](https://git-scm.com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E5%88%9B%E5%BB%BA%E6%8B%89%E5%8F%96%E8%AF%B7%E6%B1%82)             |                                                                            合并请求                                                                            |
+| 9  |      Rebase       |                                                          [变基](https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA)                                                           |                                                                          ~~重新基于~~                                                                          |
+| 10 |       Repo        | [仓库](https://git-scm.com/book/zh/v2/%E5%88%86%E5%B8%83%E5%BC%8F-Git-%E5%88%86%E5%B8%83%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.html#_%E9%9B%86%E4%B8%AD%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81) |                                                                        代码库, 存储库, 库                                                                         |
+| 11 |       Solo        |                                                                                               单独显示                                                                                                |                                                                        单独, 独立, 独立展示                                                                        |
+| 12 |       Stage       |                                             [暂存](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%9A%82%E5%AD%98)                                             |                                                                                                                                                            |
+| 13 |       Stash       |                                             [贮藏](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E8%B4%AE%E8%97%8F%E4%B8%8E%E6%B8%85%E7%90%86)                                             |                                                               储藏, 隐藏的更改, 藏匿, 存放, 隐藏, ~~暂存~~                                                                |
+
+#### 保留,不作翻译:
+
+| 序号 |   专有名词    |             注解              |
+|:--:|:---------:|:---------------------------:|
+| 1  | Launchpad |      GitKraken的专注视图模式       |
+| 2  |    WIP    | Work In Progress - 正在进行中的工作 |
+| 3  |  Gitflow  |  一种基于 Git 的工作流程（workflow）   |
+
+> 对应的代码部分可以在comparator.html搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到

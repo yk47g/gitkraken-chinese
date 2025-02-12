@@ -298,7 +298,8 @@
             填写API配置并保存
           </li>
           <li class="introduction-list-li">
-            上传旧版英文文件 (./原语言文件备份/strings.json), 新版英文文件 (具体位置见 ./README.md 中要替换的语言文件位置) 和旧版翻译文件 (./strings_x.x.x.json) 并点击 [对比] 按钮得到差异内容
+            上传旧版英文文件 (./原语言文件备份/strings.json), 新版英文文件 (具体位置见 ./README.md 中要替换的语言文件位置)
+            和旧版翻译文件 (./strings_x.x.x.json) 并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
             点击 [自动翻译] 按钮翻译并等待弹出"翻译完成"提示框
@@ -313,7 +314,8 @@
         <b>对于没有API的用户</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            上传旧版英文文件 (./原语言文件备份/strings.json), 新版英文文件 (具体位置见 ./README.md 中要替换的语言文件位置) 和旧版翻译文件 (./strings_x.x.x.json) 并点击 [对比] 按钮得到差异内容
+            上传旧版英文文件 (./原语言文件备份/strings.json), 新版英文文件 (具体位置见 ./README.md 中要替换的语言文件位置)
+            和旧版翻译文件 (./strings_x.x.x.json) 并点击 [对比] 按钮得到差异内容
           </li>
           <li class="introduction-list-li">
             复制并翻译文本框内的文件
@@ -776,8 +778,9 @@ const app = new Vue({
           if (diffInfo.type === 'removed') {
             // 不输出此行
           } else if (diffInfo.type === 'added' || diffInfo.type === 'changed') {
-            // 直接用差异中的 newValue
-            const escapedVal = this.escapeJsonValue(diffInfo.newValue);
+            // 如果存在翻译结果，则使用翻译结果，否则使用原始 newValue
+            const finalValue = diffInfo.translatedValue ? diffInfo.translatedValue : diffInfo.newValue;
+            const escapedVal = this.escapeJsonValue(finalValue);
             const newLine = `${leadingSpaces}"${this.escapeJsonValue(parsedKey)}": "${escapedVal}"${trailingComma}`;
             resultLines.push(newLine);
           } else {
@@ -852,7 +855,7 @@ const app = new Vue({
         // 回写翻译
         batch.forEach((item, index) => {
           if (translations[index]) {
-            item.newValue = translations[index];
+            item.translatedValue = translations[index];
           }
         });
         await this.sleep(1500);
@@ -900,7 +903,7 @@ const app = new Vue({
               resolve([]);
               return;
             }
-            const result = data.translation[0].split('\n');
+            const result = data.translation[0].split('\n').map(line => line.trimEnd());
             resolve(result);
           },
           error: function (error) {
@@ -994,7 +997,7 @@ const app = new Vue({
           }
         });
         const result = resp.data.choices[0].message.content.trim();
-        return result.split('\n');
+        return result.split('\n').map(line => line.trimEnd());
 
       } catch (error) {
         console.error("OpenAI API 错误:", error);

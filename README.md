@@ -15,22 +15,22 @@ GitKraken的中文汉化补丁
 <strong>更新日志</strong>
 </summary>
 
-|           日期           | 更新内容                                                         |                                                               感谢                                                                |
-|:----------------------:|--------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------:|
-| 2024.10.25-2025.02.11  | 适配 10.4.0-10.7.0 版本                                          |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2025.01.22       | 更新 OpenAi 模型选项, 完善提示词, 修复差异比较逻辑无法检测删减与内容修改的问题并保留空行, 优化界面交互体验 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2025.01.20       | 根据 10.6.1 版本进行校对&修订，更新 README.md 的格式                         |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2024.09.10       | 接入OpenAI API, 更新优化使用说明和页面交互, 新增文件上传/下载功能                     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2024.09.09       | 适配 10.3.0 版本                                                 | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) /  [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
-| 2024.02.27 -2024.08.10 | 适配 9.12.0-10.2.0 版本，更新 README.md 的格式和文件结构                    |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2024.02.27       | 明晰 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                            |
-|       2024.02.27       | 适配 9.11.1 版本                                                 |                                             [@Jaffrez](https://github.com/Jaffrez)                                              |
-|       2024.02.27       | 适配 9.5.1 版本                                                  |                                             [@buck178](https://github.com/buck178)                                              |
-|       2023.09.11       | 适配 9.5.1 版本                                                  |                                           [@star-andy](https://github.com/star-andy)                                            |
-|       2021.12.17       | 新增可视化对比，接入有道翻译 API                                           |                                        [@TanxiangCode](https://github.com/TanxiangCode)                                         |
-|       2021.03.18       | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html                  |                                         [@DreamSaddle](https://github.com/DreamSaddle)                                          |
-|       2020.08.18       | 在 Windows 2.7.0 版本 测试通过                                      |                                         [@Black-Spree](https://github.com/Black-Spree)                                          |
-|       2019.10.01       | 在 macOS 10.14 GitKraken 6.2.0 测试通过                           |                                               [@yk47g](https://github.com/yk47g)                                                |
+|          日期           | 更新内容                                                            |                                                               感谢                                                               |
+|:---------------------:|-----------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------:|
+|      2025.02.11       | 接入 DeepSeek API                                                 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+| 2024.02.27-2025.02.11 | 适配 9.12.0-10.7.0 版本                                             |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|      2025.01.22       | 更新 OpenAI 模型选项并完善提示词, 修复差异比较逻辑无法检测删减与内容修改的问题并保留空行, 优化可视化对比和界面交互 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|      2025.01.20       | 根据 10.6.1 版本进行校对&修订                                             |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|      2024.09.10       | 接入 OpenAI API, 更新、优化使用说明和页面交互, 新增文件上传/下载功能                      |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|      2024.09.09       | 适配 10.3.0 版本                                                    | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) / [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
+|      2024.02.27       | 明晰 compare.html 的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件        |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|      2024.02.27       | 适配 9.11.1 版本                                                    |                                             [@Jaffrez](https://github.com/Jaffrez)                                             |
+|      2024.02.27       | 适配 9.5.1 版本                                                     |                                             [@buck178](https://github.com/buck178)                                             |
+|      2023.09.11       | 适配 9.5.1 版本                                                     |                                           [@star-andy](https://github.com/star-andy)                                           |
+|      2021.12.17       | 新增可视化对比，接入有道翻译 API                                              |                                        [@TanxiangCode](https://github.com/TanxiangCode)                                        |
+|      2021.03.18       | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html                     |                                         [@DreamSaddle](https://github.com/DreamSaddle)                                         |
+|      2020.08.18       | 在 Windows 2.7.0 版本 测试通过                                         |                                         [@Black-Spree](https://github.com/Black-Spree)                                         |
+|      2019.10.01       | 在 macOS 10.14 GitKraken 6.2.0 测试通过                              |                                               [@yk47g](https://github.com/yk47g)                                               |
 
 </details>
 
@@ -38,7 +38,7 @@ GitKraken的中文汉化补丁
 
 通过修改软件目录下 English 语言对应的一个 JSON 文件内容来完成汉化目的。
 
-（自动生成 JSON 工具已实现自动翻译。因有道, OpenAi 的 API 属于收费接口，故不提供 Key，有需要者自行申请，方法详见 `comparator.html` - 使用说明。）
+（自动生成 JSON 工具已实现自动翻译。因有道, OpenAI 和 DeepSeek 的 API 属于收费接口，故不提供 Key，有需要者自行申请，方法详见 `comparator.html` - 使用说明。）
 
 ## 操作步骤
 
@@ -108,4 +108,4 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 | 2  |    WIP    | Work In Progress - 正在进行中的工作 |
 | 3  |  Gitflow  |  一种基于 Git 的工作流程（workflow）   |
 
-> 对应的代码部分可以在comparator.html搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到
+> 对应的代码部分在 `comparator.html` 的 `data()` 下, 可以通过搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到

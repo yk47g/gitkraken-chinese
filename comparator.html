@@ -203,6 +203,7 @@
           <label for="apiSelector">选择翻译 API:</label>
           <select id="apiSelector" v-model="selectedApi">
             <option value="openai">OpenAI</option>
+            <option value="deepseek">DeepSeek</option>
             <option value="youdao">有道智云</option>
           </select>
         </div>
@@ -211,7 +212,7 @@
         <div v-if="selectedApi === 'openai'">
           <div class="input-group">
             <label for="openaiApiKey">OpenAI API 密钥:</label>
-            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="通常以 sk- 开头">
+            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="以 sk- 开头">
           </div>
           <div class='input-group'>
             <label for='modelSelector'>选择模型:</label>
@@ -219,6 +220,21 @@
               <option value='gpt-4o-mini'>4o-mini</option>
               <option value='gpt-4o'>4o</option>
               <option value='o1-mini'>o1-mini (不建议)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- DeepSeek API 配置 -->
+        <div v-if="selectedApi === 'deepseek'">
+          <div class="input-group">
+            <label for="deepseekApiKey">DeepSeek API 密钥:</label>
+            <input type="text" id="deepseekApiKey" v-model="deepseek.apiKey" placeholder="以 sk- 开头">
+          </div>
+          <div class='input-group'>
+            <label for='deepseekModel'>选择模型:</label>
+            <select id='deepseekModel' v-model='deepseek.model'>
+              <option value='deepseek-chat'>V3</option>
+              <option value='deepseek-reasoner'>R1</option>
             </select>
           </div>
         </div>
@@ -356,25 +372,23 @@
                 </li>
               </ul>
             </li>
-          </ol>
-        </details>
-
-        <details>
-          <summary><b>有道API的申请步骤</b></summary>
-          <ol class="introduction-list">
             <li class="introduction-list-li">
-              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation"
-                      target="_blank">有道智云控制台</a>
+              按下[自动翻译]后提示翻译失败
+              <ul>
+                <li style="list-style: circle">
+                  检查 API 是否正确配置(有效性,模型访问权限)
+                </li>
+                <li style="list-style: circle">
+                  如果选择的是 DeepSeek API, 可能是灯塔国又发力了. 请检查 DeepSeek 官网-产品-
+                  <a href="https://status.deepseek.com/" target="_blank">服务状态</a>,
+                  或稍后重试
+                </li>
+                <li style="list-style: circle">
+                  如果还是不行, 可以尝试报告问题, 有可能是我的问题(因为我也没测试过, 新增该 API 时他们的 API 还在维护)
+                </li>
+              </ul>
             </li>
-            <li class="introduction-list-li">注册或登录</li>
-            <li class="introduction-list-li">在侧边栏选择 "自然语言翻译服务/文本翻译"</li>
-            <li class="introduction-list-li">找到 "文本翻译/应用概览/创建应用"</li>
-            <li class="introduction-list-li">创建应用并复制 AppKey 和 AppSecret</li>
-            <li class="introduction-list-li">在 comparator.html 文件中填写相关信息</li>
           </ol>
-          <p class="hint">
-            <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
-          </p>
         </details>
 
         <details>
@@ -394,12 +408,47 @@
                 忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
             </li>
             <li class="introduction-list-li">
-              在 comparator.html 文件中填写相关信息, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果(而且免费限额高,
-              token 还便宜)
+              复制以 sk- 开头的API密钥到配置中, 建议使用 "gpt-4o-mini" 模型, 足以保证翻译效果, 且免费限额高还便宜
             </li>
           </ol>
           <p class="hint">
             <a href="https://platform.openai.com/docs/models/gpt-4o-mini" target="_blank">收费标准</a>
+          </p>
+        </details>
+
+        <details>
+          <summary><b>DeepSeek API的申请步骤</b></summary>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              访问 DeepSeek <a href="https://platform.deepseek.com/api_keys" target="_blank">API 开放平台</a>
+            </li>
+            <li class="introduction-list-li">注册/登录后进入API keys管理页面</li>
+            <li class="introduction-list-li">点击"创建 API key"生成新密钥</li>
+            <li class="introduction-list-li">
+              <b style="color: #F00">请保管好你的密钥, 平台将不会再次展示你的密钥,
+                忘记则意味着你需要重新创建密钥并删除旧的密钥</b>
+            </li>
+            <li class="introduction-list-li">复制以 sk- 开头的API密钥到配置中</li>
+          </ol>
+          <p class="hint">
+            <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/" target="_blank">收费标准</a>
+          </p>
+        </details>
+
+        <details>
+          <summary><b>有道API的申请步骤</b></summary>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation"
+                      target="_blank">有道智云控制台</a>
+            </li>
+            <li class="introduction-list-li">注册或登录</li>
+            <li class="introduction-list-li">在侧边栏选择 "自然语言翻译服务/文本翻译"</li>
+            <li class="introduction-list-li">找到 "文本翻译/应用概览/创建应用"</li>
+            <li class="introduction-list-li">创建应用并复制 AppKey 和 AppSecret 到配置中</li>
+          </ol>
+          <p class="hint">
+            <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
           </p>
         </details>
       </fieldset>
@@ -468,6 +517,20 @@ const app = new Vue({
        */
       // 默认 API
       selectedApi: 'openai',
+      // OpenAI API 配置
+      openai: {
+        apiKey: '',
+        // 默认模型
+        model: 'gpt-4o-mini',
+        temperature: 0.7,
+      },
+      // DeepSeek API 配置
+      deepseek: {
+        apiKey: '',
+        // 默认模型
+        model: 'deepseek-chat',
+        temperature: 0.7,
+      },
       // 有道 API 配置
       youdao: {
         appKey: '',
@@ -476,13 +539,30 @@ const app = new Vue({
         from: 'en',
         to: 'zh-CHS',
       },
-      // OpenAI API 配置
-      openai: {
-        apiKey: '',
-        // 默认模型
-        model: 'gpt-4o-mini',
-        temperature: 0.7,
-      }
+
+      // 固定翻译词汇
+      fixedTranslations: [
+        {term: "Cherry Pick", translation: "拣选"},
+        {term: "Email", translation: "邮箱"},
+        {term: "Email Address", translation: "邮箱"},
+        {term: "Filter", translation: "过滤器"},
+        {term: "Fork", translation: "分支"},
+        {term: "GitKraken Desktop", translation: "GitKraken 桌面版"},
+        {term: "Graph", translation: "图"},
+        {term: "Pull Request", translation: "拉取请求"},
+        {term: "Rebase", translation: "变基"},
+        {term: "Repo", translation: "仓库"},
+        {term: "Solo", translation: "单独显示"},
+        {term: "Stage", translation: "暂存"},
+        {term: "Stash", translation: "贮藏"}
+      ],
+
+      // 需要保留的专有名词数组
+      keepTranslations: [
+        "Launchpad",
+        "WIP",
+        "Gitflow"
+      ]
     }
   },
   methods: {
@@ -813,6 +893,11 @@ const app = new Vue({
           alert("请填写OpenAI API密钥");
           return;
         }
+      } else if (this.selectedApi === 'deepseek') {
+        if (!this.deepseek.apiKey) {
+          alert("请填写DeepSeek API密钥");
+          return;
+        }
       } else if (this.selectedApi === 'youdao') {
         if (!this.youdao.appKey || !this.youdao.appSecret) {
           alert("请填写有道AppKey和AppSecret");
@@ -840,7 +925,9 @@ const app = new Vue({
         let translations = [];
         if (this.selectedApi === 'openai') {
           translations = await this.translateOpenAI(query);
-        } else {
+        } else if (this.selectedApi === 'deepseek') {
+          translations = await this.translateDeepSeek(query);
+        } else if (this.selectedApi === 'youdao') {
           translations = await this.translateYoudao(query);
         }
 
@@ -864,6 +951,117 @@ const app = new Vue({
       if (translationSucceeded) {
         this.autoGen();
         alert('翻译并整理完成');
+      }
+    },
+
+    /**
+     * 将固定翻译词汇数组格式化为字符串
+     * @returns {string} 格式化后的字符串
+     */
+    formatFixedTranslations() {
+      return this.fixedTranslations.map(item => `- ${item.term}: "${item.translation}"`).join("\n");
+    },
+
+    /**
+     * 将需要保留的专有名词数组格式化为字符串
+     * @returns {string} 格式化后的字符串
+     */
+    formatKeepTranslations() {
+      return this.keepTranslations.map(term => `- ${term}`).join("\n");
+    },
+
+    /**
+     * 调用 OpenAI 翻译
+     *
+     * @param query 翻译内容
+     * @return {Promise<string[]|*[]>} 翻译结果
+     */
+    async translateOpenAI(query) {
+      if (!this.openai.apiKey) {
+        console.error("OpenAI API 密钥未配置");
+        return [];
+      }
+
+      const messages = [
+        {
+          role: "system",
+          content: `You are a translation expert specializing in Git operation terminology. Please translate the following Git-related content from English to Chinese.
+            The following terms should be translated using fixed translations:
+            ${this.formatFixedTranslations()}
+
+            The following terms should be kept in their original form without translation:
+            ${this.formatKeepTranslations()}
+
+            Please note that you should only return the translated text, without engaging in conversation with the user or adding any additional content.`
+        },
+        {role: "user", content: query}
+      ];
+      console.log(messages); // 这个最好是留着,方便以后新增词汇查看有没有问题
+      const data = {
+        model: this.openai.model,
+        messages,
+        temperature: this.openai.temperature
+      };
+      const url = 'https://api.openai.com/v1/chat/completions';
+      try {
+        const resp = await axios.post(url, data, {
+          headers: {
+            'Authorization': `Bearer ${this.openai.apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const result = resp.data.choices[0].message.content.trim();
+        return result.split('\n').map(line => line.trimEnd());
+
+      } catch (error) {
+        console.error("OpenAI API 错误:", error);
+        return [];
+      }
+    },
+
+    /**
+     * 调用 DeepSeek  翻译
+     *
+     * @param query 翻译内容
+     * @return {Promise<string[]|*[]>} 翻译结果
+     */
+    async translateDeepSeek(query) {
+      if (!this.deepseek.apiKey) {
+        console.error("DeepSeek API 密钥未配置");
+        return [];
+      }
+
+      const messages = [
+        {
+          role: "system",
+          content: `你是一名 Git 操作术语的翻译专家。请将以下 Git 相关内容从英文翻译为中文。其中：
+          以下术语应按照固定翻译方式进行翻译：
+          ${this.formatFixedTranslations()}
+          以下术语应保持原文，不要翻译：
+          ${this.formatKeepTranslations()}
+          请注意，你只需返回翻译后的文本，不要与用户进行对话，也不要添加任何其他内容。`
+        },
+        {role: "user", content: query}
+      ];
+      console.log(messages);
+      const data = {
+        model: this.deepseek.model,
+        messages,
+        temperature: this.deepseek.temperature
+      };
+      const url = 'https://api.deepseek.com/chat/completions';
+      try {
+        const resp = await axios.post(url, data, {
+          headers: {
+            'Authorization': `Bearer ${this.deepseek.apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const result = resp.data.choices[0].message.content.trim();
+        return result.split('\n').map(line => line.trimEnd());
+      } catch (error) {
+        console.error("DeepSeek API 错误:", error);
+        return [];
       }
     },
 
@@ -914,97 +1112,6 @@ const app = new Vue({
       });
     },
 
-    /**
-     * 调用 OpenAI 翻译
-     *
-     * @param query 翻译内容
-     * @return {Promise<string[]|*[]>} 翻译结果
-     */
-    async translateOpenAI(query) {
-      if (!this.openai.apiKey) {
-        console.error("OpenAI API 密钥未配置");
-        return [];
-      }
-
-      // 固定翻译词汇
-      const fixedTranslations = [
-        {term: "Cherry Pick", translation: "拣选"},
-        {term: "Email", translation: "邮箱"},
-        {term: "Email Address", translation: "邮箱"},
-        {term: "Filter", translation: "过滤器"},
-        {term: "Fork", translation: "分支"},
-        {term: "GitKraken Desktop", translation: "GitKraken 桌面版"},
-        {term: "Graph", translation: "图"},
-        {term: "Pull Request", translation: "拉取请求"},
-        {term: "Rebase", translation: "变基"},
-        {term: "Repo", translation: "仓库"},
-        {term: "Solo", translation: "单独显示"},
-        {term: "Stage", translation: "暂存"},
-        {term: "Stash", translation: "贮藏"}
-      ];
-
-      // 需要保留的专有名词数组
-      const keepTranslations = [
-        "Launchpad",
-        "WIP",
-        "Gitflow"
-      ];
-
-      /**
-       * 将固定翻译词汇数组格式化为字符串
-       * @param {Array} translations - 包含术语及其翻译的对象数组
-       * @returns {string} 格式化后的字符串
-       */
-      function formatFixedTranslations(translations) {
-        return translations.map(item => `- ${item.term}: "${item.translation}"`).join("\n");
-      }
-
-      /**
-       * 将需要保留的专有名词数组格式化为字符串
-       * @param {Array} terms - 需要保留的专有名词数组
-       * @returns {string} 格式化后的字符串
-       */
-      function formatKeepTranslations(terms) {
-        return terms.map(term => `- ${term}`).join("\n");
-      }
-
-      const fixedTranslationsString = "\n" + formatFixedTranslations(fixedTranslations);
-      const keepTranslationsString = "\n" + formatKeepTranslations(keepTranslations);
-
-
-      const messages = [
-        {
-          role: "system",
-          content: "You are a translator of Git operation terminology. Translate the following Git-related content from English to Chinese, " +
-              "\nUse the following fixed translations for specific terms:" + fixedTranslationsString +
-              "\nKeep the following specific terms in their original form without translation:" + keepTranslationsString +
-              "\nPlease note, you should only reply with the translation and refrain from engaging in a conversation with the user."
-        },
-        {role: "user", content: query}
-      ];
-      console.log(messages); // 这个最好是留着,方便以后新增词汇查看有没有问题
-      const data = {
-        model: this.openai.model,
-        messages,
-        temperature: this.openai.temperature
-      };
-      const url = 'https://api.openai.com/v1/chat/completions';
-      try {
-        const resp = await axios.post(url, data, {
-          headers: {
-            'Authorization': `Bearer ${this.openai.apiKey}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = resp.data.choices[0].message.content.trim();
-        return result.split('\n').map(line => line.trimEnd());
-
-      } catch (error) {
-        console.error("OpenAI API 错误:", error);
-        return [];
-      }
-    },
-
     buildSign(query, curtime) {
       const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret;
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
@@ -1025,27 +1132,7 @@ const app = new Vue({
      */
     saveKeys() {
       // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
-      if (this.selectedApi === 'youdao') {
-        const appKey = this.youdao.appKey;
-        const appSecret = this.youdao.appSecret;
-
-        if (!appKey) {
-          this.saveMessage = '请填写有道AppKey';
-          this.saveMessageType = 'error';
-          return;
-        }
-        if (!appSecret) {
-          this.saveMessage = '请填写有道AppSecret';
-          this.saveMessageType = 'error';
-          return;
-        }
-
-        this.youdao.appKey = appKey;
-        this.youdao.appSecret = appSecret;
-        this.saveMessage = '有道API配置已保存';
-        this.saveMessageType = 'success';
-
-      } else if (this.selectedApi === 'openai') {
+      if (this.selectedApi === 'openai') {
         const apiKey = this.openai.apiKey;
         const model = this.openai.model;
 
@@ -1063,6 +1150,41 @@ const app = new Vue({
         this.openai.apiKey = apiKey;
         this.openai.model = model;
         this.saveMessage = 'OpenAI API配置已保存';
+        this.saveMessageType = 'success';
+
+      } else if (this.selectedApi === 'deepseek') {
+        const apiKey = this.deepseek.apiKey;
+        const model = this.deepseek.model;
+
+        if (!apiKey) {
+          this.saveMessage = '请填写DeepSeek API密钥';
+          this.saveMessageType = 'error';
+          return;
+        }
+
+        this.deepseek.apiKey = apiKey;
+        this.deepseek.model = model;
+        this.saveMessage = 'DeepSeek API配置已保存';
+        this.saveMessageType = 'success';
+
+      } else if (this.selectedApi === 'youdao') {
+        const appKey = this.youdao.appKey;
+        const appSecret = this.youdao.appSecret;
+
+        if (!appKey) {
+          this.saveMessage = '请填写有道AppKey';
+          this.saveMessageType = 'error';
+          return;
+        }
+        if (!appSecret) {
+          this.saveMessage = '请填写有道AppSecret';
+          this.saveMessageType = 'error';
+          return;
+        }
+
+        this.youdao.appKey = appKey;
+        this.youdao.appSecret = appSecret;
+        this.saveMessage = '有道API配置已保存';
         this.saveMessageType = 'success';
       }
     }

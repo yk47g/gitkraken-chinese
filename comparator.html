@@ -77,8 +77,14 @@
       width: 200px;
     }
 
-    .introduction{
+    .selectForm{
+      width: 15em;
+      box-sizing: border-box;
+    }
+
+    #introduction{
       background-color: #F5F5F5;
+      padding: 0.5em;
     }
 
     .introduction-list,
@@ -98,10 +104,6 @@
       display: grid;
       grid-template-rows: 2em 2em 2em 2em 1fr auto;
       gap: 4px;
-    }
-
-    .introduction{
-      padding-left: 15px;
     }
 
     .console-btns{
@@ -201,7 +203,7 @@
         <!-- 下拉菜单选择API -->
         <div class="input-group">
           <label for="apiSelector">选择翻译 API:</label>
-          <select id="apiSelector" v-model="selectedApi">
+          <select id="apiSelector" v-model="selectedApi" class="selectForm">
             <option value="openai">OpenAI</option>
             <option value="deepseek">DeepSeek</option>
             <option value="youdao">有道智云</option>
@@ -212,11 +214,11 @@
         <div v-if="selectedApi === 'openai'">
           <div class="input-group">
             <label for="openaiApiKey">OpenAI API 密钥:</label>
-            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="以 sk- 开头">
+            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="以 sk- 开头" class="selectForm">
           </div>
           <div class='input-group'>
             <label for='modelSelector'>选择模型:</label>
-            <select id='modelSelector' v-model='openai.model'>
+            <select id='modelSelector' v-model='openai.model' class="selectForm">
               <option value='gpt-4o-mini'>4o-mini</option>
               <option value='gpt-4o'>4o</option>
               <option value='o1-mini'>o1-mini</option>
@@ -229,11 +231,12 @@
         <div v-if="selectedApi === 'deepseek'">
           <div class="input-group">
             <label for="deepseekApiKey">DeepSeek API 密钥:</label>
-            <input type="text" id="deepseekApiKey" v-model="deepseek.apiKey" placeholder="以 sk- 开头">
+            <input type="text" id="deepseekApiKey" v-model="deepseek.apiKey" placeholder="以 sk- 开头"
+                   class="selectForm">
           </div>
           <div class='input-group'>
             <label for='deepseekModel'>选择模型:</label>
-            <select id='deepseekModel' v-model='deepseek.model'>
+            <select id='deepseekModel' v-model='deepseek.model' class="selectForm">
               <option value='deepseek-chat'>V3</option>
               <option value='deepseek-reasoner'>R1</option>
             </select>
@@ -244,11 +247,12 @@
         <div v-if="selectedApi === 'youdao'">
           <div class="input-group">
             <label for="appKey">有道AppKey:</label>
-            <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID">
+            <input type="text" id="appKey" v-model="youdao.appKey" placeholder="也就是应用ID" class="selectForm">
           </div>
           <div class="input-group">
             <label for="appSecret">有道AppSecret:</label>
-            <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥">
+            <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="也就是应用秘钥"
+                   class="selectForm">
           </div>
         </div>
 
@@ -307,7 +311,7 @@
         </div>
       </fieldset>
 
-      <fieldset class="introduction">
+      <fieldset id="introduction">
         <legend>使用说明</legend>
         <b>对于有提供支持的API的用户:</b>
         <ol class="introduction-list">

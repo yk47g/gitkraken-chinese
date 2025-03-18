@@ -1444,9 +1444,9 @@
     "PendingInteractiveRebasePanel-StartRebase": "Start Rebase",
     "PendingInteractiveRebasePanel-UpdateMessage": "Update Message",
 
-    "PendingInteractiveRebasePanel-InteractiveCherrypick": "Interactive Cherrypick",
-    "PendingInteractiveRebasePanel-CancelCherrypick": "Cancel Cherrypick",
-    "PendingInteractiveRebasePanel-StartCherrypick": "Start Cherrypick",
+    "PendingInteractiveRebasePanel-InteractiveCherrypick": "Interactive Cherry Pick",
+    "PendingInteractiveRebasePanel-CancelCherrypick": "Cancel Cherry Pick",
+    "PendingInteractiveRebasePanel-StartCherrypick": "Start Cherry Pick",
 
     "FileContentsPanel-Binary": "Binary file",
     "FileContentsPanel-Deleted": "File was deleted",

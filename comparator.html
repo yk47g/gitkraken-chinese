@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<!--  用于对比当前已有中文JSON和新版本的英文JSON,快速得到新版本英文JSON中增加的内容,这样就可以快速进行翻译  -->
+<!--  用于对比当前已有中文JSON和新旧版本的英文JSON,快速得到新版本英文JSON中增加的内容,并自动翻译  -->
 
 <html lang="zh-CN">
 
@@ -221,8 +221,6 @@
             <select id='modelSelector' v-model='openai.model' class="selectForm">
               <option value='gpt-4o-mini'>4o-mini</option>
               <option value='gpt-4o'>4o</option>
-              <option value='o1-mini'>o1-mini</option>
-              <option value='o3-mini'>o3-mini</option>
             </select>
           </div>
         </div>
@@ -531,14 +529,14 @@ const app = new Vue({
         apiKey: '',
         // 默认模型
         model: 'gpt-4o-mini',
-        temperature: 0.7,
+        temperature: 0.2,
       },
       // DeepSeek API 配置
       deepseek: {
         apiKey: '',
         // 默认模型
         model: 'deepseek-chat',
-        temperature: 0.7,
+        temperature: 0.2,
       },
       // 有道 API 配置
       youdao: {

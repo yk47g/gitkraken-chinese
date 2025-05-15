@@ -2968,7 +2968,6 @@
     "Trial-TrialStartedModal-WelcomeToAnEliteCrewOfDevelopers": "Welcome to an elite crew of developers that use GitKraken to simplify Git workflows, boost productivity, and build amazing things with their team.",
     "Trial-TrialStartedModal-InviteTeammateIfYouWantMoreDays": "Want {0} days? Get even more out of GitKraken when you {1}",
     "Trial-TrialStartedModal-InviteATeammate": "invite a teammate",
-    "Trial-TrialStartedModal-UpgradeNowAndGetADiscount": "⏰ Upgrade now and get 50% off your first seat of GitKraken Pro!",
 
     "Error": "Error",
     "Error-AddExternalSSHKeyToServiceFailed": "Add SSH Key failed",

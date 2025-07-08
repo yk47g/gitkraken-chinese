@@ -101,9 +101,9 @@
       grid-template-columns: 3fr 1fr;
     }
 
-    .console{
-      display: grid;
-      grid-template-rows: 2em 2em 2em 2em 1fr auto;
+    #console{
+      display: flex;
+      flex-direction: column;
       gap: 4px;
     }
 
@@ -111,13 +111,19 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
+      margin-bottom: 4px;
+      height: 2em;
     }
 
-    .console-btns2{
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      height: 2em;
+    .console-inputs{
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    #console-textarea{
+      flex: 1;
+      overflow: auto;
     }
 
     #sp{
@@ -255,15 +261,20 @@
     </form>
 
     <div class="operation">
-      <fieldset class="console">
+      <fieldset id="console">
         <legend>控制台</legend>
         <div class="console-btns">
           <button type="button" @click="compare">对比</button>
           <button type="button" @click="autoTranslate">自动翻译</button>
         </div>
 
+        <!-- API 错误信息  -->
+        <div v-if="errorMsg" class="error-message">
+          {{ errorMsg }}
+        </div>
+
         <!-- 上传旧版英文文件 -->
-        <div class="input-group">
+        <div class="console-inputs">
           <label for="oldEnFile">上传旧版英文文件：</label>
           <input type="file" id="oldEnFile" @change="loadFile('oldEN')">
           <span v-if="showOldEnError" class="error-message">
@@ -272,7 +283,7 @@
         </div>
 
         <!-- 上传新版英文文件 -->
-        <div class="input-group">
+        <div class="console-inputs">
           <label for="newEnFile">上传新版英文文件：</label>
           <input type="file" id="newEnFile" @change="loadFile('newEn')">
           <span v-if="showNewEnError" class="error-message">
@@ -281,7 +292,7 @@
         </div>
 
         <!-- 上传旧版中文文件 -->
-        <div class="input-group">
+        <div class="console-inputs">
           <label for="oldZhFile">上传旧版翻译文件：</label>
           <input type="file" id="oldZhFile" @change="loadFile('oldZh')">
           <span v-if="showOldZhError" class="error-message">
@@ -289,12 +300,12 @@
           </span>
         </div>
 
-        <div class="console-textarea">
+        <div id="console-textarea">
           <label for="textJson" hidden="hidden">JSON 输出</label>
           <textarea id="textJson"></textarea>
         </div>
 
-        <div class="console-btns2">
+        <div class="console-btns">
           <button type="button" @click="exportJson">导出JSON文件</button>
           <button type="button" @click="copyToClipboard">复制到剪切板</button>
         </div>
@@ -508,6 +519,7 @@ const app = new Vue({
       showOldEnError: false,
       showNewEnError: false,
       showOldZhError: false,
+      errorMsg: null,
       saveMessage: '',
       saveMessageType: 'success',
       /**
@@ -578,7 +590,7 @@ const app = new Vue({
     exportJson() {
       const content = document.getElementById('textJson').value;
       if (!content.trim()) {
-        alert('没有可以导出的内容');
+        this.errorMsg = '没有可以导出的内容';
         return;
       }
 
@@ -599,14 +611,14 @@ const app = new Vue({
     async copyToClipboard() {
       const content = document.getElementById('textJson').value;
       if (!content.trim()) {
-        alert('没有可以复制的内容');
+        this.errorMsg = '没有可以复制的内容';
         return;
       }
 
       try {
         await navigator.clipboard.writeText(content);
       } catch (e) {
-        alert('复制失败，请手动复制');
+        this.errorMsg = '复制失败，请手动复制';
       }
     },
 
@@ -631,7 +643,7 @@ const app = new Vue({
       }
       const fileInput = document.getElementById(inputId);
       if (!fileInput.files[0]) {
-        alert('未选择文件');
+        this.errorMsg = '未选择文件';
         return;
       }
 
@@ -653,7 +665,7 @@ const app = new Vue({
             this.processJsonKeys(jsonObj, 'oldEN');
           }
         } catch (e) {
-          alert('文件内容无效，无法解析为JSON');
+          this.errorMsg = '文件内容无效，无法解析为JSON';
         }
       };
       reader.readAsText(fileInput.files[0]);
@@ -754,7 +766,7 @@ const app = new Vue({
       });
 
       if (!this.diffItems.length) {
-        alert('未发现差异。');
+        this.errorMsg = '未发现差异。';
       }
 
       this.autoGen();
@@ -892,21 +904,22 @@ const app = new Vue({
       this.showNewEnError = false;
       this.showOldEnError = false;
       this.showOldZhError = false;
+      this.errorMsg = null;
 
       // 验证API配置
       if (this.selectedApi === 'openai') {
         if (!this.openai.apiKey) {
-          alert('请填写 OpenAI API 密钥。');
+          this.errorMsg = '请填写 OpenAI API 密钥。';
           return;
         }
       } else if (this.selectedApi === 'deepseek') {
         if (!this.deepseek.apiKey) {
-          alert('请填写 DeepSeek API 密钥。');
+          this.errorMsg = '请填写 DeepSeek API 密钥。';
           return;
         }
       } else if (this.selectedApi === 'youdao') {
         if (!this.youdao.appKey || !this.youdao.appSecret) {
-          alert('请填写有道 AppKey 和 AppSecret。');
+          this.errorMsg = '请填写有道 AppKey 和 AppSecret。';
           return;
         }
       }
@@ -917,7 +930,7 @@ const app = new Vue({
 
       const toTranslate = this.diffItems.filter(d => (d.type === 'added' || d.type === 'changed'));
       if (!toTranslate.length) {
-        alert('没有需要翻译的差异项。');
+        this.errorMsg = '没有需要翻译的差异项。';
         return;
       }
 
@@ -939,7 +952,6 @@ const app = new Vue({
 
         // 检查翻译结果是否有效
         if (translations.length === 0 || translations.every(t => !t.trim())) {
-          alert('翻译失败：未返回有效翻译结果。请检查 API 配置和网络连接。');
           continue;
         } else {
           translationSucceeded = true;
@@ -983,8 +995,10 @@ const app = new Vue({
      * @return {Promise<string[]|*[]>} 翻译结果
      */
     async translateOpenAI(query) {
+      this.errorMsg = null;
+
       if (!this.openai.apiKey) {
-        console.error('OpenAI API 密钥未配置');
+        this.errorMsg = 'OpenAI API 密钥未配置。';
         return [];
       }
 
@@ -1002,7 +1016,7 @@ const app = new Vue({
         },
         {role: 'user', content: query}
       ];
-      console.log(messages); // 这个最好是留着，方便以后新增词汇查看有没有问题
+      console.log(messages);
       const data = {
         model: this.openai.model,
         messages,
@@ -1020,7 +1034,7 @@ const app = new Vue({
         return result.split('\n').map(line => line.trimEnd());
 
       } catch (error) {
-        console.error('OpenAI API 错误：', error);
+        this.showErrorMsg(error);
         return [];
       }
     },
@@ -1032,8 +1046,10 @@ const app = new Vue({
      * @return {Promise<string[]|*[]>} 翻译结果
      */
     async translateDeepSeek(query) {
+      this.errorMsg = null;
+
       if (!this.deepseek.apiKey) {
-        console.error('DeepSeek API 密钥未配置。');
+        this.errorMsg = 'DeepSeek API 密钥未配置。';
         return [];
       }
 
@@ -1066,7 +1082,7 @@ const app = new Vue({
         const result = resp.data.choices[0].message.content.trim();
         return result.split('\n').map(line => line.trimEnd());
       } catch (error) {
-        console.error('DeepSeek API 错误：', error);
+        this.showErrorMsg(error);
         return [];
       }
     },
@@ -1193,6 +1209,52 @@ const app = new Vue({
         this.saveMessage = '有道 API 配置已保存。';
         this.saveMessageType = 'success';
       }
+    },
+
+    /**
+     * 返回 API 错误信息
+     */
+    showErrorMsg(error) {
+      let errorMessage = 'API 错误：';
+
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage += '请求参数错误';
+            break;
+          case 401:
+            errorMessage += 'API密钥无效';
+            break;
+          case 402:
+            errorMessage += '账户余额不足或需要付费';
+            break;
+          case 403:
+            errorMessage += '访问被拒绝';
+            break;
+          case 404:
+            errorMessage += 'API端点不存在';
+            break;
+          case 429:
+            errorMessage += '请求过于频繁';
+            break;
+          case 500:
+            errorMessage += '服务器内部错误';
+            break;
+          case 503:
+            errorMessage += '服务暂时不可用';
+            break;
+          default:
+            errorMessage += `未知错误 (${error.response.status})`;
+        }
+      } else if (error.request) {
+        errorMessage += '无法连接到服务器';
+      } else {
+        errorMessage += '请求配置错误';
+      }
+
+      errorMessage += `（${error.message || '无详细信息'}）`;
+
+      this.errorMsg = errorMessage;
     }
   }
 });

@@ -554,6 +554,7 @@ const app = new Vue({
       fixedTranslations: [
         {term: 'Cherry Pick', translation: '拣选'},
         {term: 'Collaborator', translation: '协作者'},
+        {term: 'Compose', translation: '编写'},
         {term: 'Email', translation: '邮箱'},
         {term: 'Email Address', translation: '邮箱'},
         {term: 'Filter', translation: '过滤器'},
@@ -1006,7 +1007,7 @@ const app = new Vue({
         {
           role: 'system',
           content: `You are a translation expert specializing in Git operation terminology. Please translate the following Git-related content from English to Chinese.
-            The following terms should be translated using fixed translations:
+            The following terms should preferably be translated using the following fixed translations, depending on the context:
             ${this.formatFixedTranslations()}
 
             The following terms should be kept in their original form without translation:
@@ -1057,10 +1058,12 @@ const app = new Vue({
         {
           role: 'system',
           content: `您是一名 Git 操作术语的翻译专家。请将以下 Git 相关内容从英文翻译为中文。其中：
-          以下术语应按照固定翻译方式进行翻译：
+          以下术语应根据上下文优先选择如下翻译：
           ${this.formatFixedTranslations()}
+
           以下术语应保持原文，不要翻译：
           ${this.formatKeepTranslations()}
+
           请注意，您只需返回翻译后的文本，不要与用户进行对话，也不要添加任何其他内容。`
         },
         {role: 'user', content: query}

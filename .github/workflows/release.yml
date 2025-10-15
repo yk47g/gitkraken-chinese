@@ -1,0 +1,40 @@
+name: Release from tag
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'   # 例如 11.5.1；如果以后用 v 前缀就改成 v[0-9]*
+
+permissions:
+  contents: write               # 必须，允许创建 Release 和上传资源
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare asset (copy strings_<tag>.json -> strings.json)
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          SRC="strings_${VERSION}.json"
+          if [[ ! -f "$SRC" ]]; then
+            echo "❌ 找不到 $SRC（请确认在打 Tag 的提交里存在这个文件）"; exit 1
+          fi
+          cp "$SRC" strings.json
+
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: |
+            适配 GitKraken ${{ github.ref_name }} 更新
+
+            > 对于一般的更新，仅需下载`strings.json`并按[操作步骤](https://github.com/${{ github.repository }}/blob/master/README.md#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4)替换即可。
+          artifacts: "strings.json"
+          artifactContentType: application/json
+          draft: false
+          prerelease: false
+          makeLatest: true

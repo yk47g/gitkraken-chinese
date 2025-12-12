@@ -851,6 +851,7 @@
     "ReflogActionCommitAmend": "Commit amend \"{0}\"",
     "ReflogActionCheckout": "Checkout from \"{0}\" to \"{1}\"",
     "ReflogActionReset": "Reset to \"{0}\"",
+    "ReflogActionRebase": "Rebase from \"{0}\"",
     "ReflogActionSaveOne": "Discard \"{0}\"",
     "ReflogActionSaveMany": "Discard \"{0}\" and {1} other file(s)",
     "ReflogActionSaveUnknown": "Discard",
@@ -1472,6 +1473,8 @@
     "FileViewPanel-DiffFileMode": "File Mode Changes from {0} to {1}",
     "FileViewPanel-HunkView": "Hunk View",
     "FileViewPanel-InlineView": "Inline View",
+    "FileViewPanel-FileViewCode": "Code",
+    "FileViewPanel-FileViewPreview": "Preview",
     "FileViewPanel-NextDiff": "Next Change",
     "FileViewPanel-PreviousDiff": "Previous Change",
     "FileViewPanel-SaveChanges": "Save Changes",
@@ -1899,6 +1902,13 @@
     "ToolPreferences-CustomOpenFileCommand": "Open File Command",
     "ToolPreferences-CustomOpenRepoCommand": "Open Repo Command",
     "ToolPreferences-MacOSBundleWarning": "You've selected an Application Bundle. Some editors may not support the flags required for some commands. For best results, select the editors command-line executable. {0}",
+    
+    "ToolPreferences-GitLensCallout-Heading": "GitLens",
+    "ToolPreferences-GitLensCallout-Message": "The #1 Git extension for {0}.",
+    "ToolPreferences-GitLensCallout-Included": "Included with GitKraken Pro.",
+    "ToolPreferences-GitLensCallout-LearnMore": "Learn More",
+    "ToolPreferences-GitLensCallout-Install": "Install",
+    "ToolPreferences-GitLensCallout-Open": "Open",
 
     "ToolPreferences-ExternalTerminalSubHeader": "Terminal",
     "ToolPreferences-CustomExternalTerminalPath": "Terminal Executable",
@@ -2319,7 +2329,7 @@
     "GKAIPreferences-UseCustomAiProvider": "Use your own API Key to make AI requests",
     "GKAIPreferences-UseCustomAiProvider-DisabledOrgOverride": "Provider configuration set by your organization's admin.",
     "GKAIPreferences-UseCustomAiProviderHelp": "If enabled, GitKraken Desktop will make requests directly to the selected provider",
-    
+
     "GKAIPreferences-TestConnectionButton-Label": "Test Connection",
     "GKAIPreferences-ApiKeyIsValid": "API key is valid",
 
@@ -2334,6 +2344,7 @@
     "GKAIPreferences-AzureEndpointHelp-1": "The full URL of the Azure deployment to use.",
     "GKAIPreferences-AzureEndpointHelp-2": "Format: ",
     
+    "GKAIPreferences-CustomAiProvider-CustomUrlProviderName": "<Custom URL>",
     "GKAIPreferences-CustomAiProvider-OptionalCustomProviderLabel": "Provider",
     "GKAIPreferences-CustomAiProviderAPIKey-Label": "Provider API Key",
     "GKAIPreferences-CustomAiProviderAPIKeyHelp": "Your API Key used to make the API call",
@@ -2851,6 +2862,7 @@
     "ConfirmationMessage-ResetAllWithSubmodules": "There might be uncommitted changes in submodules that will be lost and will not be undoable. Do you want to continue?",
     "ConfirmationMessage-ResetFile": "This will discard all staged and unstaged changes to \"{0}\". Are you sure you want to discard all changes to the file?",
     "ConfirmationMessage-ResetFiles": "This will discard all staged and unstaged changes to the selected files. Are you sure you want to discard all selected changes?",
+    "ConfirmationMessage-ApplyRebaseRequiresStashAndCheckoutPrompt": "To undo/redo the last rebase, you must stash any changes in branch \"{0}\". Do you want to do this now?",
 
     "DateTime-UnknownDate": "unknown date",
 
@@ -3259,6 +3271,7 @@
     "Error-FailedToOpenGkDotDev": "Failed to open GitKraken.dev",
     "Error-FailedToGenerateFileHistory": "Failed to generate file history",
     "Error-FetchFailedWithName": "Fetch failed for '{0}'",
+    "Error-FetchRefFailedCaseInsensitiveFilesystem": "You're on a case-insensitive filesystem, and one of your remotes has branches/tags (\"refs\") that only differ in casing.\nTo use this repository, rename/delete any conflicting refs (both local and on your remote), or re-clone your repository.\n\nConflicting refs: {0}",
     "Error-FetchAllPullRequestsFailed": "Fetching pull requests failed",
     "Error-GenerateSshKeyAndAddToServiceFailed": "SSH key creation failed",
     "Error-Generic": "An Error Occurred",
@@ -5166,6 +5179,8 @@
     "Ai-ExplainingOneCommit": "Explaining 1 commit",
     "Ai-ExplainingOneStash": "Explaining 1 stash",
     "Ai-ExplainingXCommits": "Explaining {0} commits",
+    "Ai-ExplainBranchLabel": "Explaining {0}",
+    "ContextMenu-ExplainBranchChangesPreview": "Explain Branch Changes (Preview)",
     "Ai-ExplanationFailed": "Commit explanation failed. Try resolving any issues and generate an explanation again.",
     "Ai-GeneratePullRequest": "Generate title and description",
     "Ai-GeneratePullRequestTooltip": "Generate a title and description for the PR with AI",
@@ -5184,6 +5199,8 @@
     "Ai-ConflictResolutionErrorNoInputData": "Missing input data prevents conflict resolution",
     "Ai-Regenerate": "Regenerate",
     "Ai-Error": "AI Error",
+    "Ai-Explain-BranchTooLong": "The selected branch has too many commits to analyze. Try selecting a smaller range.",
+    "Ai-Explain-UnexpectedError": "Unexpected error while attempting to explain changes",
     "Ai-MaxInputTokensHelpText": "Maximum number of input tokens the model can process",
     "Ai-MaxInputTokensLabel": "Max Input Tokens",
     "Ai-NoApiKey": "No API key set. Check the AI settings",
@@ -5408,7 +5425,7 @@
     "FocusViewItemActionModal-ClosingThisPR": "Closing this PR will remove it from Launchpad.",
     "FocusViewItemActionModal-Status": "Status",
     "FocusViewItemActionModal-IssueStatusChangedToX": "Issue status changed to {0}",
-    "FocusViewItemActionModal-IssueMarkedAsClosed": "Issue maked as Closed",
+    "FocusViewItemActionModal-IssueMarkedAsClosed": "Issue marked as Closed",
     "FocusViewItemActionModal-SelectStatus": "Select status...",
     "FocusViewItemActionModal-CreateMergeCommitHeader": "Create a merge commit",
     "FocusViewItemActionModal-CreateMergeCommitDescription": "All commits from this branch will be added to the base branch via a merge commit",

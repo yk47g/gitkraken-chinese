@@ -70,7 +70,7 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 - `/Applications/GitKraken.app/Contents/Resources/app/src/strings.json`
 - `/Applications/GitKraken.app/Contents/Resources/app.asar.unpacked/src/strings.json`
 
-#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1024px-Tux.svg.png" alt="Linux Icon" style="width: 18px; height: 18px;"> Linux（不同安装方式下路径可能不同）
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1280px-Tux.svg.png" alt="Linux Icon" style="width: 18px; height: 18px;"> Linux（不同安装方式下路径可能不同）
 
 - （由[@lyydhy](https://github.com/lyydhy)补充）通过 `deb` 安装（例如 Deepin 系统），路径可能是：
 

@@ -3556,7 +3556,7 @@
     "ErrorMessage-InvalidReferenceName": "无效的引用名称 {0}",
     "ErrorMessage-SecureTransportError": "针对 {0} 的安全传输错误：这可能表明您正在尝试一次推送过多的文件。",
     "ErrorMessage-RemoteAccessDeniedOrgWarning": "如果 {0} 是 {1} 上的一个组织，您可能需要请求（或授予）GitKraken访问该组织的权限。",
-    "ErrorMessage-RemoteAccessDeniedOrgWarning2": "如果这是另一个组织仓库的分叉，该组织可能也需要授予访问权限。",
+    "ErrorMessage-RemoteAccessDeniedOrgWarning2": "如果这是另一个组织仓库的派生仓库，该组织可能也需要授予访问权限。",
     "ErrorMessage-RemoteAccessDeniedButton": "前往 {0}",
     "ErrorMessage-RemoteRefDoesNotExistOnHostingServiceForPR": "拉取请求的源和/或目标在远程不存在。请获取您的远程以更新它们，然后推送缺失的分支。",
     "ErrorMessage-RemoteNotFoundWithName": "无法连接到 '{0}'。请仔细检查您的远程 URL，然后确保您对该远程执行该操作并重试。",

@@ -715,7 +715,7 @@
     "CommitAndSquashMergeButtonLabel": "提交并压缩合并",
     "CommitButtonLabelAddMessage": "键入要提交的消息",
     "CommitButtonLabelSingular": "提交 1 个文件的更改{0}{1}",
-    "CommitButtonLabelPlural": "提交 {0} 个文件的更改",
+    "CommitButtonLabelPlural": "提交 {0} 个文件的更改{1}{2}",
     "AmendPreviousCommitButtonLabel": "修订上一次提交",
     "CommitButtonLabelCheckboxAmend": "修改上一次提交",
     "CommitButtonLabelPushSuffix": "并推送",

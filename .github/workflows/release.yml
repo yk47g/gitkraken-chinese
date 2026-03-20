@@ -38,3 +38,5 @@ jobs:
           draft: false
           prerelease: false
           makeLatest: true
+          allowUpdates: true
+          replacesArtifacts: true

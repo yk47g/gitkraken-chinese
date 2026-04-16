@@ -654,6 +654,7 @@ const app = new Vue({
       const reader = new FileReader();
       reader.onload = e => {
         const rawText = e.target.result;
+        if (typeof rawText !== 'string') return;
         try {
           // 用 JSON.parse 获取 key-value
           const jsonObj = JSON.parse(rawText);
@@ -825,7 +826,7 @@ const app = new Vue({
       const scopePattern = /^\s*"?(languageOption|menuStrings|strings)"?\s*:\s*\{\s*$/;
 
       // 判断是不是关闭了当前作用域
-      const scopeClosePattern = /^\s*\}\s*,?\s*$/;
+      const scopeClosePattern = /^\s*}\s*,?\s*$/;
 
       // 匹配键值行
       const keyValuePattern = /^(\s*)"((?:\\.|[^"\\])*)"\s*:\s*"((?:\\.|[^"\\])*)"\s*(,?)\s*$/;
@@ -944,7 +945,8 @@ const app = new Vue({
       const batchSize = 20;
       for (let i = 0; i < toTranslate.length; i += batchSize) {
         const batch = toTranslate.slice(i, i + batchSize);
-        const query = batch.map(item => item.newValue).join('\n');
+        const separator = '|||SEP|||';
+        const query = batch.map(item => item.newValue).join(separator);
         let translations = [];
         if (this.selectedApi === 'openai') {
           translations = await this.translateOpenAI(query);
@@ -1016,6 +1018,7 @@ const app = new Vue({
             The following terms should be kept in their original form without translation:
             ${this.formatKeepTranslations()}
 
+            IMPORTANT: Each piece of text to translate is separated by the delimiter "|||SEP|||". You MUST use the exact same delimiter "|||SEP|||" to separate each translated result. Do NOT use newlines as separators between items. Preserve any newlines (\n) that exist within each individual text segment.
             Please note that you should only return the translated text, without engaging in conversation with the user or adding any additional content.`
         },
         {role: 'user', content: query}
@@ -1035,7 +1038,7 @@ const app = new Vue({
           }
         });
         const result = resp.data.choices[0].message.content.trim();
-        return result.split('\n').map(line => line.trimEnd());
+        return result.split('|||SEP|||').map(line => line.trim());
 
       } catch (error) {
         this.showErrorMsg(error);
@@ -1067,6 +1070,7 @@ const app = new Vue({
           以下术语应保持原文，不要翻译：
           ${this.formatKeepTranslations()}
 
+          重要：每段待翻译文本之间使用分隔符 "|||SEP|||" 分隔。你必须使用完全相同的分隔符 "|||SEP|||" 来分隔每段翻译结果。不要使用换行符作为不同条目之间的分隔。保留每段文本内部原有的换行符（\n）。
           请注意，您只需返回翻译后的文本，不要与用户进行对话，也不要添加任何其他内容。`
         },
         {role: 'user', content: query}
@@ -1086,7 +1090,7 @@ const app = new Vue({
           }
         });
         const result = resp.data.choices[0].message.content.trim();
-        return result.split('\n').map(line => line.trimEnd());
+        return result.split('|||SEP|||').map(line => line.trim());
       } catch (error) {
         this.showErrorMsg(error);
         return [];
@@ -1104,40 +1108,51 @@ const app = new Vue({
         return [];
       }
 
-      const curtime = Math.round(new Date().getTime() / 1000);
-      const sign = this.buildSign(query, curtime);
-      const url = 'https://openapi.youdao.com/api';
-      const data = {
-        q: query,
-        appKey: this.youdao.appKey,
-        salt: this.youdao.salt,
-        from: this.youdao.from,
-        to: this.youdao.to,
-        sign,
-        signType: 'v3',
-        curtime,
-      };
-      return new Promise(resolve => {
-        $.ajax({
-          url,
-          type: 'POST',
-          dataType: 'jsonp',
-          data,
-          success: function (data) {
-            if (data.errorCode !== '0') {
-              console.log(data);
-              resolve([]);
-              return;
+      // 有道 API 不支持自定义分隔符，逐条翻译以避免含 \n 的值导致错位
+      const items = query.split('|||SEP|||');
+      const results = [];
+      for (const item of items) {
+        const text = item.trim();
+        if (!text) {
+          results.push('');
+          continue;
+        }
+        const curtime = Math.round(new Date().getTime() / 1000);
+        const sign = this.buildSign(text, curtime);
+        const url = 'https://openapi.youdao.com/api';
+        const data = {
+          q: text,
+          appKey: this.youdao.appKey,
+          salt: this.youdao.salt,
+          from: this.youdao.from,
+          to: this.youdao.to,
+          sign,
+          signType: 'v3',
+          curtime,
+        };
+        const translated = await new Promise(resolve => {
+          $.ajax({
+            url,
+            type: 'POST',
+            dataType: 'jsonp',
+            data,
+            success: function (data) {
+              if (data.errorCode !== '0') {
+                console.log(data);
+                resolve('');
+                return;
+              }
+              resolve(data.translation[0].trim());
+            },
+            error: function (error) {
+              console.error(error);
+              resolve('');
             }
-            const result = data.translation[0].split('\n').map(line => line.trimEnd());
-            resolve(result);
-          },
-          error: function (error) {
-            console.error(error);
-            resolve([]);
-          }
+          });
         });
-      });
+        results.push(translated);
+      }
+      return results;
     },
 
     buildSign(query, curtime) {

@@ -158,8 +158,13 @@ jobs:
           body: |
             适配 GitKraken ${{ github.ref_name }} 更新
 
-            > 对于一般的更新，仅需下载 `strings.json` 并按[操作步骤](https://github.com/${{ github.repository }}/blob/master/README.md#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4)替换即可。
-            > 也可以下载对应系统的 `GitKrakenPatcher` 自动替换脚本，将其与 `strings.json` 放在同一目录下运行即可自动完成替换。
+            ### 自动替换（推荐）
+            1. 下载 `strings.json` 和对应系统的 `GitKrakenPatcher`，放在同一目录下
+            2. 运行 `GitKrakenPatcher`，自动完成替换
+            3. 重启 GitKraken 即可生效
+
+            ### 手动替换
+            下载 `strings.json`，按[操作步骤](https://github.com/${{ github.repository }}/blob/master/README.md#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4)手动替换对应目录下的文件。
           artifacts: "./release-assets/*"
           draft: false
           prerelease: false

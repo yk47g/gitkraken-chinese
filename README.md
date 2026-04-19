@@ -18,6 +18,7 @@ GitKraken的中文汉化补丁
 |       日期        | 更新内容                                                                          |                                                               感谢                                                               |
 |:---------------:|-------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------:|
 | 2024.02.27 - 现在 | 适配 9.12.0+ 版本。                                                                |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|   2026.04.18    | 新增适配 Windows/macOS/Linux（x64 & arm64）的 GitKrakenPatcher 与对应工作流，以实现自动替换本地化文件   |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
 |   2026.04.16    | 修复 comparator.html 对于 JSON 中 \n 转义字符处理错误的问题                                   |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
 |   2026.03.20    | 更正 11.10.0 版本文件中的格式错误                                                         |                                     [@DeathFishAtEase](https://github.com/DeathFishAtEase)                                     |
 |   2026.03.20    | 更正固定翻译词汇中错译的“Fork => 分支”为“Fork => 派生”                                         |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
@@ -54,9 +55,20 @@ GitKraken的中文汉化补丁
 
 ## 操作步骤
 
-按照以下步骤完成汉化操作：
+有两种方式完成汉化：**自动替换**（推荐）和**手动替换**。
 
-### 1. 找到并替换语言文件
+### 方式一：自动替换（推荐）
+
+1. 前往 [Releases](https://github.com/yk47g/gitkraken-chinese/releases/latest) 页面，下载 `strings.json` 和对应你操作系统的
+   `GitKrakenPatcher` 自动替换脚本。
+2. 将 `strings.json` 和 `GitKrakenPatcher` 放在**同一目录**下。
+3. 运行 `GitKrakenPatcher`，脚本会自动查找 GitKraken 安装路径并完成替换。
+4. 重启 GitKraken 即可生效。
+
+> 自动替换脚本无需安装任何运行环境，双击即可运行。目前仅在 Windows64
+> 上有测试，如有问题请于 [issues](https://github.com/yk47g/gitkraken-chinese/issues) 中反馈
+
+### 方式二：手动替换
 
 从项目根目录或 `./旧版本文件` 中找到与你当前 GitKraken 版本匹配的 `.json` 文件，将其重命名为 `strings.json`，并替换
 GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你的操作系统有所不同：
@@ -81,8 +93,6 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 - 通过 `AUR` 安装（例如 Arch Linux），路径可能是：
 
   `/opt/gitkraken/resources/app.asar.unpacked/src/strings.json`
-
-### 2. 重启 GitKraken
 
 完成文件替换后，重启 GitKraken 即可生效。
 

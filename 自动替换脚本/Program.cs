@@ -19,7 +19,7 @@ internal static class Program
         var (srcFile, version) = FindSourceJson(projectRoot);
         if (srcFile == null)
         {
-            ExitWithError($"在目录 {projectRoot} 中找不到 strings_x.x.x.json 文件。\n请确保该工具与 strings_x.x.x.json 放在同一目录下。");
+            ExitWithError($"在目录 {projectRoot} 中找不到 strings.json 或 strings_x.x.x.json 文件。\n请确保该工具与汉化文件放在同一目录下。");
             return;
         }
 
@@ -109,24 +109,22 @@ internal static class Program
     /// </summary>
     private static string FindProjectRoot()
     {
-        // 优先使用可执行文件所在目录
-        var exeDir = AppContext.BaseDirectory;
-        if (HasSourceJson(exeDir))
-            return exeDir;
-
-        // 回退到当前工作目录（从源码 dotnet run 时）
+        // 从可执行文件所在目录和当前工作目录分别向上查找，最多 3 级父目录
+        // 覆盖场景：Release 下载（同目录）、克隆仓库编译（自动替换脚本/publish/<rid>/）
+        var candidates = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var exeDir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
         var cwd = Directory.GetCurrentDirectory();
-        if (HasSourceJson(cwd))
-            return cwd;
 
-        // 如果都没有，检查上级目录（install 文件夹在项目根目录内）
-        var parentOfExe = Directory.GetParent(exeDir)?.FullName;
-        if (parentOfExe != null && HasSourceJson(parentOfExe))
-            return parentOfExe;
-
-        var parentOfCwd = Directory.GetParent(cwd)?.FullName;
-        if (parentOfCwd != null && HasSourceJson(parentOfCwd))
-            return parentOfCwd;
+        foreach (var startDir in new[] { exeDir, cwd })
+        {
+            var dir = startDir;
+            for (var i = 0; i < 4 && dir != null; i++)
+            {
+                if (candidates.Add(dir) && HasSourceJson(dir))
+                    return dir;
+                dir = Directory.GetParent(dir)?.FullName;
+            }
+        }
 
         return exeDir;
     }
@@ -135,8 +133,10 @@ internal static class Program
     {
         try
         {
+            // 优先匹配 strings_x.x.x.json，其次匹配 strings.json
             return Directory.GetFiles(dir, "strings_*.json")
-                .Any(f => SrcPattern.IsMatch(Path.GetFileName(f)));
+                       .Any(f => SrcPattern.IsMatch(Path.GetFileName(f)))
+                   || File.Exists(Path.Combine(dir, TargetFileName));
         }
         catch
         {
@@ -165,6 +165,11 @@ internal static class Program
         {
             // ignored
         }
+
+        // 回退：查找不带版号的 strings.json
+        var plain = Path.Combine(dir, TargetFileName);
+        if (File.Exists(plain))
+            return (plain, "unknown");
 
         return (null, null);
     }
@@ -214,9 +219,9 @@ internal static class Program
 
             try
             {
-                // 有版号目录，只取最新版本
+                // 有版号目录，只取最新版本（按版本号排序，而非字符串）
                 var latestAppDir = Directory.GetDirectories(root, "app-*")
-                    .OrderByDescending(d => Path.GetFileName(d))
+                    .OrderByDescending(d => Path.GetFileName(d).Substring(4), new VersionComparer())
                     .FirstOrDefault();
 
                 if (latestAppDir == null)

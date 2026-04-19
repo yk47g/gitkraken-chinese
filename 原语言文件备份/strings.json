@@ -137,6 +137,15 @@
     "About-AllRightsReserved": "All rights reserved",
     "About-Version": "GitKraken Desktop Version {0}",
 
+    "AgentStatus-ClaudeCodeHooksAddedTitle": "Claude Code Hooks Added",
+    "AgentStatus-ClaudeCodeHooksAddedBody1": "GitKraken configured Claude Code to send agent status updates to GitKraken Desktop so you can see and manage your agents in the new Agent Sessions view.",
+    "AgentStatus-ClaudeCodeHooksAddedBody2": "You can manage the installation of these hooks from {0}",
+    "AgentStatus-ClaudeCodeHooksAddedBreadcrumb": "Preferences > External Tools",
+    "AgentStatus-HooksInstalledToastTitle": "Hooks installed",
+    "AgentStatus-HooksUninstalledToastTitle": "Hooks uninstalled",
+    "AgentStatus-InstallHooksFailedToastTitle": "Failed to install Claude Code hooks",
+    "AgentStatus-UninstallHooksFailedToastTitle": "Failed to uninstall Claude Code hooks",
+
     "AgentsPreferences-Label": "Agents",
     "AgentsPreferences-SetupCommands-Label": "Setup commands",
     "AgentsPreferences-SetupCommands-Description": "Commands run in sequence when a new agent session starts in a worktree. Use this to install dependencies and prepare your environment. Put each command on a new line.",
@@ -1982,6 +1991,11 @@
 
     "ToolPreferences-CodingAgentSubHeader": "Coding Agent",
     "ToolPreferences-CodingAgent": "Coding Agent",
+    "ToolPreferences-ClaudeCodeHooks": "Claude Code Hooks",
+    "ToolPreferences-ClaudeCodeHooks-HelpText": "Send live agent status to GitKraken to display in the Agents session view",
+    "ToolPreferences-ClaudeCodeHooks-InstallButton": "Install Hooks",
+    "ToolPreferences-ClaudeCodeHooks-ReinstallButton": "Reinstall Hooks",
+    "ToolPreferences-ClaudeCodeHooks-UninstallButton": "Uninstall Hooks",
 
     "Preferences-DisabledByOrgLabel": "This feature has been disabled by your organization.",
     "Preferences-Preferences": "Preferences",

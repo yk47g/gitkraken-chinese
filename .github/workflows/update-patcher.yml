@@ -1,0 +1,99 @@
+# 触发条件：自动替换脚本目录有 push 更新（非 tag 推送时）
+# 行为：重新编译 patcher，上传到最新 tag 的 release 中，保留原有的 strings.json
+name: Update patcher
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '自动替换脚本/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build-patcher:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            artifact: GitKrakenPatcher_Windows_x64.exe
+          - rid: win-arm64
+            artifact: GitKrakenPatcher_Windows_arm64.exe
+          - rid: linux-x64
+            artifact: GitKrakenPatcher_Linux_x64
+          - rid: linux-arm64
+            artifact: GitKrakenPatcher_Linux_arm64
+          - rid: osx-x64
+            artifact: GitKrakenPatcher_macOS_x64
+          - rid: osx-arm64
+            artifact: GitKrakenPatcher_macOS_arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish ${{ matrix.rid }}
+        run: |
+          dotnet publish '自动替换脚本/GitKrakenPatcher.csproj' \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            /p:PublishSingleFile=true \
+            /p:PublishTrimmed=true \
+            -o ./out
+
+      - name: Rename artifact
+        shell: bash
+        run: |
+          if [[ "${{ matrix.rid }}" == win-* ]]; then
+            mv ./out/GitKrakenPatcher.exe "./out/${{ matrix.artifact }}"
+          else
+            mv ./out/GitKrakenPatcher "./out/${{ matrix.artifact }}"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ./out/${{ matrix.artifact }}
+
+  upload-to-release:
+    needs: build-patcher
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest release tag
+        id: latest
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq '.tag_name' 2>/dev/null || echo "")
+          if [[ -z "$TAG" ]]; then
+            echo "No existing release found, skipping"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest release tag: $TAG"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      # 逐个上传到已有 release，gh release upload --clobber 会替换同名文件，保留其它文件（如 strings.json）
+      - name: Upload patcher to release ${{ steps.latest.outputs.tag }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.latest.outputs.tag }}"
+          echo "Uploading patcher binaries to release $TAG..."
+          find ./artifacts -name "GitKrakenPatcher_*" -type f | while read -r file; do
+            echo "  Uploading $(basename "$file")..."
+            gh release upload "$TAG" "$file" --clobber -R "${{ github.repository }}"
+          done
+          echo "Done!"

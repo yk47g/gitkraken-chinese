@@ -3,11 +3,25 @@ using System.Text.RegularExpressions;
 
 namespace GitKrakenPatcher;
 
+/// <summary>
+/// GitKraken 中文汉化补丁安装工具。
+/// <para>自动查找汉化源文件和 GitKraken 安装路径，完成 strings.json 的备份与替换。</para>
+/// </summary>
 internal static class Program
 {
+    /// <summary>
+    /// GitKraken 使用的本地化文件名。
+    /// </summary>
     private const string TargetFileName = "strings.json";
+
+    /// <summary>
+    /// 匹配带版本号的汉化源文件名，如 <c>strings_12.0.1.json</c>。
+    /// </summary>
     private static readonly Regex SrcPattern = new(@"^strings_(\d+\.\d+\.\d+)\.json$", RegexOptions.Compiled);
 
+    /// <summary>
+    /// 程序入口。依次执行：查找汉化源文件 → 查找 GitKraken 安装路径 → 备份并替换 strings.json。
+    /// </summary>
     private static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -129,6 +143,11 @@ internal static class Program
         return exeDir;
     }
 
+    /// <summary>
+    /// 判断指定目录中是否存在汉化源文件（<c>strings_x.x.x.json</c> 或 <c>strings.json</c>）。
+    /// </summary>
+    /// <param name="dir">要检查的目录路径。</param>
+    /// <returns>存在汉化源文件时返回 <c>true</c>。</returns>
     private static bool HasSourceJson(string dir)
     {
         try
@@ -145,8 +164,13 @@ internal static class Program
     }
 
     /// <summary>
-    /// 在指定目录中找到版本号最高的 strings_x.x.x.json。
+    /// 在指定目录中查找汉化源文件。优先选择版本号最高的 <c>strings_x.x.x.json</c>，
+    /// 若不存在则回退到 <c>strings.json</c>。
     /// </summary>
+    /// <param name="dir">要搜索的目录路径。</param>
+    /// <returns>
+    /// 找到的文件路径和版本号（纯 <c>strings.json</c> 时版本为 <c>"unknown"</c>）；未找到时均为 <c>null</c>。
+    /// </returns>
     private static (string? path, string? version) FindSourceJson(string dir)
     {
         try
@@ -175,8 +199,9 @@ internal static class Program
     }
 
     /// <summary>
-    /// 根据操作系统查找 GitKraken 的 strings.json 路径。
+    /// 根据当前操作系统，自动查找 GitKraken 安装目录下所有 <c>strings.json</c> 的完整路径。
     /// </summary>
+    /// <returns>找到的所有 <c>strings.json</c> 路径列表（已去重）。</returns>
     private static List<string> FindGitKrakenPaths()
     {
         var results = new List<string>();
@@ -193,6 +218,12 @@ internal static class Program
         return results.Distinct().ToList();
     }
 
+    /// <summary>
+    /// 在 Windows 系统中查找 GitKraken 的 <c>strings.json</c>。
+    /// <para>搜索 <c>%LOCALAPPDATA%</c>、<c>%PROGRAMFILES%</c>、<c>%PROGRAMFILES(x86)%</c> 下的
+    /// <c>app-*</c> 版本目录，仅取版本号最高的目录。</para>
+    /// </summary>
+    /// <param name="results">用于收集找到的文件路径。</param>
     private static void FindGitKrakenWindows(List<string> results)
     {
         var searchRoots = new List<string>();
@@ -242,6 +273,11 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// 在 macOS 系统中查找 GitKraken 的 <c>strings.json</c>。
+    /// <para>搜索系统级和用户级 Applications 目录。</para>
+    /// </summary>
+    /// <param name="results">用于收集找到的文件路径。</param>
     private static void FindGitKrakenMacOS(List<string> results)
     {
         var basePaths = new[]
@@ -266,6 +302,11 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// 在 Linux 系统中查找 GitKraken 的 <c>strings.json</c>。
+    /// <para>搜索 deb、AUR、Snap、Flatpak（系统级和用户级）等常见安装路径。</para>
+    /// </summary>
+    /// <param name="results">用于收集找到的文件路径。</param>
     private static void FindGitKrakenLinux(List<string> results)
     {
         var basePaths = new[]
@@ -307,6 +348,10 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// 输出错误信息并等待用户按键后退出。
+    /// </summary>
+    /// <param name="message">要显示的错误信息。</param>
     private static void ExitWithError(string message)
     {
         Console.WriteLine();
@@ -314,6 +359,9 @@ internal static class Program
         WaitExit();
     }
 
+    /// <summary>
+    /// 显示"按任意键退出"提示并等待用户按键。
+    /// </summary>
     private static void WaitExit()
     {
         Console.WriteLine();
@@ -322,10 +370,11 @@ internal static class Program
     }
 
     /// <summary>
-    /// 版本号比较器，用于排序 "12.0.1" > "11.10.0" 等。
+    /// 语义化版本号比较器，按数值逐段比较（如 <c>"12.0.1" &gt; "11.10.0" &gt; "9.5.1"</c>）。
     /// </summary>
     private class VersionComparer : IComparer<string>
     {
+        /// <inheritdoc />
         public int Compare(string? x, string? y)
         {
             if (x == null && y == null) return 0;

@@ -513,6 +513,7 @@
     "File-Delete": "Delete file",
     "File-Deleted": "Deleted '{0}'",
     "File-DoesNotExist": "File does not exist",
+    "File-PathBlockedByDirectory": "Cannot open file: path blocked by a directory",
     "File-ConfirmDeletePath": "Are you sure you want to delete '{0}'?",
     "File-Open": "Open file",
     "File-Edit": "Edit file",
@@ -2139,9 +2140,6 @@
 
     "Annotation-GitKrakenReview-Title": "GitKraken Code Review is now in preview!",
     "Annotation-GitKrakenReview-Description": "Review PRs faster with cleaner diffs, AI-generated suggestions, and integrated chat \u2014 approve and comment just like on GitHub.",
-    "Annotation-PinnedBranch-Name": "Pin a branch to the left",
-    "Annotation-PinnedBranch-Description": "Right-click any local branch and select 'Pin to Left' to keep it in the leftmost column of the graph.",
-
     "PurchaseReceipt-Updating": "updating",
     "PurchaseReceipt-Type-Suite": "GitKraken {0} Suite",
     "PurchaseReceipt-Type-Gitgui": "GitKraken Desktop {0}",
@@ -2207,6 +2205,8 @@
     "Services-AddToService": "Add to {0}",
     "Services-BrowseForPublicSSHKey": "Browse for {0} SSH Key",
     "Services-BrowseForPrivateSSHKey": "Browse for {0} SSH Key",
+    "Services-CloudTokenRemoved-Title": "Integration disconnected",
+    "Services-CloudTokenRemoved-Content": "One or more integration connections on this profile have been disconnected: {0}",
     "Services-ClearSSHKey": "Stop Using",
     "Services-Connect": "Connect",
     "Services-Connected": "Connected",
@@ -3178,15 +3178,6 @@
 
     "Annotation-toggle-with": "Toggle with {0}",
     "Annotation-got-it": "Got it",
-    "Annotation-SmartBranchVisibility-Title": "NEW: Smart Branch Visibility",
-    "Annotation-SmartBranchVisibility-Description": "Enable 'Smart Branch Visibility' to keep your current work front and center: only your currently checked out branch, its target branch, and their respective upstreams will show in the Commit Graph.",
-
-    "Annotation-SmartBranchVisibilityAutoEnabled-Title": "Smart Branch Visibility Active",
-    "Annotation-SmartBranchVisibilityAutoEnabled-Description1": "We noticed there are a lot of branches on this repo, so we turned on 'Smart Branch Visibility' to keep your current work front and center.",
-    "Annotation-SmartBranchVisibilityAutoEnabled-Description2": "Smart Branch Visibility only shows your currently checked out branch, its target branch, and their respective upstreams in the Commit Graph.",
-    "Annotation-SmartBranchVisibilityAutoEnabled-ShowAllBranches": "{0}",
-    "Annotation-SmartBranchVisibilityAutoEnabled-ShowAllBranchesLink": "Show all branches instead",
-
     "OrganizationMember-Admin": "Admin",
     "OrganizationMember-AlreadyMember": "{0} is already a member of this organization",
     "OrganizationMember-ApproveInvite": "Approve",
@@ -3674,6 +3665,7 @@
     "ErrorMessage-UnknownFailure": "Unknown failure.",
 
     "ErrorMessage-BlobNotFound": "Blob not found. This may occur in repositories using blobless clone where the file has not been fetched yet.",
+    "ErrorMessage-PathBlockedByDirectory": "A directory currently exists at this path, possibly due to a rebase or merge that introduced a file/directory name conflict.",
     "ErrorMessage-SparseCheckoutFileNotFound": "File not found. This may occur in repositories using sparse checkout.",
     "ErrorMessage-SparseCheckoutFilesNotFound": "{0} files not found. This may occur in repositories using sparse checkout.",
 
@@ -5705,6 +5697,21 @@
     "AgentWorkflow-TerminalCommandsFailed": "Failed to run commands in terminal",
     "AgentWorkflow-StartSessionFailed": "Failed to start agent session",
     "AgentWorkflow-NoAvailableTabFound": "No tab available after switching to worktree",
+    "AgentWorkflow-NoFilterResults": "No matching worktrees",
+    "AgentWorkflow-SortFilterTooltip": "Sort & filter",
+    "AgentWorkflow-SortSection": "Sort",
+    "AgentWorkflow-FilterSection": "Filters",
+    "AgentWorkflow-SortNone": "None",
+    "AgentWorkflow-SortAlphabetical": "Alphabetical",
+    "AgentWorkflow-SortStatus": "Status",
+    "AgentWorkflow-SortChangeSize": "Change size",
+    "AgentWorkflow-FilterNeedsAttention": "Needs attention",
+    "AgentWorkflow-FilterHasAgentSessions": "Has agent sessions",
+    "AgentWorkflow-FilterHasChanges": "Has changes",
+    "AgentWorkflow-FilterHasPR": "Has PR",
+    "AgentWorkflow-FilterCurrent": "Current",
+    "AgentWorkflow-ClearAll": "Clear all",
+    "AgentWorkflow-CloseSortFilter": "Close",
 
     "SatisfactionSurvey-Header": "How satisfied are you with this product experience?",
     "SatisfactionSurvey-SubHeader": "Your feedback helps improve GitKraken",

@@ -2276,7 +2276,7 @@
     "Services-SSHKeyUnverifiable": "{0} 不允许外部应用程序检查公钥是否已注册。如果您的密钥未被 {0} 接受，请使用下面的按钮，并确保已在 {1} 上添加了该密钥。",
     "Services-SwitchAccount": "切换",
     "Services-Token": "令牌",
-    "Services-UseDifferentAccount": "为此配置文件使用不同的 {0} 账户",
+    "Services-UseDifferentAccount": "为此配置文件使用一个不同的 {0} 账户",
     "Services-UsingAgent": "使用您的系统 SSH 本地代理",
     "Services-UsingDefaults": "使用默认的 GitKraken 桌面版 SSH 密钥",
     "Services-UsingNone": "未检测到 SSH 设置。您可以在下面添加一个 SSH 密钥到 {0}。",

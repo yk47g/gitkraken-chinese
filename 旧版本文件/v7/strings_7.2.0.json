@@ -1343,7 +1343,7 @@
     "IssueTrackerCreateForm-SubmitLabelIssue":"创建问题",
     "FileHistory-BlameButtonLabel":"追责",
     "IssueTrackerError-BadRequest":"错误的请求语法",
-    "IssueTracker-GitLab":"亚搏体育app",
+    "IssueTracker-GitLab":"GitLab",
     "File-CouldNotCreateOutOfRepo":"无法在存储库之外创建文件!",
     "GitFlow-CannotStartHotfixMissingMaster":"{0}分支必须启始热修复",
     "Application":"应用",

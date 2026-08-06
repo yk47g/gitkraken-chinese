@@ -1021,6 +1021,8 @@
     "ContextMenu-CreateBranchHere": "Create branch here",
     "ContextMenu-CreateTagHere": "Create tag here",
     "ContextMenu-DeleteLocalAndRemoteBranches": "Delete {0} and {1}",
+    "ContextMenu-RemoveWorktreeAndDeleteLocalAndRemote": "Remove worktree and delete {0} and {1}",
+    "ContextMenu-RemoveWorktreeAndDeleteAll": "Remove worktree and delete all \"{0}\" branches (local && remote)",
     "ContextMenu-DeleteAll": "Delete all \"{0}\" branches (local && remote)",
     "ContextMenu-DeleteBranch": "Delete {0}",
     "ContextMenu-Delete1BranchInFolder": "Delete 1 branch in folder \"{0}\"",
@@ -2115,6 +2117,11 @@
 
     "SuggestedOrgs-WeHaveNotifiedTheTeam": "We've let the team know you'd like to join!",
 
+    "AzureOrgPickerForm-title": "Choose an Azure DevOps organization",
+    "AzureOrgPickerForm-description": "Select the organization you'd like to start with. You can change this anytime in Preferences.",
+    "AzureOrgPickerForm-Skip": "Skip this step",
+    "AzureOrgPickerForm-skipHint": "Skipping leaves Azure DevOps partly connected. You can finish it later in Preferences → Integrations → Azure DevOps.",
+
     "WelcomeForm-ConnectGitProvider-title": "Connect Git Provider",
     "WelcomeForm-ConnectGitProvider-desc": "Unlocks more features and starts your 14-day trial of GitKraken Advanced.",
     "WelcomeForm-iAgreeToThe": "By continuing, you agree to the GitKraken",
@@ -2925,6 +2932,7 @@
 
     "PromptForRemoveWorktreeAndDeleteBranch-Confirm": "Remove and Delete",
     "PromptForRemoveWorktreeAndDeleteBranch-Message": "This will permanently remove the worktree at '{0}' and delete the local branch '{1}'. This action cannot be undone.",
+    "PromptForRemoveWorktreeAndDeleteBranchAndRemote-Message": "This will permanently remove the worktree at '{0}' and delete the local branch '{1}' and its remotes. This action cannot be undone.",
 
     "PromptForTagAnnotation-Message": "Message:",
     "PromptForTagAnnotation-Placeholder": "Annotation message",
@@ -3121,7 +3129,7 @@
     "GitKraken-Features": "GitKraken features",
 
     "NewTabView-RepositoriesSection": "Repositories",
-    "NewTabView-RepositorySearch-Placeholder": "Search repositories",
+    "NewTabView-RepositorySearch-Placeholder": "Search repositories ({0} + {1} + F)",
     "NewTabView-ConnectIntegrations-Title": "Connect More Integrations",
     "NewTabView-ConnectIntegrations-Description": "Speed up your workflow and reduce context switching with powerful integrations for pull requests, issues, CI/CD, and more.",
     "NewTabView-ConnectIntegrations-Action": "Connect Integrations",
@@ -5530,6 +5538,11 @@
     "FocusView-PullRequestClosedSuccessfully": "Pull Request closed successfully",
     "FocusView-UpdateStatus": "Update Status",
     "FocusView-MarkAsClosed": "Mark as closed",
+    "FocusView-StartAgentSession": "Start an Agent Session",
+    "FocusView-SendIssueContext": "Send issue context to start immediately",
+    "FocusView-StartAgentSessionFailed": "Failed to start the agent session",
+    "FocusView-IssueFetchFailed": "We couldn't load the issue details. Please try again.",
+    "FocusView-BaseBranchOptionsFetchFailed": "We couldn't load the base branch options. Please try again.",
     "FocusView-OpenCodeSuggestion": "Open Code Suggestion",
     "FocusView-ReviewPullRequest": "Review Pull Request",
     "FocusView-CreateCloudPatch": "Create Cloud Patch",
@@ -5720,6 +5733,11 @@
     "FocusViewTeamViewUpsell-Body": "Team mode shows all pull requests and issues for the repositories in your Workspace — giving you a high level view of your team's coding efforts.",
     "FocusViewTeamViewUpsell-SubHeader": "Start using Team Launchpad now",
 
+    "FocusViewSignInGate-Header": "Sign In to Use Launchpad",
+    "FocusViewSignInGate-Body": "Launchpad brings your pull requests, issues, and work in progress from all of your repositories into a single view — so you always know what needs your attention next.",
+    "FocusViewSignInGate-SubHeader": "Create a free account to start using Launchpad",
+    "FocusViewSignInGate-ImageAlt": "Launchpad preview",
+
     "MultiBranchDisplay-CheckoutBranch": "Click to checkout branch",
 
     "StatusBar-Cancellation": "Your subscription is scheduled to cancel. {1}.",
@@ -5748,6 +5766,7 @@
     "Worktree-FormPrune": "Prune worktrees",
     "Worktree-FormRemove": "Remove this worktree",
     "Worktree-FormRemoveAndDeleteBranch": "Remove worktree and delete branch",
+    "Worktree-FormRemoveAndDeleteBranchAndRemote": "Remove worktree and delete branch (local && remote)",
     "Worktree-FormUnlock": "Unlock this worktree",
     "Worktree-FormWorkdir": "Working directory",
     "Worktree-FormWorktreeBranch": "Worktree branch to create",

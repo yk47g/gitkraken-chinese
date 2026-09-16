@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<!-- 用于对比当前已有中文 JSON 和新旧版本的英文 JSON，快速得到新版本英文 JSON 中增加的内容，并自动翻译。 -->
+
+<html lang="zh-CN">
+
+<head>
+  <title>自动翻译脚本</title>
+
+  <!-- ==== 元数据 ==== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ==== 脚本库 ==== -->
+  <script defer src="https://cdn.jsdelivr.net/npm/vue@3.5.42/dist/vue.global.prod.js"
+          integrity="sha384-bqTg8NKlUS8kbe8Sak41ZAg1OAW/cc4kyI+FqMhCpzsyG7B39KgZfDOKA3HnKhCV"
+          crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jquery@4.0.0/dist/jquery.min.js"
+          integrity="sha384-fgGyf7Mo7DURSOMnOy7ed+dkq5Job205Gnzu6QIg0BOHKaqt4D76Dt8VlDCzcMHV"
+          crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"
+          integrity="sha384-wMl+kXogESASLchg2kqaUiGjNIMsZDb+Mpsqc1rCWd1qlG+lgD3E4HAPSAq5tvzC"
+          crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/axios@1.20.0/dist/axios.min.js"
+          integrity="sha384-mIJWc6qj9ALoBF2yHkNOf0fbGel66+X3UkhYw57p36/PaTyDpO9pvnxrVZ7ZGJfi"
+          crossorigin="anonymous"></script>
+
+  <!-- ==== 其他库 ==== -->
+  <link rel="icon" type="image/x-icon"
+        href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
+
+  <!-- ==== 样式 ==== -->
+  <link rel="stylesheet" href="./assets/css/comparator.css">
+</head>
+
+<body>
+  <header class="header">
+    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese"
+       target="_blank" rel="noopener noreferrer">
+      <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
+           alt="关于我们的 GitHub 项目">
+    </a>
+  </header>
+  <div id="app">
+    <form @submit.prevent="saveKeys">
+      <fieldset class="APIConfig">
+        <legend>API 配置</legend>
+
+        <!-- 下拉菜单选择 API -->
+        <div class="input-group">
+          <label for="apiSelector">选择翻译 API：</label>
+          <select id="apiSelector" v-model="selectedApi" class="selectForm" @change="handleApiChange">
+            <option value="openai">OpenAI</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="youdao">有道智云</option>
+          </select>
+          <template v-if="selectedApi === 'deepseek'">
+            <span class="time-context">当前时段：</span>
+            <span class="deepseek-time-status" :class="deepseekTimeStatus.className">
+      {{ deepseekTimeStatus.label }}
+     </span>
+          </template>
+        </div>
+
+        <!-- OpenAI API 配置 -->
+        <div v-if="selectedApi === 'openai'">
+          <div class="input-group">
+            <label for="openaiApiKey">OpenAI API 密钥：</label>
+            <input type="password" id="openaiApiKey" v-model="openai.apiKey"
+                   placeholder="sk-" class="selectForm" autocomplete="off" spellcheck="false"
+                   @input="scheduleModelLoad('openai')" @change="loadModelsImmediately('openai')">
+            <a class="field-link" href="https://platform.openai.com/api-keys" target="_blank"
+               rel="noopener noreferrer">申请密钥</a>
+          </div>
+          <transition name="step-drawer">
+            <div v-if="hasProviderApiKey('openai')">
+              <div class="input-group">
+                <label for="modelSelector">选择模型：</label>
+                <select id="modelSelector" v-model="openai.model" class="selectForm"
+                        @change="handleModelChange('openai')">
+                  <option v-for="model in openaiModels" :key="model.id" :value="model.id">
+                    {{ model.label }}
+                  </option>
+                </select>
+                <a class="field-link" href="https://developers.openai.com/api/docs/pricing" target="_blank"
+                   rel="noopener noreferrer">价格详情</a>
+              </div>
+              <transition name="reasoning-drawer">
+                <div class="input-group" v-if="getReasoningEfforts('openai', openai.model).length">
+                  <label for="openaiReasoningEffort">推理强度：</label>
+                  <select id="openaiReasoningEffort" v-model="openai.reasoningEffort" class="selectForm">
+                    <option value="">默认</option>
+                    <option v-for="effort in getReasoningEfforts('openai', openai.model)" :key="effort" :value="effort">
+                      {{ formatReasoningEffort(effort) }}
+                    </option>
+                  </select>
+                </div>
+              </transition>
+              <transition name="step-drawer">
+                <div class="input-group" v-if="modelMessage">
+                  <span class="save-message" :class="modelMessageType">{{ modelMessage }}</span>
+                </div>
+              </transition>
+            </div>
+          </transition>
+        </div>
+
+        <!-- DeepSeek API 配置 -->
+        <div v-if="selectedApi === 'deepseek'">
+          <div class="input-group">
+            <label for="deepseekApiKey">DeepSeek API 密钥：</label>
+            <input type="password" id="deepseekApiKey"
+                   v-model="deepseek.apiKey" placeholder="sk-" class="selectForm"
+                   autocomplete="off" spellcheck="false"
+                   @input="scheduleModelLoad('deepseek')" @change="loadModelsImmediately('deepseek')">
+            <a class="field-link" href="https://platform.deepseek.com/api_keys" target="_blank"
+               rel="noopener noreferrer">申请密钥</a>
+          </div>
+          <transition name="step-drawer">
+            <div v-if="hasProviderApiKey('deepseek')">
+              <div class="input-group">
+                <label for="deepseekModel">选择模型：</label>
+                <select id="deepseekModel" v-model="deepseek.model" class="selectForm"
+                        @change="handleModelChange('deepseek')">
+                  <option v-for="model in deepseekModels" :key="model.id" :value="model.id">
+                    {{ model.label }}
+                  </option>
+                </select>
+                <a class="field-link" href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank"
+                   rel="noopener noreferrer">价格详情</a>
+              </div>
+              <transition name="reasoning-drawer">
+                <div class="input-group" v-if="getReasoningEfforts('deepseek', deepseek.model).length">
+                  <label for="deepseekReasoningEffort">推理强度：</label>
+                  <select id="deepseekReasoningEffort" v-model="deepseek.reasoningEffort" class="selectForm">
+                    <option value="">默认</option>
+                    <option v-for="effort in getReasoningEfforts('deepseek', deepseek.model)" :key="effort"
+                            :value="effort">
+                      {{ formatReasoningEffort(effort) }}
+                    </option>
+                  </select>
+                </div>
+              </transition>
+              <transition name="step-drawer">
+                <div class="input-group" v-if="modelMessage">
+                  <span class="save-message" :class="modelMessageType">{{ modelMessage }}</span>
+                </div>
+              </transition>
+            </div>
+          </transition>
+        </div>
+
+        <!-- 有道 API 配置 -->
+        <div v-if="selectedApi === 'youdao'">
+          <div class="input-group">
+            <label for="appKey">有道 AppKey：</label>
+            <input type="text" id="appKey" v-model="youdao.appKey" placeholder="应用 ID"
+                   class="selectForm" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="input-group">
+            <label for="appSecret">有道 AppSecret：</label>
+            <input type="password" id="appSecret"
+                   v-model="youdao.appSecret" placeholder="应用密钥" class="selectForm"
+                   autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <transition name="step-drawer">
+          <div class="input-group" v-if="shouldShowSaveButton()">
+            <button type="submit">保存</button>
+            <span v-if="saveMessage" :class="['save-message', saveMessageType]">
+            {{ saveMessage }}
+     </span>
+          </div>
+        </transition>
+      </fieldset>
+    </form>
+
+    <div class="operation">
+      <fieldset id="console">
+        <legend>控制台</legend>
+        <div class="console-btns">
+          <button type="button" :disabled="!canCompare()"
+                  :title="!canCompare() ? '请先至少上传新旧英文文件' : ''"
+                  @click="compare">对比
+          </button>
+          <button type="button" :disabled="!isApiConfigured() || isTranslating"
+                  :title="isTranslating ? '正在翻译，请稍候' : (!isApiConfigured() ? '请先配置翻译 API' : '')"
+                  @click="autoTranslate">
+            {{ isTranslating ? '翻译中...' : '自动翻译' }}
+          </button>
+        </div>
+
+        <!-- API 错误信息  -->
+        <div v-if="errorMsg" class="error-message">
+          {{ errorMsg }}
+        </div>
+        <div v-if="translationMessage" class="status-message" :class="translationMessageType">
+          {{ translationMessage }}
+        </div>
+
+        <!-- 上传旧版英文文件 -->
+        <div class="console-inputs">
+          <label for="oldEnFile">上传旧版英文文件：</label>
+          <input type="file" id="oldEnFile" accept=".json,application/json" @change="loadFile('oldEN')">
+          <span v-if="showOldEnError" class="error-message">
+          需要上传旧版英文文件。
+          </span>
+        </div>
+
+        <!-- 上传新版英文文件 -->
+        <div class="console-inputs">
+          <label for="newEnFile">上传新版英文文件：</label>
+          <input type="file" id="newEnFile" accept=".json,application/json" @change="loadFile('newEn')">
+          <span v-if="showNewEnError" class="error-message">
+            需要上传新版英文文件。
+          </span>
+        </div>
+
+        <!-- 上传旧版中文文件 -->
+        <div class="console-inputs">
+          <label for="oldZhFile">上传旧版翻译文件：</label>
+          <input type="file" id="oldZhFile" accept=".json,application/json" @change="loadFile('oldZh')">
+          <span v-if="showOldZhError" class="error-message">
+            需要上传旧版翻译文件。
+          </span>
+        </div>
+
+        <div id="console-textarea">
+          <label for="textJson" hidden="hidden">JSON 输出</label>
+          <textarea id="textJson" v-model="generatedContent"></textarea>
+        </div>
+
+        <div class="console-btns">
+          <button type="button" :disabled="!hasGeneratedContent()"
+                  :title="!hasGeneratedContent() ? '暂无可导出的内容' : ''"
+                  @click="exportJson">导出JSON文件
+          </button>
+          <button type="button" :disabled="!hasGeneratedContent()"
+                  :title="!hasGeneratedContent() ? '暂无可复制的内容' : ''"
+                  @click="copyToClipboard">复制到剪切板
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset id="introduction">
+        <legend>使用说明</legend>
+        <b>对于有提供支持的 API 的用户：</b>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+            填写 API 配置并保存。密钥仅保存在当前页面内存中，刷新页面后需要重新填写。
+          </li>
+          <li class="introduction-list-li">
+            上传旧版英文文件（仓库中的 原语言文件备份/strings.json）、新版英文文件（对应 GitKraken
+            版本安装目录中的 strings.json）和旧版翻译文件（仓库中的 strings_x.x.x.json），
+            然后点击 [对比] 获取差异内容。
+          </li>
+          <li class="introduction-list-li">
+            点击 [自动翻译]。翻译期间按钮会显示“翻译中...”并暂时禁用；完成后页面会显示“翻译并整理完成。”。
+          </li>
+          <li class="introduction-list-li">
+            导出并覆盖 strings.json 文件。
+          </li>
+          <li class="introduction-list-li">
+            重启 GitKraken。
+          </li>
+        </ol>
+        <b>对于没有 API 的用户：</b>
+        <ol class="introduction-list">
+          <li class="introduction-list-li">
+            上传旧版英文文件（仓库中的 原语言文件备份/strings.json）、新版英文文件（对应 GitKraken
+            版本安装目录中的 strings.json）和旧版翻译文件（仓库中的 strings_x.x.x.json），
+            然后点击 [对比] 获取差异内容。
+          </li>
+          <li class="introduction-list-li">
+            复制文本框中的内容，使用其他翻译工具完成翻译。
+          </li>
+          <li class="introduction-list-li">
+            将翻译后的内容使用
+            <a href="https://www.bejson.com/" target="_blank" rel="noopener noreferrer">
+              格式化工具
+            </a>
+            整理为有效 JSON。
+          </li>
+          <li class="introduction-list-li">
+            将整理后的内容导出或复制为 strings.json，并覆盖 GitKraken 安装目录下的同名文件。
+          </li>
+          <li class="introduction-list-li">
+            重启 GitKraken。
+          </li>
+        </ol>
+        <details>
+          <summary><b>可能出现的问题和解决建议</b></summary>
+          <a href="https://github.com/yk47g/gitkraken-chinese/issues"
+             target="_blank" rel="noopener noreferrer">
+            报告问题
+          </a>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              使用 API 翻译后没有生成新增内容：
+              <ul>
+                <li class="disc-list-item">
+                  确认页面通过 GitHub Pages 或本地 HTTP 服务打开。直接以 file:// 打开页面时，
+                  OpenAI 和 DeepSeek 的跨域请求可能失败。
+                </li>
+                <li class="disc-list-item">
+                  检查 API 是否正确配置（有效性、模型访问权限等）。
+                </li>
+                <li class="disc-list-item">
+                  检查页面错误信息和当前选择的模型是否可用。
+                </li>
+              </ul>
+            </li>
+            <li class="introduction-list-li">
+              按下[自动翻译]后看起来没有反应：
+              <ul>
+                <li class="disc-list-item">
+                  如果按钮显示“翻译中...”并处于禁用状态，说明翻译任务正在执行，请等待完成或错误提示。
+                </li>
+                <li class="disc-list-item">
+                  如果按钮没有进入该状态，请检查 API 配置是否完整。
+                </li>
+              </ul>
+            </li>
+            <li class="introduction-list-li">
+              页面显示翻译失败或结果不完整：
+              <ul>
+                <li class="disc-list-item">
+                  页面会显示翻译服务的具体错误信息，并按批次自动重试一次。重试后结果数量仍不完整时，
+                  会停止生成，避免输出部分未翻译的内容。
+                </li>
+                <li class="disc-list-item">
+                  检查 API 配置、余额、模型访问权限和网络连接。
+                </li>
+                <li class="disc-list-item">
+                  如果选择的是有道 API，请检查请求是否超时或返回了错误码。
+                </li>
+                <li class="disc-list-item">
+                  如果选择的是 DeepSeek API，请检查 DeepSeek 官网 - 产品 -
+                  <a href="https://status.deepseek.com/" target="_blank"
+                     rel="noopener noreferrer">服务状态</a>，
+                  或稍后重试。
+                </li>
+                <li class="disc-list-item">
+                  如果问题持续存在，请携带页面错误信息和所用模型报告问题。
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </details>
+
+        <details>
+          <summary><b>OpenAI API 的申请步骤</b></summary>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://platform.openai.com/api-keys" target="_blank"
+                      rel="noopener noreferrer">OpenAI 官方网站</a>。
+            </li>
+            <li class="introduction-list-li">注册或登录。</li>
+            <li class="introduction-list-li">
+              在顶栏左上角新建 Project（可选）或使用用户密钥（可选，不推荐），之后在顶栏右上角选择“Dashboard”，随后侧边栏选择“API
+              Keys”。
+            </li>
+            <li class="introduction-list-li">通过“+ Create New secret key”按照提示新建一个密钥。</li>
+            <li class="introduction-list-li">
+              <b class="warning-text">请保管好您的密钥。平台将不会再次展示您的密钥，
+                忘记则意味着您需要重新创建密钥并删除旧的密钥。</b>
+            </li>
+            <li class="introduction-list-li">
+              复制以 sk- 开头的 API 密钥到配置中。填写后页面会自动获取可用模型；
+              默认模型不可用时会选择接口返回的首个可用模型。可根据页面显示的价格档位选择模型。
+            </li>
+          </ol>
+          <p class="hint">
+            <a href="https://platform.openai.com/docs/pricing" target="_blank"
+               rel="noopener noreferrer">收费标准</a>
+            |
+            <a href="https://platform.openai.com/tokenizer" target="_blank"
+               rel="noopener noreferrer">Token 计算</a>
+          </p>
+        </details>
+
+        <details>
+          <summary><b>DeepSeek API 的申请步骤</b></summary>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              访问 DeepSeek <a href="https://platform.deepseek.com/api_keys" target="_blank"
+                               rel="noopener noreferrer">API 开放平台</a>。
+            </li>
+            <li class="introduction-list-li">注册/登录后进入 API keys 管理页面。</li>
+            <li class="introduction-list-li">点击“创建 API key”生成新密钥。</li>
+            <li class="introduction-list-li">
+              <b class="warning-text">请保管好您的密钥。平台将不会再次展示您的密钥，
+                忘记则意味着您需要重新创建密钥并删除旧的密钥。</b>
+            </li>
+            <li class="introduction-list-li">复制以 sk- 开头的 API 密钥到配置中。</li>
+          </ol>
+          <p class="hint">
+            <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing" target="_blank"
+               rel="noopener noreferrer">收费标准</a>
+            |
+            <a href="https://api-docs.deepseek.com/zh-cn/quick_start/token_usage" target="_blank"
+               rel="noopener noreferrer">Token 计算</a>
+          </p>
+        </details>
+
+        <details>
+          <summary><b>有道 API 的申请步骤</b></summary>
+          <ol class="introduction-list">
+            <li class="introduction-list-li">
+              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation"
+                      target="_blank" rel="noopener noreferrer">有道智云控制台</a>。
+            </li>
+            <li class="introduction-list-li">注册或登录。</li>
+            <li class="introduction-list-li">在侧边栏选择“自然语言翻译服务/文本翻译”。</li>
+            <li class="introduction-list-li">找到“文本翻译/应用概览/创建应用”。</li>
+            <li class="introduction-list-li">创建应用并复制 AppKey 和 AppSecret 到配置中。</li>
+          </ol>
+          <p class="hint">
+            <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank"
+               rel="noopener noreferrer">收费标准</a>
+          </p>
+        </details>
+      </fieldset>
+    </div>
+
+    <div id="sp">
+      <div>
+        <b>差异项（{{ diffItems.length }}）
+          <span class="diff-green">新增</span>
+          <span class="diff-red"> 删减</span>
+          <span class="diff-blue">改动</span>
+        </b>
+      </div>
+      <ul>
+        <li v-for="(diff, index) in diffItems" :key="index"
+            :class="{'diff-green': diff.color === 'green',
+                     'diff-red': diff.color === 'red',
+                     'diff-blue': diff.color === 'blue'}">
+          <!-- 改动时显示旧值->新值 -->
+          <span v-if="diff.type==='changed'">
+            {{ index + 1 }}. {{ diff.key }} ({{ diff.oldValue }} => {{ diff.newValue }})
+          </span>
+          <!-- 新增/删减只显示key -->
+          <span v-else-if="diff.type==='added'">
+            {{ index + 1 }}. {{ diff.key }}
+          </span>
+          <span v-else-if="diff.type==='removed'">
+            {{ index + 1 }}. {{ diff.key }}
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <script defer src="./assets/js/comparator.js"></script>
+</body>
+</html>

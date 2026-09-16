@@ -1,651 +1,8 @@
-<!DOCTYPE html>
-
-<!-- 用于对比当前已有中文 JSON 和新旧版本的英文 JSON，快速得到新版本英文 JSON 中增加的内容，并自动翻译。 -->
-
-<html lang="zh-CN">
-
-<head>
-  <title>自动翻译脚本</title>
-
-  <!-- ==== 元数据 ==== -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- ==== 脚本库 ==== -->
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-  <!-- ==== 其他库 ==== -->
-  <link rel="icon" type="image/x-icon"
-        href="https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png?20160129085523">
-
-  <!-- ==== 样式 ==== -->
-  <style>
-    body{
-      font-family: 'Arial', sans-serif;
-    }
-
-    li{
-      list-style: none;
-    }
-
-    fieldset{
-      padding: 0.5em;
-      margin: 1px;
-    }
-
-    button:hover{
-      cursor: pointer;
-    }
-
-    button:disabled{
-      cursor: not-allowed;
-      opacity: 0.55;
-    }
-
-    header{
-      height: 32px;
-    }
-
-    .header-anchor{
-      display: inline-block;
-      padding: 0;
-      margin: 0;
-      height: 100%;
-    }
-
-    .header-anchor-logo{
-      display: inline-block;
-      padding: 1px;
-      height: 30px;
-    }
-
-    .APIConfig{
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .input-group{
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .input-group label{
-      width: 230px;
-      margin-right: 10px;
-    }
-
-    .APIConfig button{
-      width: 200px;
-    }
-
-    .selectForm{
-      width: 15em;
-      box-sizing: border-box;
-    }
-
-    .time-context{
-      margin-left: 10px;
-      font-weight: normal;
-    }
-
-    .deepseek-time-status{
-      margin-left: 4px;
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-
-    .deepseek-time-status.peak{
-      color: #D32F2F;
-    }
-
-    .deepseek-time-status.off-peak{
-      color: #2E7D32;
-    }
-
-    .field-link{
-      margin-left: 10px;
-      white-space: nowrap;
-    }
-
-    .reasoning-drawer-enter-active,
-    .reasoning-drawer-leave-active{
-      overflow: hidden;
-      transition: max-height 0.25s ease, opacity 0.2s ease, margin-bottom 0.25s ease;
-    }
-
-    .reasoning-drawer-enter,
-    .reasoning-drawer-enter-from,
-    .reasoning-drawer-leave-to{
-      max-height: 0;
-      margin-bottom: 0;
-      opacity: 0;
-    }
-
-    .reasoning-drawer-enter-to,
-    .reasoning-drawer-leave,
-    .reasoning-drawer-leave-from{
-      max-height: 40px;
-      margin-bottom: 4px;
-      opacity: 1;
-    }
-
-    .step-drawer-enter-active,
-    .step-drawer-leave-active{
-      overflow: hidden;
-      transition: max-height 0.3s ease, opacity 0.2s ease,
-      margin-bottom 0.3s ease, transform 0.3s ease;
-    }
-
-    .step-drawer-enter,
-    .step-drawer-enter-from,
-    .step-drawer-leave-to{
-      max-height: 0;
-      margin-bottom: 0;
-      opacity: 0;
-      transform: translateY(-6px);
-    }
-
-    .step-drawer-enter-to,
-    .step-drawer-leave,
-    .step-drawer-leave-from{
-      max-height: 200px;
-      margin-bottom: 4px;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #introduction{
-      background-color: #F5F5F5;
-      padding: 0.5em;
-    }
-
-    .introduction-list,
-    .introduction-list-li{
-      padding: 0;
-      margin: 0 0 0 4px;
-      list-style: decimal;
-    }
-
-    .operation{
-      min-height: 75vh;
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-    }
-
-    #console{
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .console-btns{
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 4px;
-      height: 2em;
-    }
-
-    .console-inputs{
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    #console-textarea{
-      flex: 1;
-      overflow: auto;
-    }
-
-    #sp{
-      margin-right: 6px;
-    }
-
-    #textJson{
-      width: 100%;
-      height: 95%;
-      overflow: auto;
-      margin-top: 10px;
-      resize: none;
-      padding: 4px;
-      box-sizing: border-box;
-    }
-
-    summary{
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .diff-green{
-      color: green;
-    }
-
-    .diff-red{
-      color: red;
-    }
-
-    .diff-blue{
-      color: blue;
-    }
-
-    .error-message{
-      margin-left: 10px;
-      color: red;
-      font-weight: bold;
-    }
-
-    .save-message{
-      margin-left: 10px;
-      font-weight: bold;
-    }
-
-    .save-message.success{
-      color: green;
-    }
-
-    .save-message.error{
-      color: red;
-    }
-
-    @media (max-width: 1001px){
-      .operation{
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header class="header">
-    <a class="header-anchor" href="https://github.com/yk47g/gitkraken-chinese" target="_blank">
-      <img class="header-anchor-logo" src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
-           alt="关于我们的 GitHub 项目">
-    </a>
-  </header>
-  <div id="app">
-    <form @submit.prevent="saveKeys">
-      <fieldset class="APIConfig">
-        <legend>API 配置</legend>
-
-        <!-- 下拉菜单选择 API -->
-        <div class="input-group">
-          <label for="apiSelector">选择翻译 API：</label>
-          <select id="apiSelector" v-model="selectedApi" class="selectForm" @change="handleApiChange">
-            <option value="openai">OpenAI</option>
-            <option value="deepseek">DeepSeek</option>
-            <option value="youdao">有道智云</option>
-          </select>
-          <template v-if="selectedApi === 'deepseek'">
-            <span class="time-context">当前时段：</span>
-            <span class="deepseek-time-status" :class="deepseekTimeStatus.className">
-      {{ deepseekTimeStatus.label }}
-     </span>
-          </template>
-        </div>
-
-        <!-- OpenAI API 配置 -->
-        <div v-if="selectedApi === 'openai'">
-          <div class="input-group">
-            <label for="openaiApiKey">OpenAI API 密钥：</label>
-            <input type="text" id="openaiApiKey" v-model="openai.apiKey" placeholder="sk-" class="selectForm"
-                   @input="scheduleModelLoad('openai')" @change="loadModels('openai')">
-            <a class="field-link" href="https://platform.openai.com/api-keys" target="_blank"
-               rel="noopener noreferrer">申请密钥</a>
-          </div>
-          <transition name="step-drawer">
-            <div v-if="hasProviderApiKey('openai')">
-              <div class="input-group">
-                <label for="modelSelector">选择模型：</label>
-                <select id="modelSelector" v-model="openai.model" class="selectForm"
-                        @change="handleModelChange('openai')">
-                  <option v-for="model in openaiModels" :key="model.id" :value="model.id">
-                    {{ model.label }}
-                  </option>
-                </select>
-                <a class="field-link" href="https://developers.openai.com/api/docs/pricing" target="_blank"
-                   rel="noopener noreferrer">价格详情</a>
-              </div>
-              <transition name="reasoning-drawer">
-                <div class="input-group" v-if="getReasoningEfforts('openai', openai.model).length">
-                  <label for="openaiReasoningEffort">推理强度：</label>
-                  <select id="openaiReasoningEffort" v-model="openai.reasoningEffort" class="selectForm">
-                    <option value="">默认</option>
-                    <option v-for="effort in getReasoningEfforts('openai', openai.model)" :key="effort" :value="effort">
-                      {{ formatReasoningEffort(effort) }}
-                    </option>
-                  </select>
-                </div>
-              </transition>
-              <transition name="step-drawer">
-                <div class="input-group" v-if="modelMessage">
-                  <span class="save-message" :class="modelMessageType">{{ modelMessage }}</span>
-                </div>
-              </transition>
-            </div>
-          </transition>
-        </div>
-
-        <!-- DeepSeek API 配置 -->
-        <div v-if="selectedApi === 'deepseek'">
-          <div class="input-group">
-            <label for="deepseekApiKey">DeepSeek API 密钥：</label>
-            <input type="text" id="deepseekApiKey" v-model="deepseek.apiKey" placeholder="sk-"
-                   class="selectForm" @input="scheduleModelLoad('deepseek')" @change="loadModels('deepseek')">
-            <a class="field-link" href="https://platform.deepseek.com/api_keys" target="_blank"
-               rel="noopener noreferrer">申请密钥</a>
-          </div>
-          <transition name="step-drawer">
-            <div v-if="hasProviderApiKey('deepseek')">
-              <div class="input-group">
-                <label for="deepseekModel">选择模型：</label>
-                <select id="deepseekModel" v-model="deepseek.model" class="selectForm"
-                        @change="handleModelChange('deepseek')">
-                  <option v-for="model in deepseekModels" :key="model.id" :value="model.id">
-                    {{ model.label }}
-                  </option>
-                </select>
-                <a class="field-link" href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank"
-                   rel="noopener noreferrer">价格详情</a>
-              </div>
-              <transition name="reasoning-drawer">
-                <div class="input-group" v-if="getReasoningEfforts('deepseek', deepseek.model).length">
-                  <label for="deepseekReasoningEffort">推理强度：</label>
-                  <select id="deepseekReasoningEffort" v-model="deepseek.reasoningEffort" class="selectForm">
-                    <option value="">默认</option>
-                    <option v-for="effort in getReasoningEfforts('deepseek', deepseek.model)" :key="effort"
-                            :value="effort">
-                      {{ formatReasoningEffort(effort) }}
-                    </option>
-                  </select>
-                </div>
-              </transition>
-              <transition name="step-drawer">
-                <div class="input-group" v-if="modelMessage">
-                  <span class="save-message" :class="modelMessageType">{{ modelMessage }}</span>
-                </div>
-              </transition>
-            </div>
-          </transition>
-        </div>
-
-        <!-- 有道 API 配置 -->
-        <div v-if="selectedApi === 'youdao'">
-          <div class="input-group">
-            <label for="appKey">有道 AppKey：</label>
-            <input type="text" id="appKey" v-model="youdao.appKey" placeholder="应用 ID" class="selectForm">
-          </div>
-          <div class="input-group">
-            <label for="appSecret">有道 AppSecret：</label>
-            <input type="text" id="appSecret" v-model="youdao.appSecret" placeholder="应用密钥"
-                   class="selectForm">
-          </div>
-        </div>
-
-        <transition name="step-drawer">
-          <div class="input-group" v-if="shouldShowSaveButton()">
-            <button type="submit">保存</button>
-            <span v-if="saveMessage" :class="['save-message', saveMessageType]">
-            {{ saveMessage }}
-     </span>
-          </div>
-        </transition>
-      </fieldset>
-    </form>
-
-    <div class="operation">
-      <fieldset id="console">
-        <legend>控制台</legend>
-        <div class="console-btns">
-          <button type="button" :disabled="!canCompare()"
-                  :title="!canCompare() ? '请先至少上传新旧英文文件' : ''"
-                  @click="compare">对比
-          </button>
-          <button type="button" :disabled="!isApiConfigured()"
-                  :title="!isApiConfigured() ? '请先配置翻译 API' : ''"
-                  @click="autoTranslate">自动翻译
-          </button>
-        </div>
-
-        <!-- API 错误信息  -->
-        <div v-if="errorMsg" class="error-message">
-          {{ errorMsg }}
-        </div>
-
-        <!-- 上传旧版英文文件 -->
-        <div class="console-inputs">
-          <label for="oldEnFile">上传旧版英文文件：</label>
-          <input type="file" id="oldEnFile" @change="loadFile('oldEN')">
-          <span v-if="showOldEnError" class="error-message">
-          需要上传旧版英文文件。
-          </span>
-        </div>
-
-        <!-- 上传新版英文文件 -->
-        <div class="console-inputs">
-          <label for="newEnFile">上传新版英文文件：</label>
-          <input type="file" id="newEnFile" @change="loadFile('newEn')">
-          <span v-if="showNewEnError" class="error-message">
-            需要上传新版英文文件。
-          </span>
-        </div>
-
-        <!-- 上传旧版中文文件 -->
-        <div class="console-inputs">
-          <label for="oldZhFile">上传旧版翻译文件：</label>
-          <input type="file" id="oldZhFile" @change="loadFile('oldZh')">
-          <span v-if="showOldZhError" class="error-message">
-            需要上传旧版翻译文件。
-          </span>
-        </div>
-
-        <div id="console-textarea">
-          <label for="textJson" hidden="hidden">JSON 输出</label>
-          <textarea id="textJson" @input="generatedContent = $event.target.value"></textarea>
-        </div>
-
-        <div class="console-btns">
-          <button type="button" :disabled="!hasGeneratedContent()"
-                  :title="!hasGeneratedContent() ? '暂无可导出的内容' : ''"
-                  @click="exportJson">导出JSON文件
-          </button>
-          <button type="button" :disabled="!hasGeneratedContent()"
-                  :title="!hasGeneratedContent() ? '暂无可复制的内容' : ''"
-                  @click="copyToClipboard">复制到剪切板
-          </button>
-        </div>
-      </fieldset>
-
-      <fieldset id="introduction">
-        <legend>使用说明</legend>
-        <b>对于有提供支持的 API 的用户：</b>
-        <ol class="introduction-list">
-          <li class="introduction-list-li">
-            填写 API 配置并保存。
-          </li>
-          <li class="introduction-list-li">
-            上传旧版英文文件（./原语言文件备份/strings.json），新版英文文件（具体位置见 ./README.md 中要替换的语言文件位置）
-            和旧版翻译文件（./strings_x.x.x.json）并点击 [对比] 按钮得到差异内容。
-          </li>
-          <li class="introduction-list-li">
-            点击 [自动翻译] 按钮翻译并等待弹出“翻译完成”提示框。
-          </li>
-          <li class="introduction-list-li">
-            导出并覆盖 strings.json 文件。
-          </li>
-          <li class="introduction-list-li">
-            重启 GitKraken。
-          </li>
-        </ol>
-        <b>对于没有 API 的用户：</b>
-        <ol class="introduction-list">
-          <li class="introduction-list-li">
-            上传旧版英文文件（./原语言文件备份/strings.json），新版英文文件（具体位置见 ./README.md 中要替换的语言文件位置）
-            和旧版翻译文件（./strings_x.x.x.json）并点击 [对比] 按钮得到差异内容。
-          </li>
-          <li class="introduction-list-li">
-            复制并翻译文本框内的文件。
-          </li>
-          <li class="introduction-list-li">
-            将翻译好的内容使用
-            <a href="https://www.bejson.com/" target="_blank">
-              格式化工具
-            </a>
-            来整理。
-          </li>
-          <li class="introduction-list-li">
-            重启 GitKraken。
-          </li>
-        </ol>
-        <details>
-          <summary><b>可能出现的问题和解决建议</b></summary>
-          <a href="https://github.com/yk47g/gitkraken-chinese/issues">
-            报告问题
-          </a>
-          <ol class="introduction-list">
-            <li class="introduction-list-li">
-              使用 API 翻译后并没有插入新增内容：
-              <ul>
-                <li style="list-style: circle">
-                  确认使用了 VS Code 的 Live Server 或类似的服务。
-                </li>
-                <li style="list-style: circle">
-                  检查 API 是否正确配置（有效性、模型访问权限等）。
-                </li>
-              </ul>
-            </li>
-            <li class="introduction-list-li">
-              按下[自动翻译]没反应：
-              <ul>
-                <li style="list-style: circle">
-                  在跳出任何错误弹窗前或控制台更新 JSON 翻译好的内容前，都应该在正常运行（大概），耐心等待即可。
-                </li>
-              </ul>
-            </li>
-            <li class="introduction-list-li">
-              按下[自动翻译]后提示翻译失败：
-              <ul>
-                <li style="list-style: circle">
-                  检查 API 是否正确配置（有效性、模型访问权限）。
-                </li>
-                <li style="list-style: circle">
-                  如果选择的是 DeepSeek API，请检查 DeepSeek 官网 - 产品 -
-                  <a href="https://status.deepseek.com/" target="_blank">服务状态</a>，
-                  或稍后重试。
-                </li>
-                <li style="list-style: circle">
-                  如果还是不行，可以尝试报告问题。有可能是我的问题（因为我也没测试过，新增该 API 时他们的 API 还在维护）。
-                </li>
-              </ul>
-            </li>
-          </ol>
-        </details>
-
-        <details>
-          <summary><b>OpenAI API 的申请步骤</b></summary>
-          <ol class="introduction-list">
-            <li class="introduction-list-li">
-              进入 <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI 官方网站</a>。
-            </li>
-            <li class="introduction-list-li">注册或登录。</li>
-            <li class="introduction-list-li">
-              在顶栏左上角新建 Project（可选）或使用用户密钥（可选，不推荐），之后在顶栏右上角选择“Dashboard”，随后侧边栏选择“API
-              Keys”。
-            </li>
-            <li class="introduction-list-li">通过“+ Create New secret key”按照提示新建一个密钥。</li>
-            <li class="introduction-list-li">
-              <b style="color: #F00">请保管好您的密钥。平台将不会再次展示您的密钥，
-                忘记则意味着您需要重新创建密钥并删除旧的密钥。</b>
-            </li>
-            <li class="introduction-list-li">
-              复制以 sk- 开头的API密钥到配置中。建议使用“gpt-4o-mini”模型，足以保证翻译效果，且免费限额高。（主要是便宜）
-            </li>
-          </ol>
-          <p class="hint">
-            <a href="https://platform.openai.com/docs/pricing" target="_blank">收费标准</a>
-            |
-            <a href="https://platform.openai.com/tokenizer" target="_blank">Token 计算</a>
-          </p>
-        </details>
-
-        <details>
-          <summary><b>DeepSeek API 的申请步骤</b></summary>
-          <ol class="introduction-list">
-            <li class="introduction-list-li">
-              访问 DeepSeek <a href="https://platform.deepseek.com/api_keys" target="_blank">API 开放平台</a>。
-            </li>
-            <li class="introduction-list-li">注册/登录后进入 API keys 管理页面。</li>
-            <li class="introduction-list-li">点击“创建 API key”生成新密钥。</li>
-            <li class="introduction-list-li">
-              <b style="color: #F00">请保管好您的密钥。平台将不会再次展示您的密钥，
-                忘记则意味着您需要重新创建密钥并删除旧的密钥。</b>
-            </li>
-            <li class="introduction-list-li">复制以 sk- 开头的 API 密钥到配置中。</li>
-          </ol>
-          <p class="hint">
-            <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing" target="_blank">收费标准</a>
-            |
-            <a href="https://api-docs.deepseek.com/zh-cn/quick_start/token_usage" target="_blank">Token 计算</a>
-          </p>
-        </details>
-
-        <details>
-          <summary><b>有道 API 的申请步骤</b></summary>
-          <ol class="introduction-list">
-            <li class="introduction-list-li">
-              进入 <a href="https://ai.youdao.com/console/#/service-singleton/text-translation"
-                      target="_blank">有道智云控制台</a>。
-            </li>
-            <li class="introduction-list-li">注册或登录。</li>
-            <li class="introduction-list-li">在侧边栏选择“自然语言翻译服务/文本翻译”。</li>
-            <li class="introduction-list-li">找到“文本翻译/应用概览/创建应用”。</li>
-            <li class="introduction-list-li">创建应用并复制 AppKey 和 AppSecret 到配置中。</li>
-          </ol>
-          <p class="hint">
-            <a href="https://ai.youdao.com/price-center.s#servicename=fanyi-text" target="_blank">收费标准</a>
-          </p>
-        </details>
-      </fieldset>
-    </div>
-
-    <div id="sp">
-      <div>
-        <b>差异项（{{ diffItems.length }}）
-          <span style="color: green">新增</span>
-          <span style="color: red"> 删减</span>
-          <span style="color: blue">改动</span>
-        </b>
-      </div>
-      <ul>
-        <li v-for="(diff, index) in diffItems" :key="index"
-            :class="{'diff-green': diff.color === 'green',
-                     'diff-red': diff.color === 'red',
-                     'diff-blue': diff.color === 'blue'}">
-          <!-- 改动时显示旧值->新值 -->
-          <span v-if="diff.type==='changed'">
-            {{ index + 1 }}. {{ diff.key }} ({{ diff.oldValue }} => {{ diff.newValue }})
-          </span>
-          <!-- 新增/删减只显示key -->
-          <span v-else-if="diff.type==='added'">
-            {{ index + 1 }}. {{ diff.key }}
-          </span>
-          <span v-else-if="diff.type==='removed'">
-            {{ index + 1 }}. {{ diff.key }}
-          </span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</body>
-
-</html>
-
-<script>
+/**
+ * @file 比较器页面的交互、JSON 差异分析与翻译逻辑。
+ */
+
+/* global Vue, axios, $, CryptoJS */
 
 /** OpenAI 默认模型标识。 */
 const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
@@ -670,8 +27,22 @@ const PRICE_TIER_LIMITS = [
   {max: Infinity, label: '贼拉贵'}
 ];
 
-const app = new Vue({
-  el: '#app',
+/** 单次批量翻译包含的条目数。 */
+const TRANSLATION_BATCH_SIZE = 20;
+
+/** 单批翻译的最大尝试次数。 */
+const TRANSLATION_MAX_ATTEMPTS = 2;
+
+/** 批量翻译使用的分隔符。 */
+const TRANSLATION_SEPARATOR = '|||SEP|||';
+
+/** 重试翻译前的等待时间（毫秒）。 */
+const TRANSLATION_RETRY_DELAY = 1000;
+
+/** 有道 JSONP 请求的超时时间（毫秒）。 */
+const YOUDAO_REQUEST_TIMEOUT = 15000;
+
+const app = Vue.createApp({
   data() {
     return {
       /**
@@ -697,6 +68,10 @@ const app = new Vue({
       errorMsg: null,
       saveMessage: '',
       saveMessageType: 'success',
+      // 翻译状态
+      isTranslating: false,
+      translationMessage: '',
+      translationMessageType: 'success',
       /**
        * API 配置
        */
@@ -758,7 +133,6 @@ const app = new Vue({
       youdao: {
         appKey: '',
         appSecret: '',
-        salt: (new Date).getTime(),
         from: 'en',
         to: 'zh-CHS',
       },
@@ -824,7 +198,7 @@ const app = new Vue({
     this.updateDeepSeekTime();
     this.deepseekTimeTimer = setInterval(this.updateDeepSeekTime, 30000);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.deepseekTimeTimer) {
       clearInterval(this.deepseekTimeTimer);
     }
@@ -841,7 +215,7 @@ const app = new Vue({
      * 导出JSON文件
      */
     exportJson() {
-      const content = document.getElementById('textJson').value;
+      const content = this.generatedContent;
       if (!content.trim()) {
         this.errorMsg = '没有可以导出的内容';
         return;
@@ -862,7 +236,7 @@ const app = new Vue({
      * @returns {Promise<void>}
      */
     async copyToClipboard() {
-      const content = document.getElementById('textJson').value;
+      const content = this.generatedContent;
       if (!content.trim()) {
         this.errorMsg = '没有可以复制的内容';
         return;
@@ -1146,17 +520,23 @@ const app = new Vue({
       }
 
       this.generatedContent = resultLines.join('\n');
-      document.getElementById('textJson').value = this.generatedContent;
     },
 
     /**
-     * 自动翻译
+     * 自动翻译差异项，并在全部批次成功后重新生成 JSON。
+     *
+     * @return {Promise<void>}
      */
     async autoTranslate() {
+      if (this.isTranslating) {
+        return;
+      }
+
       this.showNewEnError = false;
       this.showOldEnError = false;
       this.showOldZhError = false;
       this.errorMsg = null;
+      this.translationMessage = '';
 
       // 验证API配置
       if (this.selectedApi === 'openai') {
@@ -1186,43 +566,100 @@ const app = new Vue({
         return;
       }
 
-      let translationSucceeded = false;
+      this.isTranslating = true;
+      try {
+        for (let i = 0; i < toTranslate.length; i += TRANSLATION_BATCH_SIZE) {
+          const batch = toTranslate.slice(i, i + TRANSLATION_BATCH_SIZE);
+          const translations = await this.requestTranslationsWithRetry(batch, this.selectedApi);
 
-      // 分批翻译
-      const batchSize = 20;
-      for (let i = 0; i < toTranslate.length; i += batchSize) {
-        const batch = toTranslate.slice(i, i + batchSize);
-        const separator = '|||SEP|||';
-        const query = batch.map(item => item.newValue).join(separator);
-        let translations = [];
-        if (this.selectedApi === 'openai') {
-          translations = await this.translateOpenAI(query);
-        } else if (this.selectedApi === 'deepseek') {
-          translations = await this.translateDeepSeek(query);
-        } else if (this.selectedApi === 'youdao') {
-          translations = await this.translateYoudao(query);
-        }
-
-        // 检查翻译结果是否有效
-        if (translations.length === 0 || translations.every(t => !t.trim())) {
-          continue;
-        } else {
-          translationSucceeded = true;
-        }
-
-        // 回写翻译
-        batch.forEach((item, index) => {
-          if (translations[index]) {
-            item.translatedValue = translations[index];
+          if (!translations) {
+            if (!this.errorMsg) {
+              this.errorMsg = '翻译结果数量与待翻译条目不一致，已停止生成以避免输出不完整。';
+            }
+            return;
           }
-        });
-        await this.sleep(1500);
+
+          batch.forEach((item, index) => {
+            item.translatedValue = translations[index];
+          });
+
+          if (i + TRANSLATION_BATCH_SIZE < toTranslate.length) {
+            await this.sleep(1500);
+          }
+        }
+
+        this.autoGen();
+        this.translationMessage = '翻译并整理完成。';
+        this.translationMessageType = 'success';
+      } finally {
+        this.isTranslating = false;
+      }
+    },
+
+    /**
+     * 分批请求翻译，并在结果不完整时自动重试。
+     *
+     * @param {Array<{newValue: string}>} batch 本批待翻译条目。
+     * @param {'openai'|'deepseek'|'youdao'} provider 翻译服务提供方。
+     * @return {Promise<string[]|null>} 完整翻译结果，重试后仍不完整时返回 null。
+     */
+    async requestTranslationsWithRetry(batch, provider) {
+      const query = batch.map(item => item.newValue).join(TRANSLATION_SEPARATOR);
+
+      for (let attempt = 1; attempt <= TRANSLATION_MAX_ATTEMPTS; attempt++) {
+        try {
+          let translations = [];
+          if (provider === 'openai') {
+            translations = await this.translateOpenAI(query);
+          } else if (provider === 'deepseek') {
+            translations = await this.translateDeepSeek(query);
+          } else if (provider === 'youdao') {
+            translations = await this.translateYoudao(query);
+          }
+
+          if (this.isValidTranslationBatch(translations, batch.length)) {
+            this.errorMsg = null;
+            return translations;
+          }
+        } catch (error) {
+          this.handleTranslationError(error);
+        }
+
+        if (attempt < TRANSLATION_MAX_ATTEMPTS) {
+          await this.sleep(TRANSLATION_RETRY_DELAY);
+        }
       }
 
-      if (translationSucceeded) {
-        this.autoGen();
-        alert('翻译并整理完成！');
+      return null;
+    },
+
+    /**
+     * 判断翻译结果是否完整且有效。
+     *
+     * @param {Array} translations 翻译结果。
+     * @param {number} expectedCount 预期条目数量。
+     * @return {boolean} 结果数量一致且每项均为非空字符串时返回 true。
+     */
+    isValidTranslationBatch(translations, expectedCount) {
+      return Array.isArray(translations) &&
+          translations.length === expectedCount &&
+          translations.every(item => typeof item === 'string' && item.trim());
+    },
+
+    /**
+     * 将翻译异常转换为界面错误信息。
+     *
+     * @param {Error} error 翻译过程中产生的异常。
+     */
+    handleTranslationError(error) {
+      if (error && error.response) {
+        this.showErrorMsg(error);
+        return;
       }
+
+      const message = error && error.message ? error.message : '未知错误';
+      this.errorMsg = `翻译失败：${message}`;
+      console.error('[handleTranslationError]', error);
     },
 
     /**
@@ -1242,17 +679,16 @@ const app = new Vue({
     },
 
     /**
-     * 调用 OpenAI 翻译
+     * 调用 OpenAI 翻译。
      *
-     * @param query 翻译内容
-     * @return {Promise<string[]|*[]>} 翻译结果
+     * @param {string} query 使用约定分隔符连接的翻译内容。
+     * @return {Promise<string[]>} 翻译结果数组。
      */
     async translateOpenAI(query) {
       this.errorMsg = null;
 
       if (!this.openai.apiKey) {
-        this.errorMsg = 'OpenAI API 密钥未配置。';
-        return [];
+        throw new Error('OpenAI API 密钥未配置。');
       }
 
       const messages = [
@@ -1265,12 +701,11 @@ const app = new Vue({
             The following terms should be kept in their original form without translation:
             ${this.formatKeepTranslations()}
 
-            IMPORTANT: Each piece of text to translate is separated by the delimiter "|||SEP|||". You MUST use the exact same delimiter "|||SEP|||" to separate each translated result. Do NOT use newlines as separators between items. Preserve any newlines (\n) that exist within each individual text segment.
+            IMPORTANT: Each piece of text to translate is separated by the delimiter "${TRANSLATION_SEPARATOR}". You MUST use the exact same delimiter "${TRANSLATION_SEPARATOR}" to separate each translated result. Do NOT use newlines as separators between items. Preserve any newlines (\n) that exist within each individual text segment.
             Please note that you should only return the translated text, without engaging in conversation with the user or adding any additional content.`
         },
         {role: 'user', content: query}
       ];
-      console.log(messages);
       const isReasoningModel = this.isOpenAIReasoningModel(this.openai.model);
       const data = {
         model: this.openai.model,
@@ -1284,34 +719,30 @@ const app = new Vue({
         data.temperature = this.openai.temperature;
       }
       const url = 'https://api.openai.com/v1/chat/completions';
-      try {
-        const resp = await axios.post(url, data, {
-          headers: {
-            'Authorization': `Bearer ${this.openai.apiKey}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = resp.data.choices[0].message.content.trim();
-        return result.split('|||SEP|||').map(line => line.trim());
-
-      } catch (error) {
-        this.showErrorMsg(error);
-        return [];
+      const resp = await axios.post(url, data, {
+        headers: {
+          'Authorization': `Bearer ${this.openai.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = resp.data?.choices?.[0]?.message?.content;
+      if (typeof result !== 'string' || !result.trim()) {
+        throw new Error('OpenAI 返回了空内容。');
       }
+      return result.split(TRANSLATION_SEPARATOR).map(line => line.trim());
     },
 
     /**
-     * 调用 DeepSeek  翻译
+     * 调用 DeepSeek 翻译。
      *
-     * @param query 翻译内容
-     * @return {Promise<string[]|*[]>} 翻译结果
+     * @param {string} query 使用约定分隔符连接的翻译内容。
+     * @return {Promise<string[]>} 翻译结果数组。
      */
     async translateDeepSeek(query) {
       this.errorMsg = null;
 
       if (!this.deepseek.apiKey) {
-        this.errorMsg = 'DeepSeek API 密钥未配置。';
-        return [];
+        throw new Error('DeepSeek API 密钥未配置。');
       }
 
       const messages = [
@@ -1324,12 +755,11 @@ const app = new Vue({
           以下术语应保持原文，不要翻译：
           ${this.formatKeepTranslations()}
 
-          重要：每段待翻译文本之间使用分隔符 "|||SEP|||" 分隔。你必须使用完全相同的分隔符 "|||SEP|||" 来分隔每段翻译结果。不要使用换行符作为不同条目之间的分隔。保留每段文本内部原有的换行符（\n）。
+          重要：每段待翻译文本之间使用分隔符 "${TRANSLATION_SEPARATOR}" 分隔。你必须使用完全相同的分隔符 "${TRANSLATION_SEPARATOR}" 来分隔每段翻译结果。不要使用换行符作为不同条目之间的分隔。保留每段文本内部原有的换行符（\n）。
           请注意，您只需返回翻译后的文本，不要与用户进行对话，也不要添加任何其他内容。`
         },
         {role: 'user', content: query}
       ];
-      console.log(messages);
       const data = {
         model: this.deepseek.model,
         messages,
@@ -1339,34 +769,32 @@ const app = new Vue({
         data.reasoning_effort = this.deepseek.reasoningEffort;
       }
       const url = 'https://api.deepseek.com/chat/completions';
-      try {
-        const resp = await axios.post(url, data, {
-          headers: {
-            'Authorization': `Bearer ${this.deepseek.apiKey}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = resp.data.choices[0].message.content.trim();
-        return result.split('|||SEP|||').map(line => line.trim());
-      } catch (error) {
-        this.showErrorMsg(error);
-        return [];
+      const resp = await axios.post(url, data, {
+        headers: {
+          'Authorization': `Bearer ${this.deepseek.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = resp.data?.choices?.[0]?.message?.content;
+      if (typeof result !== 'string' || !result.trim()) {
+        throw new Error('DeepSeek 返回了空内容。');
       }
+      return result.split(TRANSLATION_SEPARATOR).map(line => line.trim());
     },
 
     /**
-     * 调用有道翻译
+     * 调用有道翻译。
      *
-     * @param query 翻译内容
+     * @param {string} query 使用约定分隔符连接的翻译内容。
+     * @return {Promise<string[]>} 翻译结果数组。
      */
     async translateYoudao(query) {
       if (!this.youdao.appKey || !this.youdao.appSecret) {
-        console.error('有道AppKey或AppSecret未配置');
-        return [];
+        throw new Error('有道 AppKey 或 AppSecret 未配置。');
       }
 
       // 有道 API 不支持自定义分隔符，逐条翻译以避免含 \n 的值导致错位
-      const items = query.split('|||SEP|||');
+      const items = query.split(TRANSLATION_SEPARATOR);
       const results = [];
       for (const item of items) {
         const text = item.trim();
@@ -1374,36 +802,44 @@ const app = new Vue({
           results.push('');
           continue;
         }
-        const curtime = Math.round(new Date().getTime() / 1000);
-        const sign = this.buildSign(text, curtime);
+        const salt = this.createSalt();
+        const curtime = Math.round(Date.now() / 1000);
+        const sign = this.buildSign(text, salt, curtime);
         const url = 'https://openapi.youdao.com/api';
         const data = {
           q: text,
           appKey: this.youdao.appKey,
-          salt: this.youdao.salt,
+          salt,
           from: this.youdao.from,
           to: this.youdao.to,
           sign,
           signType: 'v3',
           curtime,
         };
-        const translated = await new Promise(resolve => {
+        const translated = await new Promise((resolve, reject) => {
           $.ajax({
             url,
             type: 'POST',
             dataType: 'jsonp',
             data,
+            timeout: YOUDAO_REQUEST_TIMEOUT,
             success: function (data) {
               if (data.errorCode !== '0') {
-                console.log(data);
-                resolve('');
+                reject(new Error(`有道翻译失败，错误码：${data.errorCode}`));
                 return;
               }
-              resolve(data.translation[0].trim());
+              const translation = data.translation && data.translation[0];
+              if (typeof translation !== 'string' || !translation.trim()) {
+                reject(new Error('有道翻译返回了空内容。'));
+                return;
+              }
+              resolve(translation.trim());
             },
-            error: function (error) {
-              console.error(error);
-              resolve('');
+            error: function (xhr, status) {
+              const message = status === 'timeout'
+                  ? '有道翻译请求超时。'
+                  : `有道翻译请求失败：${status || '网络错误'}`;
+              reject(new Error(message));
             }
           });
         });
@@ -1412,8 +848,25 @@ const app = new Vue({
       return results;
     },
 
-    buildSign(query, curtime) {
-      const str = this.youdao.appKey + this.truncate(query) + this.youdao.salt + curtime + this.youdao.appSecret;
+    /**
+     * 生成有道请求使用的随机 salt。
+     *
+     * @return {string} 包含时间戳和随机值的 salt。
+     */
+    createSalt() {
+      return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    },
+
+    /**
+     * 构建有道翻译签名。
+     *
+     * @param {string} query 待翻译文本。
+     * @param {string} salt 请求随机值。
+     * @param {number} curtime 当前 Unix 时间戳（秒）。
+     * @return {string} 有道 v3 签名。
+     */
+    buildSign(query, salt, curtime) {
+      const str = this.youdao.appKey + this.truncate(query) + salt + curtime + this.youdao.appSecret;
       return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
     },
 
@@ -1436,8 +889,17 @@ const app = new Vue({
 
       if ((this.selectedApi === 'openai' && this.openai.apiKey) ||
           (this.selectedApi === 'deepseek' && this.deepseek.apiKey)) {
-        this.loadModels(this.selectedApi);
+        this.loadModelsImmediately(this.selectedApi);
       }
+    },
+
+    /**
+     * 立即加载指定 API 的模型列表。
+     *
+     * @param {'openai'|'deepseek'} provider API 提供方。
+     */
+    loadModelsImmediately(provider) {
+      void this.loadModels(provider);
     },
 
     /**
@@ -1547,7 +1009,7 @@ const app = new Vue({
 
       this.modelLoadTimers[provider] = setTimeout(() => {
         if (this.selectedApi === provider) {
-          this.loadModels(provider);
+          this.loadModelsImmediately(provider);
         }
       }, 800);
     },
@@ -1758,7 +1220,7 @@ const app = new Vue({
               this.openaiPriceMap
           );
           if (!this.openaiModels.some(model => model.id === this.openai.model)) {
-            this.openai.model = DEFAULT_OPENAI_MODEL;
+            this.openai.model = this.openaiModels[0].id;
             this.openai.reasoningEffort = '';
           }
         } else {
@@ -1768,7 +1230,7 @@ const app = new Vue({
               this.deepseekPriceMap
           );
           if (!this.deepseekModels.some(model => model.id === this.deepseek.model)) {
-            this.deepseek.model = DEFAULT_DEEPSEEK_MODEL;
+            this.deepseek.model = this.deepseekModels[0].id;
           }
         }
 
@@ -1819,12 +1281,19 @@ const app = new Vue({
 
         return labels.length ? `${modelId}（${labels.join('，')}）` : modelId;
       };
-      const options = [{id: defaultModelId, label: buildLabel(defaultModelId)}];
-      const modelIds = new Set([defaultModelId]);
+      const availableModelIds = models
+          .map(model => typeof model.id === 'string' ? model.id.trim() : '')
+          .filter(Boolean);
+      const options = [];
+      const modelIds = new Set();
 
-      models.forEach(model => {
-        const modelId = typeof model.id === 'string' ? model.id.trim() : '';
-        if (!modelId || modelIds.has(modelId)) {
+      if (!availableModelIds.length || availableModelIds.includes(defaultModelId)) {
+        options.push({id: defaultModelId, label: buildLabel(defaultModelId)});
+        modelIds.add(defaultModelId);
+      }
+
+      availableModelIds.forEach(modelId => {
+        if (modelIds.has(modelId)) {
           return;
         }
         modelIds.add(modelId);
@@ -1936,7 +1405,7 @@ const app = new Vue({
     async saveKeys() {
       // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
       if (this.selectedApi === 'openai') {
-        const apiKey = this.openai.apiKey;
+        const apiKey = this.openai.apiKey.trim();
 
         if (!apiKey) {
           this.saveMessage = '请填写 OpenAI API 密钥。';
@@ -1944,7 +1413,7 @@ const app = new Vue({
           return;
         }
 
-        const model = this.openai.model;
+        const model = this.openai.model.trim();
         if (!model) {
           this.saveMessage = '请选择 OpenAI 模型。';
           this.saveMessageType = 'error';
@@ -1957,7 +1426,7 @@ const app = new Vue({
         this.saveMessageType = 'success';
 
       } else if (this.selectedApi === 'deepseek') {
-        const apiKey = this.deepseek.apiKey;
+        const apiKey = this.deepseek.apiKey.trim();
 
         if (!apiKey) {
           this.saveMessage = '请填写 DeepSeek API 密钥。';
@@ -1965,15 +1434,15 @@ const app = new Vue({
           return;
         }
 
-        const model = this.deepseek.model;
+        const model = this.deepseek.model.trim();
         this.deepseek.apiKey = apiKey;
         this.deepseek.model = model;
         this.saveMessage = 'DeepSeek API 配置已保存。';
         this.saveMessageType = 'success';
 
       } else if (this.selectedApi === 'youdao') {
-        const appKey = this.youdao.appKey;
-        const appSecret = this.youdao.appSecret;
+        const appKey = this.youdao.appKey.trim();
+        const appSecret = this.youdao.appSecret.trim();
 
         if (!appKey) {
           this.saveMessage = '请填写有道 AppKey。';
@@ -2070,4 +1539,5 @@ const app = new Vue({
     }
   }
 });
-</script>
+
+app.mount('#app');

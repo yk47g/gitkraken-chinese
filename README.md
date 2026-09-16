@@ -53,7 +53,7 @@ GitKraken的中文汉化补丁
 通过修改软件目录下 English 语言对应的一个 JSON 文件内容来完成汉化目的。
 
 （自动生成 JSON 工具已实现自动翻译。因 有道、OpenAI 和 DeepSeek 的 API 属于收费接口，故不提供 Key，有需要者请自行申请。申请方法详见
-`comparator.html` - 使用说明）
+`docs/index.html` - 使用说明）
 
 ## 操作步骤
 
@@ -151,4 +151,4 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 | 3  |  Gitflow  |  一种基于 Git 的工作流程（workflow）   |
 | 4  | AI Token  |      大语言模型 AI 的基本计算单位       |
 
-> 对应的代码部分在 `comparator.html` 的 `data()` 下，可以通过搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到。
+> 对应的代码部分在 `docs/assets/js/comparator.js` 的 `data()` 下，可以通过搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到。

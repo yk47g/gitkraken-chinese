@@ -2,7 +2,7 @@
 
 GitKraken的中文汉化补丁
 
-[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤) | [许可证](#许可证) | [意见征集](#意见征集)
+[说明](#说明) | [更新](#更新) | [原理](#原理) | [操作步骤](#操作步骤) | [自行翻译](#自行翻译) | [许可证](#许可证) | [意见征集](#意见征集)
 
 ## 说明
 
@@ -15,55 +15,53 @@ GitKraken的中文汉化补丁
 <strong>更新日志</strong>
 </summary>
 
-|       日期        | 更新内容                                                                                 |                                                               感谢                                                               |
-|:---------------:|--------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------:|
-| 2024.02.27 - 现在 | 适配 9.12.0+ 版本。                                                                       |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2026.06.20    | 发现并修复项目中 SEO 注入内容（Issue [#42](https://github.com/yk47g/gitkraken-chinese/issues/42)） |                   <br/>             @[hu-qi](https://github.com/hu-qi) / @[yk47g](https://github.com/yk47g)                    |
-|    2026.6.03    | 适配 12.2.0 版本。                                                                        |              [@DeathFishAtEase](https://github.com/DeathFishAtEase) / [@YuanXiQWQ](https://github.com/YuanXiQWQ)               |
-|   2026.04.18    | 新增适配 Windows/macOS/Linux（x64 & arm64）的 GitKrakenPatcher 与对应工作流，以实现自动替换本地化文件          |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2026.04.16    | 修复 comparator.html 对于 JSON 中 \n 转义字符处理错误的问题                                          |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2026.03.20    | 更正 11.10.0 版本文件中的格式错误                                                                |                                     [@DeathFishAtEase](https://github.com/DeathFishAtEase)                                     |
-|   2026.03.20    | 更正固定翻译词汇中错译的“Fork => 分支”为“Fork => 派生”                                                |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2026.02.14    | 编写文档[GitKraken 基础操作](./GitKraken%20基础操作/GitKraken%20基础操作.md)                         |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.10.15    | 创建自动释放工作流                                                                            |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.08.08    | 优化 OpenAI 与 DeepSeek 的提示词，更新固定翻译词汇表。                                                 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.07.08    | API 错误将返回具体的错误类型，将大部分弹窗改为界面消息                                                        |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.06.18    | 更新固定翻译词汇表和保留词汇表。                                                                     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.05.22    | 为项目添加 AGPL-3.0 许可证。                                                                  |                                                                                                                                |
-|   2025.05.12    | 修正中英标点混淆问题，规范代码中单双引号混淆的问题（HTML统一使用双引号，JS统一使用单引号）。                                    |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.04.01    | 毁灭了整个项目。                                                                             |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.02.11    | 接入 DeepSeek API。                                                                     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.01.22    | 更新 OpenAI 模型选项并完善提示词，修复差异比较逻辑无法检测删减与内容修改的问题并保留空行，优化可视化对比和界面交互。                       |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2025.01.20    | 根据 10.6.1 版本进行校对&修订。                                                                 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2024.09.10    | 接入 OpenAI API，更新、优化使用说明和页面交互，新增文件上传/下载功能。                                            |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2024.09.09    | 适配 10.3.0 版本。                                                                        | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) / [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
-|   2024.02.27    | 明晰 compare.html（即现名 comparator.html）的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件。        |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
-|   2024.02.27    | 适配 9.11.1 版本。                                                                        |                                             [@Jaffrez](https://github.com/Jaffrez)                                             |
-|   2024.02.27    | 适配 9.5.1 版本。                                                                         |                                             [@buck178](https://github.com/buck178)                                             |
-|   2023.09.11    | 适配 9.5.1 版本。                                                                         |                                           [@star-andy](https://github.com/star-andy)                                           |
-|   2021.12.17    | 新增可视化对比，接入有道翻译 API。                                                                  |                                        [@TanxiangCode](https://github.com/TanxiangCode)                                        |
-|   2021.03.18    | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html。                                         |                                         [@DreamSaddle](https://github.com/DreamSaddle)                                         |
-|   2020.08.18    | 在 Windows 2.7.0 测试通过。                                                                |                                         [@Black-Spree](https://github.com/Black-Spree)                                         |
-|   2019.10.01    | 在 macOS 10.14 GitKraken 6.2.0 测试通过。                                                  |                                               [@yk47g](https://github.com/yk47g)                                               |
+|       日期        | 更新内容                                                                                                             |                                                              感谢                                                              |
+|:-----------------:|----------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------:|
+| 2024.02.27 - 现在 | 适配 9.12.0+ 版本。                                                                                                  |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2026.09.17     | 拆分比较器为 HTML/CSS/JS，迁移至 Vue 3，并新增 GitHub Actions 自动部署。                                             |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2026.06.20     | 发现并修复项目中 SEO 注入内容（Issue [#42](https://github.com/yk47g/gitkraken-chinese/issues/42)）                   |                   <br/>             @[hu-qi](https://github.com/hu-qi) / @[yk47g](https://github.com/yk47g)                    |
+|    2026.06.03     | 适配 12.2.0 版本。                                                                                                   |              [@DeathFishAtEase](https://github.com/DeathFishAtEase) / [@YuanXiQWQ](https://github.com/YuanXiQWQ)               |
+|    2026.04.18     | 新增适配 Windows/macOS/Linux（x64 & arm64）的 GitKrakenPatcher 与对应工作流，以实现自动替换本地化文件                |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2026.04.16     | 修复 comparator.html 对于 JSON 中 \n 转义字符处理错误的问题                                                          |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2026.03.20     | 更正 11.10.0 版本文件中的格式错误                                                                                    |                                     [@DeathFishAtEase](https://github.com/DeathFishAtEase)                                     |
+|    2026.03.20     | 更正固定翻译词汇中错译的“Fork => 分支”为“Fork => 派生”                                                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2026.02.14     | 编写文档[GitKraken 基础操作](./GitKraken%20基础操作/GitKraken%20基础操作.md)                                         |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.10.15     | 创建自动释放工作流                                                                                                   |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.08.08     | 优化 OpenAI 与 DeepSeek 的提示词，更新固定翻译词汇表。                                                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.07.08     | API 错误将返回具体的错误类型，将大部分弹窗改为界面消息                                                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.06.18     | 更新固定翻译词汇表和保留词汇表。                                                                                     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.05.22     | 为项目添加 AGPL-3.0 许可证。                                                                                         |                                                                                                                                |
+|    2025.05.12     | 修正中英标点混淆问题，规范代码中单双引号混淆的问题（HTML统一使用双引号，JS统一使用单引号）。                         |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.04.01     | 毁灭了整个项目。                                                                                                     |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.02.11     | 接入 DeepSeek API。                                                                                                  |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.01.22     | 更新 OpenAI 模型选项并完善提示词，修复差异比较逻辑无法检测删减与内容修改的问题并保留空行，优化可视化对比和界面交互。 |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2025.01.20     | 根据 10.6.1 版本进行校对&修订。                                                                                      |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2024.09.10     | 接入 OpenAI API，更新、优化使用说明和页面交互，新增文件上传/下载功能。                                               |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2024.09.09     | 适配 10.3.0 版本。                                                                                                   | [@FXDYJ](https://github.com/FXDYJ) / [@Slinet6056](https://github.com/Slinet6056) / [@YuanXiQWQ](https://github.com/YuanXiQWQ) |
+|    2024.02.27     | 明晰 compare.html（即现名 comparator.html）的使用说明和操作界面，可视化有道 API 配置，添加关于有道 API 的描述文件。  |                                           [@YuanXiQWQ](https://github.com/YuanXiQWQ)                                           |
+|    2024.02.27     | 适配 9.11.1 版本。                                                                                                   |                                             [@Jaffrez](https://github.com/Jaffrez)                                             |
+|    2024.02.27     | 适配 9.5.1 版本。                                                                                                    |                                             [@buck178](https://github.com/buck178)                                             |
+|    2023.09.11     | 适配 9.5.1 版本。                                                                                                    |                                           [@star-andy](https://github.com/star-andy)                                           |
+|    2021.12.17     | 新增可视化对比，接入有道翻译 API。                                                                                   |                                        [@TanxiangCode](https://github.com/TanxiangCode)                                        |
+|    2021.03.18     | 新增对比新旧版本区别，自动生成新版本的 JSON 文件的工具 compare.html。                                                |                                         [@DreamSaddle](https://github.com/DreamSaddle)                                         |
+|    2020.08.18     | 在 Windows 2.7.0 测试通过。                                                                                          |                                         [@Black-Spree](https://github.com/Black-Spree)                                         |
+|    2019.10.01     | 在 macOS 10.14 GitKraken 6.2.0 测试通过。                                                                            |                                               [@yk47g](https://github.com/yk47g)                                               |
 
 </details>
 
 ## 原理
 
-通过修改软件目录下 English 语言对应的一个 JSON 文件内容来完成汉化目的。
-
-（自动生成 JSON 工具已实现自动翻译。因 有道、OpenAI 和 DeepSeek 的 API 属于收费接口，故不提供 Key，有需要者请自行申请。申请方法详见
-`docs/index.html` - 使用说明）
+通过替换软件目录下原英文语言文件 `strings.json` 为中文来完成汉化目的。
 
 ## 操作步骤
 
-有两种方式完成汉化：**自动替换**（推荐）和**手动替换**。
+有两种方式完成汉化： **自动替换**（推荐）和 **手动替换**。
 
 ### 方式一：自动替换（推荐）
 
 1. 前往 [Releases](https://github.com/yk47g/gitkraken-chinese/releases/latest) 页面，下载 `strings.json` 和对应你操作系统的
    `GitKrakenPatcher` 自动替换脚本。
-2. 将 `strings.json` 和 `GitKrakenPatcher` 放在**同一目录**下。
+2. 将 `strings.json` 和 `GitKrakenPatcher` 放在 **同一目录**下。
 3. 运行 `GitKrakenPatcher`，脚本会自动查找 GitKraken 安装路径并完成替换。
 4. 重启 GitKraken 即可生效。
 
@@ -98,14 +96,29 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 
 完成文件替换后，重启 GitKraken 即可生效。
 
+## 自行翻译
+
+[对比翻译器](https://yk47g.github.io/gitkraken-chinese/) 可以对比新旧文件差异条目并自动翻译。
+
+“有道”、“OpenAI”和“DeepSeek”的 API 属于收费接口，需自行申请。
+
 ## 许可证
 
-本项目采用 [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html) 许可证。有关该许可的参考中文，详见
-[AGPLv3 中文](https://www.chinasona.org/gnu/agpl-3.0-cn.html)
+本项目原创代码、文档及贡献者独立创作的翻译内容，在其拥有相应权利的范围内采用 [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html) / [中文参考](https://www.chinasona.org/gnu/agpl-3.0-cn.html) 许可证。
+
+GitKraken 名称、商标、原始英文字符串及其他第三方内容，其权利归相应权利人所有，不包含在本项目 AGPLv3 授权范围内。
+
+本仓库不提供 GitKraken 原始英文语言文件；使用者应从其合法安装的 GitKraken 中自行获取。
+
+由 GitKraken 原始文件派生的语言文件不因本仓库的许可证声明而重新授权，相关权利和使用条件仍受上游许可约束。
+
+本项目与 GitKraken/Axosoft 不存在隶属、赞助或授权关系。使用者应自行确认其使用、修改和分发行为符合 GitKraken EULA 及适用法律。
+
+如相关权利人对本仓库内容有异议，请通过仓库 Issues 联系维护者；维护者将根据要求调整或移除相关内容。
 
 ## 意见征集
 
-#### [加入讨论](https://github.com/yk47g/gitkraken-chinese/discussions/33)
+### [加入讨论](https://github.com/yk47g/gitkraken-chinese/discussions/33)
 
 在校对时发现，由于每次只是对新增/修改词汇上传来翻译，用词常有不统一的现象。翻阅 Git 中文社区，发现很多专有名词的翻译也很不统一。因此想开一个讨论看看大家的意见。
 目前规定的如下：
@@ -113,42 +126,42 @@ GitKraken 安装目录下的 `strings.json` 文件。该文件的位置根据你
 > 带多个链接表示官中有多种翻译，
 > 不带链接可能是因为该页面没有官中翻译或不是 Git 名词（但并不表示带链接的就一定是 Git 名词）。
 
-#### 翻译：
+### 翻译：
 
-| 序号 |         专有名词         |                                                                                               统一翻译                                                                                                |                                                                 其它翻译                                                                  |
-|:--:|:--------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------:|
-| 1  |        Bisect        |                                    [二分查找](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E4%BD%BF%E7%94%A8-Git-%E8%B0%83%E8%AF%95.html#_binary_search)                                    |                                                                                                                                       |
-| 2  |     Cherry Pick      |                                   [拣选](https://git-scm.com/book/zh/v2/%e5%88%86%e5%b8%83%e5%bc%8f-Git-%e7%bb%b4%e6%8a%a4%e9%a1%b9%e7%9b%ae#_rebase_cherry_pick)                                   |                                                              挑拣、挑选、樱桃挑选                                                               |
-| 3  |     Collaborator     |                             [协作者](https://git-scm.com/book/zh/v2/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84-Git-GitLab.html#_%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)                             | [合作者](https://git-scm.com/book/zh/v2/GitHub-%E7%BB%B4%E6%8A%A4%E9%A1%B9%E7%9B%AE.html#_%E6%B7%BB%E5%8A%A0%E5%90%88%E4%BD%9C%E8%80%85) |
-| 4  |       Compose        |                                                                                                编写                                                                                                 |                                                                ~~组合~~                                                                 |
-| 5  | Conventional Commits |                                                                   [约定式提交](https://www.conventionalcommits.org/zh-hans/v1.0.0/)                                                                    |                                                                                                                                       |
-| 6  |    DETACHED HEAD     |                                          [游离 HEAD](https://git-scm.com/docs/git-checkout/zh_HANS-CN#_%e6%b8%b8%e7%a6%bb%e7%8a%b6%e6%80%81detached_head)                                           |                                                              ~~分离 HEAD~~                                                              |
-| 7  |        Email         |                                                                                                邮箱                                                                                                 |                                                                 电子邮件                                                                  |
-| 8  |    Email Address     |                                                                                                邮箱                                                                                                 |                                                                电子邮件地址                                                                 |
-| 9  |        Filter        |         [过滤器](https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2.html#_%E9%99%90%E5%88%B6%E8%BE%93%E5%87%BA%E9%95%BF%E5%BA%A6)          |                                                                  筛选器                                                                  |
-| 10 |         Fork         |                 [派生/派生仓库](https://git-scm.<br/>com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E6%B4%BE%E7%94%9F%E9%A1%B9%E7%9B%AE)                  |                                                             ~~分叉~~、~~分支~~                                                             |
-| 11 |  GitKraken Desktop   |                                                                                           GitKraken 桌面版                                                                                           |                                                             GitKraken 客户端                                                             |
-| 12 |        Graph         |                                                                                                 图                                                                                                 |                                                                 图形、图表                                                                 |
-| 13 |       Git GUI        |        [Git 图形界面](https://git-scm.com/book/zh/v2/%E9%99%84%E5%BD%95-A:-%E5%9C%A8%E5%85%B6%E5%AE%83%E7%8E%AF%E5%A2%83%E4%B8%AD%E4%BD%BF%E7%94%A8-Git-%E5%9B%BE%E5%BD%A2%E7%95%8C%E9%9D%A2)         |                                                                                                                                       |
-| 14 |     Git Provider     |                [Git 托管](https://git-scm.com/book/zh/v2/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84-Git-%E7%AC%AC%E4%B8%89%E6%96%B9%E6%89%98%E7%AE%A1%E7%9A%84%E9%80%89%E6%8B%A9)                |                                                                Git 提供商                                                                |
-| 15 |     Pull Request     |            [拉取请求](https://git-scm.com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E5%88%9B%E5%BB%BA%E6%8B%89%E5%8F%96%E8%AF%B7%E6%B1%82)             |                                                                 合并请求                                                                  |
-| 16 |         Hunk         |                                             [区块](https://git-scm.com/book/zh/v2/Git-%e5%b7%a5%e5%85%b7-%e4%ba%a4%e4%ba%92%e5%bc%8f%e6%9a%82%e5%ad%98)                                             |                                                                代码块、修改块                                                                |
-| 17 |        Others        |                                                                    [其它](https://cd.hwxnet.com/view.do?pindex=lngmcojihgjnegca)                                                                    |                                                                ~~其他~~                                                                 |
-| 18 |        Rebase        |                                                          [变基](https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA)                                                           |                                                               ~~重新基于~~                                                                |
-| 19 |         Repo         | [仓库](https://git-scm.com/book/zh/v2/%E5%88%86%E5%B8%83%E5%BC%8F-Git-%E5%88%86%E5%B8%83%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.html#_%E9%9B%86%E4%B8%AD%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81) |                                                               代码库、存储库、库                                                               |
-| 20 |         Solo         |                                                                                               单独显示                                                                                                |                                                              单独、独立、独立展示                                                               |
-| 21 |        Stage         |                                             [暂存](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%9A%82%E5%AD%98)                                             |                                                                                                                                       |
-| 22 |        Stash         |                                             [贮藏](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E8%B4%AE%E8%97%8F%E4%B8%8E%E6%B8%85%E7%90%86)                                             |                                               储藏、~~隐藏的更改~~、~~藏匿~~、~~存放~~、~~隐藏~~、~~暂存~~                                                |
-| 23 |  Working Directory   |                                    [工作目录](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E8%B4%AE%E8%97%8F%E4%B8%8E%E6%B8%85%E7%90%86.html#_git_clean)                                    |                                                                ~~工作区~~                                                                |
-| 24 |      Workspace       |                                                                                                工作区                                                                                                |                                                               ~~工作目录~~                                                                |
+| 序号 |       专有名词       |                                                                                              统一翻译                                                                                               |                                                                 其它翻译                                                                 |
+|:----:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|
+|  1   |        Bisect        |                                   [二分查找](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E4%BD%BF%E7%94%A8-Git-%E8%B0%83%E8%AF%95.html#_binary_search)                                   |                                                                                                                                          |
+|  2   |     Cherry Pick      |                                   [拣选](https://git-scm.com/book/zh/v2/%e5%88%86%e5%b8%83%e5%bc%8f-Git-%e7%bb%b4%e6%8a%a4%e9%a1%b9%e7%9b%ae#_rebase_cherry_pick)                                   |                                                           挑拣、挑选、樱桃挑选                                                           |
+|  3   |     Collaborator     |                            [协作者](https://git-scm.com/book/zh/v2/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84-Git-GitLab.html#_%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)                             | [合作者](https://git-scm.com/book/zh/v2/GitHub-%E7%BB%B4%E6%8A%A4%E9%A1%B9%E7%9B%AE.html#_%E6%B7%BB%E5%8A%A0%E5%90%88%E4%BD%9C%E8%80%85) |
+|  4   |       Compose        |                                                                                                编写                                                                                                 |                                                                 ~~组合~~                                                                 |
+|  5   | Conventional Commits |                                                                  [约定式提交](https://www.conventionalcommits.org/zh-hans/v1.0.0/)                                                                  |                                                                                                                                          |
+|  6   |    DETACHED HEAD     |                                          [游离 HEAD](https://git-scm.com/docs/git-checkout/zh_HANS-CN#_%e6%b8%b8%e7%a6%bb%e7%8a%b6%e6%80%81detached_head)                                           |                                                              ~~分离 HEAD~~                                                               |
+|  7   |        Email         |                                                                                                邮箱                                                                                                 |                                                                 电子邮件                                                                 |
+|  8   |    Email Address     |                                                                                                邮箱                                                                                                 |                                                               电子邮件地址                                                               |
+|  9   |        Filter        |         [过滤器](https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2.html#_%E9%99%90%E5%88%B6%E8%BE%93%E5%87%BA%E9%95%BF%E5%BA%A6)         |                                                                  筛选器                                                                  |
+|  10  |         Fork         |               [派生/派生仓库](https://git-scm.<br/>com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E6%B4%BE%E7%94%9F%E9%A1%B9%E7%9B%AE)                |                                                            ~~分叉~~、~~分支~~                                                            |
+|  11  |  GitKraken Desktop   |                                                                                          GitKraken 桌面版                                                                                           |                                                             GitKraken 客户端                                                             |
+|  12  |        Graph         |                                                                                                 图                                                                                                  |                                                                图形、图表                                                                |
+|  13  |       Git GUI        |       [Git 图形界面](https://git-scm.com/book/zh/v2/%E9%99%84%E5%BD%95-A:-%E5%9C%A8%E5%85%B6%E5%AE%83%E7%8E%AF%E5%A2%83%E4%B8%AD%E4%BD%BF%E7%94%A8-Git-%E5%9B%BE%E5%BD%A2%E7%95%8C%E9%9D%A2)        |                                                                                                                                          |
+|  14  |     Git Provider     |                [Git 托管](https://git-scm.com/book/zh/v2/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84-Git-%E7%AC%AC%E4%B8%89%E6%96%B9%E6%89%98%E7%AE%A1%E7%9A%84%E9%80%89%E6%8B%A9)                |                                                                Git 提供商                                                                |
+|  15  |     Pull Request     |           [拉取请求](https://git-scm.com/book/zh/v2/GitHub-%E5%AF%B9%E9%A1%B9%E7%9B%AE%E5%81%9A%E5%87%BA%E8%B4%A1%E7%8C%AE.html#_%E5%88%9B%E5%BB%BA%E6%8B%89%E5%8F%96%E8%AF%B7%E6%B1%82)            |                                                                 合并请求                                                                 |
+|  16  |         Hunk         |                                             [区块](https://git-scm.com/book/zh/v2/Git-%e5%b7%a5%e5%85%b7-%e4%ba%a4%e4%ba%92%e5%bc%8f%e6%9a%82%e5%ad%98)                                             |                                                              代码块、修改块                                                              |
+|  17  |        Others        |                                                                    [其它](https://cd.hwxnet.com/view.do?pindex=lngmcojihgjnegca)                                                                    |                                                                 ~~其他~~                                                                 |
+|  18  |        Rebase        |                                                          [变基](https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA)                                                           |                                                               ~~重新基于~~                                                               |
+|  19  |         Repo         | [仓库](https://git-scm.com/book/zh/v2/%E5%88%86%E5%B8%83%E5%BC%8F-Git-%E5%88%86%E5%B8%83%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.html#_%E9%9B%86%E4%B8%AD%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81) |                                                            代码库、存储库、库                                                            |
+|  20  |         Solo         |                                                                                              单独显示                                                                                               |                                                           单独、独立、独立展示                                                           |
+|  21  |        Stage         |                                             [暂存](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%9A%82%E5%AD%98)                                             |                                                                                                                                          |
+|  22  |        Stash         |                                             [贮藏](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E8%B4%AE%E8%97%8F%E4%B8%8E%E6%B8%85%E7%90%86)                                             |                                       储藏、~~隐藏的更改~~、~~藏匿~~、~~存放~~、~~隐藏~~、~~暂存~~                                       |
+|  23  |  Working Directory   |                                   [工作目录](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E8%B4%AE%E8%97%8F%E4%B8%8E%E6%B8%85%E7%90%86.html#_git_clean)                                   |                                                                ~~工作区~~                                                                |
+|  24  |      Workspace       |                                                                                               工作区                                                                                                |                                                               ~~工作目录~~                                                               |
 
-#### 保留，不作翻译：
+### 保留，不作翻译：
 
-| 序号 |   专有名词    |             注解              |
-|:--:|:---------:|:---------------------------:|
-| 1  | Launchpad |      GitKraken 的专注视图模式      |
-| 2  |    WIP    | Work In Progress - 正在进行中的工作 |
-| 3  |  Gitflow  |  一种基于 Git 的工作流程（workflow）   |
-| 4  | AI Token  |      大语言模型 AI 的基本计算单位       |
+| 序号 | 专有名词  |                注解                 |
+|:----:|:---------:|:-----------------------------------:|
+|  1   | Launchpad |      GitKraken 的专注视图模式       |
+|  2   |    WIP    | Work In Progress - 正在进行中的工作 |
+|  3   |  Gitflow  | 一种基于 Git 的工作流程（workflow） |
+|  4   | AI Token  |    大语言模型 AI 的基本计算单位     |
 
 > 对应的代码部分在 `docs/assets/js/comparator.js` 的 `data()` 下，可以通过搜索 `固定翻译词汇` 或者 `fixedTranslations` 找到。

@@ -190,8 +190,8 @@ const app = Vue.createApp({
       );
 
       return isPeak
-          ? {label: '高峰时段', className: 'peak'}
-          : {label: '空闲时段', className: 'off-peak'};
+          ? {label: '梁文峰', className: 'peak'}
+          : {label: '梁文谷', className: 'off-peak'};
     }
   },
   mounted() {

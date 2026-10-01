@@ -57,8 +57,8 @@
           <template v-if="selectedApi === 'deepseek'">
             <span class="time-context">当前时段：</span>
             <span class="deepseek-time-status" :class="deepseekTimeStatus.className">
-      {{ deepseekTimeStatus.label }}
-     </span>
+              {{ deepseekTimeStatus.label }}
+            </span>
           </template>
         </div>
 
@@ -169,8 +169,8 @@
           <div class="input-group" v-if="shouldShowSaveButton()">
             <button type="submit">保存</button>
             <span v-if="saveMessage" :class="['save-message', saveMessageType]">
-            {{ saveMessage }}
-     </span>
+              {{ saveMessage }}
+            </span>
           </div>
         </transition>
       </fieldset>
@@ -187,7 +187,7 @@
           <button type="button" :disabled="!isApiConfigured() || isTranslating"
                   :title="isTranslating ? '正在翻译，请稍候' : (!isApiConfigured() ? '请先配置翻译 API' : '')"
                   @click="autoTranslate">
-            {{ isTranslating ? '翻译中...' : '自动翻译' }}
+            {{ isTranslating ? '翻译中……' : '自动翻译' }}
           </button>
         </div>
 
@@ -204,7 +204,7 @@
           <label for="oldEnFile">上传旧版英文文件：</label>
           <input type="file" id="oldEnFile" accept=".json,application/json" @change="loadFile('oldEN')">
           <span v-if="showOldEnError" class="error-message">
-          需要上传旧版英文文件。
+            需要上传旧版英文文件。
           </span>
         </div>
 
@@ -234,7 +234,7 @@
         <div class="console-btns">
           <button type="button" :disabled="!hasGeneratedContent()"
                   :title="!hasGeneratedContent() ? '暂无可导出的内容' : ''"
-                  @click="exportJson">导出JSON文件
+                  @click="exportJson">导出 JSON 文件
           </button>
           <button type="button" :disabled="!hasGeneratedContent()"
                   :title="!hasGeneratedContent() ? '暂无可复制的内容' : ''"
@@ -251,12 +251,12 @@
             填写 API 配置并保存。密钥仅保存在当前页面内存中，刷新页面后需要重新填写。
           </li>
           <li class="introduction-list-li">
-            上传旧版英文文件（你保留的旧版 strings.json；如若刚刚更新，也可以从 Gitkraken 安装目录的旧版版号目录中获取）、新版英文文件（当前
+            上传旧版英文文件（你保留的旧版 strings.json；如若刚刚更新，也可以从 GitKraken 安装目录的旧版版号目录中获取）、新版英文文件（当前
             GitKraken 安装目录中的 strings.json）和旧版翻译文件（仓库“旧版本文件”中对应版本的 strings_x.x.x.json），
-            然后点击 [对比] 获取差异内容。
+            然后点击 【对比】 获取差异内容。
           </li>
           <li class="introduction-list-li">
-            点击 [自动翻译]。翻译期间按钮会显示“翻译中...”并暂时禁用；完成后页面会显示“翻译并整理完成。”。
+            点击 【自动翻译】。翻译期间按钮会显示“翻译中……”并暂时禁用；完成后页面会显示“翻译并整理完成。”。
           </li>
           <li class="introduction-list-li">
             导出并覆盖 strings.json 文件。
@@ -268,9 +268,9 @@
         <b>对于没有 API 的用户：</b>
         <ol class="introduction-list">
           <li class="introduction-list-li">
-            上传旧版英文文件（你保留的旧版 strings.json；如若刚刚更新，也可以从 Gitkraken 安装目录的旧版版号目录中获取）、新版英文文件（当前
+            上传旧版英文文件（你保留的旧版 strings.json；如若刚刚更新，也可以从 GitKraken 安装目录的旧版版号目录中获取）、新版英文文件（当前
             GitKraken 安装目录中的 strings.json）和旧版翻译文件（仓库“旧版本文件”中对应版本的 strings_x.x.x.json），
-            然后点击 [对比] 获取差异内容。
+            然后点击 【对比】 获取差异内容。
           </li>
           <li class="introduction-list-li">
             复制文本框中的内容，使用其他翻译工具完成翻译。
@@ -312,10 +312,10 @@
               </ul>
             </li>
             <li class="introduction-list-li">
-              按下[自动翻译]后看起来没有反应：
+              按下【自动翻译】后看起来没有反应：
               <ul>
                 <li class="disc-list-item">
-                  如果按钮显示“翻译中...”并处于禁用状态，说明翻译任务正在执行，请等待完成或错误提示。
+                  如果按钮显示“翻译中……”并处于禁用状态，说明翻译任务正在执行，请等待完成或错误提示。
                 </li>
                 <li class="disc-list-item">
                   如果按钮没有进入该状态，请检查 API 配置是否完整。
@@ -358,8 +358,7 @@
             </li>
             <li class="introduction-list-li">注册或登录。</li>
             <li class="introduction-list-li">
-              在顶栏左上角新建 Project（可选）或使用用户密钥（可选，不推荐），之后在顶栏右上角选择“Dashboard”，随后侧边栏选择“API
-              Keys”。
+              在顶栏左上角新建 Project（可选）或使用用户密钥（可选，不推荐），之后在顶栏右上角选择“Dashboard”，随后侧边栏选择“API Keys”。
             </li>
             <li class="introduction-list-li">通过“+ Create New secret key”按照提示新建一个密钥。</li>
             <li class="introduction-list-li">
@@ -437,11 +436,11 @@
             :class="{'diff-green': diff.color === 'green',
                      'diff-red': diff.color === 'red',
                      'diff-blue': diff.color === 'blue'}">
-          <!-- 改动时显示旧值->新值 -->
+          <!-- 改动时显示旧值 -> 新值 -->
           <span v-if="diff.type==='changed'">
-            {{ index + 1 }}. {{ diff.key }} ({{ diff.oldValue }} => {{ diff.newValue }})
+            {{ index + 1 }}. {{ diff.key }}（{{ diff.oldValue }} => {{ diff.newValue }}）
           </span>
-          <!-- 新增/删减只显示key -->
+          <!-- 新增/删减只显示 key -->
           <span v-else-if="diff.type==='added'">
             {{ index + 1 }}. {{ diff.key }}
           </span>

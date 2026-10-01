@@ -212,12 +212,12 @@ const app = Vue.createApp({
     },
 
     /**
-     * 导出JSON文件
+     * 导出 JSON 文件
      */
     exportJson() {
       const content = this.generatedContent;
       if (!content.trim()) {
-        this.errorMsg = '没有可以导出的内容';
+        this.errorMsg = '没有可以导出的内容。';
         return;
       }
 
@@ -238,20 +238,20 @@ const app = Vue.createApp({
     async copyToClipboard() {
       const content = this.generatedContent;
       if (!content.trim()) {
-        this.errorMsg = '没有可以复制的内容';
+        this.errorMsg = '没有可以复制的内容。';
         return;
       }
 
       try {
         await navigator.clipboard.writeText(content);
       } catch (e) {
-        this.errorMsg = '复制失败，请手动复制';
+        this.errorMsg = '复制失败，请手动复制。';
       }
     },
 
     /**
      * 读取文件
-     * @param type 'newEn' (新版英文) | 'oldZh' (旧版中文) | 'oldEN' (旧版英文)
+     * @param {'newEn'|'oldZh'|'oldEN'} type 新版英文、旧版中文或旧版英文文件类型。
      */
     loadFile(type) {
       this.showOldEnError = false;
@@ -270,7 +270,7 @@ const app = Vue.createApp({
       }
       const fileInput = document.getElementById(inputId);
       if (!fileInput.files[0]) {
-        this.errorMsg = '未选择文件';
+        this.errorMsg = '未选择文件。';
         return;
       }
 
@@ -293,14 +293,14 @@ const app = Vue.createApp({
             this.processJsonKeys(jsonObj, 'oldEN');
           }
         } catch (e) {
-          this.errorMsg = '文件内容无效，无法解析为JSON';
+          this.errorMsg = '文件内容无效，无法解析为 JSON。';
         }
       };
       reader.readAsText(fileInput.files[0]);
     },
 
     /**
-     * 将JSON里的 languageOption/menuStrings/strings 提取为数组
+     * 将 JSON 里的 languageOption/menuStrings/strings 提取为数组
      * @param json
      * @param fileType
      */
@@ -415,13 +415,13 @@ const app = Vue.createApp({
     },
 
     /**
-     * 自动生成JSON
+     * 自动生成 JSON
      * 基于旧版中文文件做合并，但行顺序和空行以新版英文文件为模板重构
      * 差异项：
      *   -added：新增 => 输出中文翻译或保留新版英文字符（若未翻译）
      *   -removed：删减
      *   -changed： 替换为新版英文（深度对比时）
-     *   -未出现在diffItems的=>保留旧版中文翻译
+     *   - 未出现在 diffItems 的 => 保留旧版中文翻译
      */
     autoGen() {
       // 1. 把旧版中文转为字典
@@ -507,7 +507,7 @@ const app = Vue.createApp({
             const newLine = `${leadingSpaces}"${this.escapeJsonValue(parsedKey)}": "${escapedVal}"${trailingComma}`;
             resultLines.push(newLine);
           } else {
-            // 大概应该可能差不多不会跳到这里吧ww
+            // 大概应该可能差不多不会跳到这里吧 ww
           }
         } else {
           // 无差异 => 优先保留旧版翻译，缺少旧版中文时回退到新版英文
@@ -538,7 +538,7 @@ const app = Vue.createApp({
       this.errorMsg = null;
       this.translationMessage = '';
 
-      // 验证API配置
+      // 验证 API 配置
       if (this.selectedApi === 'openai') {
         if (!this.openai.apiKey) {
           this.errorMsg = '请填写 OpenAI API 密钥。';
@@ -1176,7 +1176,7 @@ const app = Vue.createApp({
       this.modelsLoadCompleted[provider] = false;
 
       if (showLoading) {
-        this.modelMessage = '正在获取模型...';
+        this.modelMessage = '正在获取模型……';
         this.modelMessageType = 'success';
       }
 
@@ -1403,7 +1403,7 @@ const app = Vue.createApp({
      * 保存 API 配置。
      */
     async saveKeys() {
-      // 获取 AppKey和 AppSecret 或 OpenAI API 密钥的表单内容
+      // 获取 AppKey 和 AppSecret 或 OpenAI API 密钥的表单内容
       if (this.selectedApi === 'openai') {
         const apiKey = this.openai.apiKey.trim();
 
@@ -1463,7 +1463,9 @@ const app = Vue.createApp({
     },
 
     /**
-     * 返回 API 错误信息
+     * 显示 API 错误信息。
+     *
+     * @param {Error} error API 请求异常。
      */
     showErrorMsg(error) {
       let errorMessage = 'API 错误：';
@@ -1515,7 +1517,7 @@ const app = Vue.createApp({
             errorMessage += '网关超时';
             break;
           default:
-            errorMessage += `未知错误 (HTTP ${status})`;
+            errorMessage += `未知错误（HTTP ${status}）`;
         }
 
         // 附带后端返回的具体 code 与 message，便于排查

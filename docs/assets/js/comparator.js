@@ -1260,7 +1260,7 @@ const app = Vue.createApp({
     },
 
     /**
-     * 将默认模型与接口返回的模型合并为下拉选项。
+     * 将默认模型固定在首项，并合并接口返回的模型为不重复的下拉选项。
      *
      * @param {string} defaultModelId 默认模型标识。
      * @param {Array<{id: string}>} models 接口返回的模型列表。
@@ -1287,10 +1287,8 @@ const app = Vue.createApp({
       const options = [];
       const modelIds = new Set();
 
-      if (!availableModelIds.length || availableModelIds.includes(defaultModelId)) {
-        options.push({id: defaultModelId, label: buildLabel(defaultModelId)});
-        modelIds.add(defaultModelId);
-      }
+      options.push({id: defaultModelId, label: buildLabel(defaultModelId)});
+      modelIds.add(defaultModelId);
 
       availableModelIds.forEach(modelId => {
         if (modelIds.has(modelId)) {

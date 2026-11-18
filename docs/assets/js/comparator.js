@@ -18,7 +18,7 @@ const OPENAI_PUBLIC_PRICING_URL =
 const DEEPSEEK_PUBLIC_PRICING_URL =
     'https://r.jina.ai/https://api-docs.deepseek.com/quick_start/pricing';
 
-/** 按每 100 万 Token 输出价格划分的模型价格档位。 */
+/** 按每输出 100 万词元的价格划分的模型价格档位。 */
 const PRICE_TIER_LIMITS = [
   {max: 1, label: '贼拉便宜'},
   {max: 5, label: '便宜'},
@@ -139,28 +139,33 @@ const app = Vue.createApp({
 
       // 固定翻译词汇
       fixedTranslations: [
+        {term: 'Agent (AI development)', translation: '智能体'},
         {term: 'Bisect', translation: '二分查找'},
         {term: 'Cherry Pick', translation: '拣选'},
+        {term: 'Coding Agent', translation: '编程智能体'},
         {term: 'Collaborator', translation: '协作者'},
         {term: 'Compose', translation: '编写'},
         {term: 'Conventional Commits', translation: '约定式提交'},
         {term: 'DETACHED HEAD', translation: '游离 HEAD'},
-        {term: 'Email', translation: '邮箱'},
-        {term: 'Email Address', translation: '邮箱'},
+        {term: 'Email (message)', translation: '电子邮件'},
+        {term: 'Email Address (including Email when it denotes an address)', translation: '电子邮件地址'},
         {term: 'Filter', translation: '过滤器'},
         {term: 'Fork', translation: '派生/派生仓库'},
-        {term: 'GitKraken Desktop', translation: 'GitKraken 桌面版'},
-        {term: 'Graph', translation: '图'},
-        {term: 'Git GUI', translation: 'Git 图形界面'},
         {term: 'Git Provider', translation: 'Git 托管'},
+        {term: 'GitKraken Desktop', translation: 'GitKraken 桌面版'},
+        {term: 'Graph (Git commit graph)', translation: '图'},
+        {term: 'GUI', translation: '图形用户界面'},
         {term: 'Hunk', translation: '区块'},
         {term: 'Others', translation: '其它'},
         {term: 'Pull Request', translation: '拉取请求'},
         {term: 'Rebase', translation: '变基'},
         {term: 'Repo', translation: '仓库'},
         {term: 'Solo', translation: '单独显示'},
+        {term: 'SSH Agent', translation: 'SSH 代理'},
         {term: 'Stage', translation: '暂存'},
         {term: 'Stash', translation: '贮藏'},
+        {term: 'Token (AI model processing units)', translation: '词元'},
+        {term: 'Token (authentication or authorization credentials)', translation: '令牌'},
         {term: 'Working directory', translation: '工作目录'},
         {term: 'Workspace', translation: '工作区'}
       ],
@@ -170,7 +175,6 @@ const app = Vue.createApp({
         'Launchpad',
         'WIP',
         'Gitflow',
-        'AI Token',
       ]
     };
   },
